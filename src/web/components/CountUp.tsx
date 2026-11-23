@@ -31,10 +31,6 @@ export default function CountUp({
 
   useEffect(() => {
     if (!started) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      const id = requestAnimationFrame(() => setN(to));
-      return () => cancelAnimationFrame(id);
-    }
     const start = performance.now();
     let raf = 0;
     const tick = (t: number) => {

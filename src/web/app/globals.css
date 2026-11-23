@@ -135,24 +135,7 @@ body {
   overflow: hidden;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
-    transition-delay: 0ms !important;
-    animation-duration: 0.01ms !important;
-    animation-delay: 0ms !important;
-  }
-  .reveal,
-  .hero-in {
-    opacity: 1;
-    transform: none;
-  }
-}
+
 
 /* How-it-works step details */
 .step-pill {
@@ -171,14 +154,7 @@ body {
 .reveal.is-visible .step-line {
   transform: scaleX(1);
 }
-@media (prefers-reduced-motion: reduce) {
-  .step-pill {
-    transform: none;
-  }
-  .step-line {
-    transform: none;
-  }
-}
+
 
 @keyframes price-fade-in {
   from {
@@ -282,21 +258,7 @@ body {
   object-fit: cover;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track {
-    animation: none;
-    transform: none;
-  }
-  .ribbon-path {
-    animation: none;
-    stroke-dashoffset: 0;
-  }
-  .ribbon-drift,
-  .float-bob,
-  .menu-in {
-    animation: none;
-  }
-}
+
 
 /* TransformShowcase scroll morph (driven by --p, set in rAF) */
 .tf-frame {
@@ -314,6 +276,4 @@ body {
   opacity: var(--capin);
   transform: translateY(calc(12px * (1 - var(--capin))));
 }
-@media (prefers-reduced-motion: reduce) {
-  .tf-frame { --p: 1; }
-}
+

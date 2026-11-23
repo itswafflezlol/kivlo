@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Moment {
   score: number;
@@ -68,15 +68,8 @@ function fmt(sec: number) {
 }
 
 function useReducedMotion() {
-  return useSyncExternalStore(
-    (cb) => {
-      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-      mq.addEventListener("change", cb);
-      return () => mq.removeEventListener("change", cb);
-    },
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    () => false
-  );
+  // founder decision: animations always run, OS reduced-motion setting is ignored
+  return false;
 }
 
 function ScoreRing({ score, animate }: { score: number; animate: boolean }) {
@@ -227,11 +220,7 @@ export default function HeroMock() {
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    if (
-      inView &&
-      !reduced &&
-      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
+    if (inView && !reduced) {
       v.preload = "auto";
       v.play().catch(() => {});
     } else {

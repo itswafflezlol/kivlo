@@ -1,27 +1,19 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect } from "react";
 
 export function useReducedMotion() {
-  return useSyncExternalStore(
-    (cb) => {
-      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-      mq.addEventListener("change", cb);
-      return () => mq.removeEventListener("change", cb);
-    },
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    () => false
-  );
+  // founder decision: animations always run, OS reduced-motion setting is ignored
+  return false;
 }
 
-/** Plays the video only while in view; never autoplays under reduced motion. */
+/** Plays the video only while in view. */
 export function useInViewPlay(
   ref: React.RefObject<HTMLVideoElement | null>
 ) {
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const io = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) v.play().catch(() => {});
