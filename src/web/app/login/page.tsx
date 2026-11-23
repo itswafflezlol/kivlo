@@ -1,24 +1,18 @@
-import Link from "next/link";
+import { Suspense } from "react";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import AuthCard from "@/components/AuthCard";
 
-export const metadata = { title: "Login — Kivlo" };
+export const metadata = { title: "Log in — Kivlo" };
 
 export default function Page() {
   return (
     <>
       <Nav />
-      <main className="mx-auto max-w-[1200px] px-5 py-24">
-        <h1 className="font-heading text-4xl font-extrabold">
-          Login
-        </h1>
-        <p className="mt-4 text-lg text-slate">Coming soon.</p>
-        <Link
-          href="/"
-          className="mt-6 inline-block text-sm font-semibold text-lime-deep underline-offset-4 hover:underline"
-        >
-          ← Back home
-        </Link>
+      <main className="flex min-h-[70vh] items-center justify-center px-5 py-16">
+        <Suspense>
+          <AuthCard mode="login" />
+        </Suspense>
       </main>
       <Footer />
     </>

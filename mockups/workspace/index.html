@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KivloWorkspace — base design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #181818;
+    --graphite: #1f1f1f;
+    --carbon: #272727;
+    --edge: #363636;
+    --edge-soft: #2c2c2c;
+    --lime: #bdef72;
+    --lime-deep: #3d7a0a;
+    --lilac: #baaef0;
+    --heat: #f5a524;
+    --text: #f2f2f0;
+    --muted: #9a9a96;
+    --faint: #6f6f6b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Manrope", system-ui, sans-serif;
+    background: var(--ink);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: "JetBrains Mono", monospace; }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--edge-soft);
+    background: var(--graphite);
+    flex-shrink: 0;
+  }
+  .wordmark {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 800; font-size: 15px; letter-spacing: -0.02em;
+  }
+  .wordmark img { height: 20px; width: auto; display: block; }
+  .divider { width: 1px; height: 20px; background: var(--edge); }
+  .project { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .project b { color: var(--text); font-weight: 700; }
+  .topbar .spacer { flex: 1; }
+  .icon-btn {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); border: 1px solid transparent;
+    background: transparent; cursor: pointer;
+  }
+  .icon-btn:hover { background: var(--carbon); color: var(--text); }
+  .credits {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 12px; font-weight: 700; color: var(--text);
+    background: var(--carbon); border: 1px solid var(--edge);
+    padding: 5px 12px; border-radius: 999px;
+  }
+  .credits .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); }
+  .export-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--lime); color: var(--ink);
+    font-weight: 800; font-size: 13px;
+    padding: 7px 8px 7px 16px; border-radius: 999px; border: none; cursor: pointer;
+  }
+  .export-btn .arr {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--ink); color: var(--lime);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+
+  /* ---------- main grid ---------- */
+  .main { flex: 1; display: flex; min-height: 0; }
+
+  /* ---------- left rail ---------- */
+  .rail {
+    width: 264px; flex-shrink: 0;
+    border-right: 1px solid var(--edge-soft);
+    background: var(--graphite);
+    display: flex; flex-direction: column; min-height: 0;
+  }
+  .rail-head { padding: 14px 14px 10px; border-bottom: 1px solid var(--edge-soft); }
+  .rail-title { display: flex; align-items: baseline; justify-content: space-between; }
+  .rail-title h2 { font-size: 14px; font-weight: 800; }
+  .rail-title span { font-size: 11px; color: var(--faint); font-weight: 600; }
+  .rail-sort {
+    margin-top: 10px; width: 100%;
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--carbon); border: 1px solid var(--edge);
+    color: var(--muted); font-size: 12px; font-weight: 600;
+    padding: 6px 10px; border-radius: 9px;
+  }
+  .moments { overflow-y: auto; padding: 8px; flex: 1; }
+  .moment {
+    display: flex; gap: 10px; padding: 8px; border-radius: 12px;
+    cursor: pointer; border: 1px solid transparent; margin-bottom: 2px;
+    position: relative;
+  }
+  .moment:hover { background: var(--carbon); }
+  .moment.sel { background: var(--carbon); border-color: var(--edge); }
+  .moment.sel::before {
+    content: ""; position: absolute; left: 0; top: 8px; bottom: 8px;
+    width: 3px; border-radius: 3px; background: var(--lime);
+  }
+  .m-thumb {
+    width: 46px; aspect-ratio: 9/16; border-radius: 8px;
+    object-fit: cover; flex-shrink: 0; background: var(--carbon);
+  }
+  .m-info { min-width: 0; flex: 1; }
+  .m-score {
+    display: inline-flex; align-items: center;
+    font-size: 10px; font-weight: 800; font-family: "JetBrains Mono", monospace;
+    padding: 1.5px 6px; border-radius: 5px; color: var(--ink);
+  }
+  .s-lime { background: var(--lime); }
+  .s-heat { background: var(--heat); }
+  .s-gray { background: #555; color: var(--text); }
+  .m-name {
+    font-size: 12.5px; font-weight: 700; margin-top: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .m-meta { font-size: 11px; color: var(--faint); margin-top: 2px; font-family: "JetBrains Mono", monospace; }
+
+  /* ---------- canvas ---------- */
+  .canvas {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column;
+    background:
+      radial-gradient(1200px 500px at 50% -10%, #242424 0%, var(--ink) 60%);
+  }
+  .stage {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    position: relative; min-height: 0; padding: 18px;
+  }
+  .frame {
+    position: relative; aspect-ratio: 9/16; height: 100%;
+    max-height: 100%; border-radius: 22px; overflow: hidden;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7), 0 0 0 1px var(--edge);
+    background: #000;
+  }
+  .frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .frame .cap {
+    position: absolute; left: 0; right: 0; bottom: 13%;
+    text-align: center; font-weight: 800; font-size: 26px; line-height: 1.15;
+    text-transform: uppercase; letter-spacing: -0.01em; color: #fff;
+    text-shadow: 0 2px 0 var(--ink), 0 0 12px rgba(0,0,0,0.55);
+    padding: 0 16px;
+  }
+  .frame .cap em {
+    font-style: normal; background: var(--lime); color: var(--ink);
+    padding: 0 7px; border-radius: 5px; text-shadow: none;
+  }
+  .frame .wm {
+    position: absolute; right: 10px; bottom: 10px;
+    font-size: 11px; font-weight: 800; color: #fff; opacity: 0.28;
+  }
+  .frame .tag {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+    font-family: "JetBrains Mono", monospace; font-size: 10.5px;
+    padding: 4px 9px; border-radius: 999px; color: #fff;
+  }
+  .frame .tag b { color: var(--lime); font-weight: 500; }
+
+  /* transport */
+  .transport {
+    flex-shrink: 0; padding: 12px 20px 14px;
+    display: flex; align-items: center; justify-content: center; gap: 18px;
+  }
+  .t-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); background: var(--carbon);
+    border: 1px solid var(--edge); cursor: pointer; font-size: 12px;
+  }
+  .t-btn.play { width: 42px; height: 42px; background: var(--lime); color: var(--ink); border: none; font-size: 14px; }
+  .t-time { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--muted); }
+  .t-time b { color: var(--text); font-weight: 500; }
+
+  /* ---------- right panel ---------- */
+  .panel {
+    width: 288px; flex-shrink: 0;
+    border-left: 1px solid var(--edge-soft);
+    background: var(--graphite);
+    overflow-y: auto;
+  }
+  .tabs {
+    display: flex; padding: 10px 14px 0; gap: 4px;
+    border-bottom: 1px solid var(--edge-soft);
+  }
+  .tab {
+    padding: 8px 12px 10px; font-size: 13px; font-weight: 700;
+    color: var(--faint); cursor: pointer; position: relative;
+  }
+  .tab.on { color: var(--text); }
+  .tab.on::after {
+    content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px;
+    height: 2px; border-radius: 2px; background: var(--lime);
+  }
+  .p-sec { padding: 16px 16px 4px; }
+  .p-label {
+    font-size: 11px; font-weight: 700; color: var(--faint);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;
+  }
+  .select {
+    width: 100%; background: var(--carbon); border: 1px solid var(--edge);
+    border-radius: 10px; padding: 8px 11px; font-size: 13px; font-weight: 600;
+    color: var(--text); display: flex; justify-content: space-between; align-items: center;
+  }
+  .select span.chev { color: var(--faint); font-size: 10px; }
+  .swatches { display: flex; gap: 7px; }
+  .sw {
+    width: 26px; height: 26px; border-radius: 8px; cursor: pointer;
+    border: 2px solid transparent;
+  }
+  .sw.on { border-color: #fff; box-shadow: 0 0 0 2px var(--carbon); }
+  .slider { display: flex; align-items: center; gap: 10px; }
+  .track { flex: 1; height: 4px; border-radius: 4px; background: var(--edge); position: relative; }
+  .fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; background: var(--lime); }
+  .knob {
+    position: absolute; top: 50%; transform: translate(-50%,-50%);
+    width: 12px; height: 12px; border-radius: 50%; background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+  .sval { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--muted); width: 34px; text-align: right; }
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 0; font-size: 13px; font-weight: 600;
+  }
+  .tg { width: 34px; height: 19px; border-radius: 999px; background: var(--edge); position: relative; flex-shrink: 0; }
+  .tg::after {
+    content: ""; position: absolute; top: 2px; left: 2px;
+    width: 15px; height: 15px; border-radius: 50%; background: #888;
+  }
+  .tg.on { background: var(--lime); }
+  .tg.on::after { left: 17px; background: var(--ink); }
+  .p-divider { height: 1px; background: var(--edge-soft); margin: 12px 16px 0; }
+
+  /* ---------- timeline ---------- */
+  .timeline {
+    height: 148px; flex-shrink: 0;
+    border-top: 1px solid var(--edge-soft);
+    background: var(--graphite);
+    display: flex; flex-direction: column;
+  }
+  .tl-toolbar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 14px; border-bottom: 1px solid var(--edge-soft);
+  }
+  .tl-tool { color: var(--faint); font-size: 11px; font-weight: 600; display: flex; gap: 14px; }
+  .tl-zoom { margin-left: auto; display: flex; align-items: center; gap: 8px; color: var(--faint); font-size: 11px; font-family: "JetBrains Mono", monospace; }
+  .tl-body { flex: 1; display: flex; overflow: hidden; position: relative; }
+  .tl-labels { width: 76px; flex-shrink: 0; border-right: 1px solid var(--edge-soft); padding-top: 14px; }
+  .tl-labels div { height: 30px; font-size: 10.5px; font-weight: 700; color: var(--faint); display: flex; align-items: center; padding-left: 12px; }
+  .tl-tracks { flex: 1; position: relative; padding-top: 4px; overflow: hidden; }
+  .ruler { height: 16px; position: relative; color: var(--faint); font-size: 9px; font-family: "JetBrains Mono", monospace; }
+  .ruler span { position: absolute; top: 3px; transform: translateX(-50%); }
+  .row { height: 30px; position: relative; margin-top: 4px; }
+  .clip {
+    position: absolute; top: 0; height: 30px; border-radius: 7px;
+    background: linear-gradient(180deg, #2f4235, #26332b);
+    border: 1px solid #3d4f42;
+    overflow: hidden;
+  }
+  .clip .handle { position: absolute; top: 0; bottom: 0; width: 7px; background: var(--lime); opacity: 0.9; }
+  .clip .handle.l { left: 0; border-radius: 7px 0 0 7px; }
+  .clip .handle.r { right: 0; border-radius: 0 7px 7px 0; }
+  .clip .clabel {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 10.5px; font-weight: 700; color: #cfe8b8; white-space: nowrap;
+  }
+  .capchunk {
+    position: absolute; top: 0; height: 30px; border-radius: 7px;
+    background: #37325a; border: 1px solid #4a4390;
+    font-size: 10px; font-weight: 600; color: var(--lilac);
+    display: flex; align-items: center; padding: 0 8px; white-space: nowrap; overflow: hidden;
+  }
+  .playhead {
+    position: absolute; top: 0; bottom: 0; width: 2px; background: var(--lime);
+    z-index: 5;
+  }
+  .playhead::before {
+    content: ""; position: absolute; top: 0; left: -5px;
+    border: 6px solid transparent; border-top: 8px solid var(--lime);
+  }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--edge); border-radius: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+</style>
+</head>
+<body>
+
+  <!-- top bar -->
+  <header class="topbar">
+    <div class="wordmark">
+      <img src="../../src/web/public/kivlo-mark-white.png" alt="Kivlo" onerror="this.style.display='none'"/>
+      KivloWorkspace
+    </div>
+    <div class="divider"></div>
+    <div class="project">KaiCenat stream · <b>launched in gta6</b></div>
+    <div class="spacer"></div>
+    <button class="icon-btn" title="Undo">↩</button>
+    <button class="icon-btn" title="Redo">↪</button>
+    <div class="credits"><span class="dot"></span>24 credits</div>
+    <button class="export-btn">Export <span class="arr">↗</span></button>
+  </header>
+
+  <div class="main">
+
+    <!-- left rail: moments -->
+    <aside class="rail">
+      <div class="rail-head">
+        <div class="rail-title"><h2>Moments</h2><span>6 found</span></div>
+        <div class="rail-sort">Sort: score <span>▾</span></div>
+      </div>
+      <div class="moments">
+        <div class="moment sel">
+          <img class="m-thumb" src="../../src/web/public/videos/wall/clix-1.jpg" alt=""/>
+          <div class="m-info">
+            <span class="m-score s-lime">94</span>
+            <div class="m-name">Kai gets launched</div>
+            <div class="m-meta">0:28 · 1:42:10</div>
+          </div>
+        </div>
+        <div class="moment">
+          <img class="m-thumb" src="../../src/web/public/videos/wall/cinna-1.jpg" alt=""/>
+          <div class="m-info">
+            <span class="m-score s-lime">88</span>
+            <div class="m-name">The car explodes</div>
+            <div class="m-meta">0:24 · 2:11:48</div>
+          </div>
+        </div>
+        <div class="moment">
+          <img class="m-thumb" src="../../src/web/public/videos/wall/agent00-1.jpg" alt=""/>
+          <div class="m-info">
+            <span class="m-score s-heat">81</span>
+            <div class="m-name">Wait til he does it</div>
+            <div class="m-meta">0:31 · 0:58:03</div>
+          </div>
+        </div>
+        <div class="moment">
+          <img class="m-thumb" src="../../src/web/public/videos/wall/deansocool-1.jpg" alt=""/>
+          <div class="m-info">
+            <span class="m-score s-heat">76</span>
+            <div class="m-name">Chat spams W</div>
+            <div class="m-meta">0:19 · 3:04:37</div>
+          </div>
+        </div>
+        <div class="moment">
+          <img class="m-thumb" src="../../src/web/public/videos/wall/marlon-1.jpg" alt=""/>
+          <div class="m-info">
+            <span class="m-score s-gray">64</span>
+            <div class="m-name">He almost had it</div>
+            <div class="m-meta">0:26 · 1:27:55</div>
+          </div>
+        </div>
+        <div class="moment">
+          <img class="m-thumb" src="../../src/web/public/videos/wall/rakai-1.jpg" alt=""/>
+          <div class="m-info">
+            <span class="m-score s-gray">58</span>
+            <div class="m-name">Slow build, decent payoff</div>
+            <div class="m-meta">0:33 · 2:40:12</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- center: stage + transport -->
+    <section class="canvas">
+      <div class="stage">
+        <div class="frame">
+          <img src="../../src/web/public/videos/wall/clix-1.jpg" alt="Clip preview"/>
+          <div class="tag">Moment 1 · <b>94</b></div>
+          <div class="cap">No way he<br/><em>did that</em></div>
+          <div class="wm">kivlo</div>
+        </div>
+      </div>
+      <div class="transport">
+        <div class="t-time"><b>0:12.4</b> / 0:28</div>
+        <button class="t-btn" title="Back 5s">⟲</button>
+        <button class="t-btn play" title="Play">▶</button>
+        <button class="t-btn" title="Forward 5s">⟳</button>
+        <div class="t-time">Fit · 87%</div>
+      </div>
+    </section>
+
+    <!-- right panel -->
+    <aside class="panel">
+      <div class="tabs">
+        <div class="tab">Layout</div>
+        <div class="tab on">Captions</div>
+        <div class="tab">Post</div>
+      </div>
+
+      <div class="p-sec">
+        <div class="p-label">Template</div>
+        <div class="select">Karaoke pop <span class="chev">▾</span></div>
+      </div>
+      <div class="p-sec">
+        <div class="p-label">Font</div>
+        <div class="select">Clash Display <span class="chev">▾</span></div>
+      </div>
+      <div class="p-sec">
+        <div class="p-label">Size</div>
+        <div class="slider">
+          <div class="track"><div class="fill" style="width:62%"></div><div class="knob" style="left:62%"></div></div>
+          <div class="sval">26</div>
+        </div>
+      </div>
+      <div class="p-sec">
+        <div class="p-label">Position</div>
+        <div class="slider">
+          <div class="track"><div class="fill" style="width:78%"></div><div class="knob" style="left:78%"></div></div>
+          <div class="sval">87%</div>
+        </div>
+      </div>
+      <div class="p-sec">
+        <div class="p-label">Active word</div>
+        <div class="swatches">
+          <div class="sw on" style="background:#BDEF72"></div>
+          <div class="sw" style="background:#F5A524"></div>
+          <div class="sw" style="background:#BAAEF0"></div>
+          <div class="sw" style="background:#ffffff"></div>
+          <div class="sw" style="background:#FF6B63"></div>
+        </div>
+      </div>
+      <div class="p-sec">
+        <div class="toggle-row">Highlight active word <div class="tg on"></div></div>
+        <div class="toggle-row">Auto line-break <div class="tg on"></div></div>
+        <div class="toggle-row">Word-by-word reveal <div class="tg"></div></div>
+      </div>
+      <div class="p-divider"></div>
+      <div class="p-sec" style="padding-bottom:16px">
+        <div class="toggle-row">Safe margins <div class="tg"></div></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- timeline -->
+  <footer class="timeline">
+    <div class="tl-toolbar">
+      <div class="tl-tool"><span>✂ Split</span><span>⟲ Snap</span><span>+ Marker</span></div>
+      <div class="tl-zoom">− ───●─── + &nbsp;0:12.4</div>
+    </div>
+    <div class="tl-body">
+      <div class="tl-labels"><div>Video</div><div>Captions</div><div>Audio</div></div>
+      <div class="tl-tracks">
+        <div class="ruler">
+          <span style="left:8%">0:05</span><span style="left:22%">0:10</span>
+          <span style="left:36%">0:15</span><span style="left:50%">0:20</span>
+          <span style="left:64%">0:25</span><span style="left:78%">0:30</span>
+        </div>
+        <div class="row">
+          <div class="clip" style="left:4%;width:88%">
+            <div class="handle l"></div><div class="handle r"></div>
+            <div class="clabel">kaicenat_gta6 · 0:28</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="capchunk" style="left:4%;width:16%">bro…</div>
+          <div class="capchunk" style="left:21%;width:24%">no way he</div>
+          <div class="capchunk" style="left:46%;width:18%">did that</div>
+          <div class="capchunk" style="left:65%;width:27%">clip it clip it clip it</div>
+        </div>
+        <div class="row">
+          <div class="clip" style="left:4%;width:88%;background:repeating-linear-gradient(90deg,#2b2b2b 0 6px,#333 6px 12px);border-color:#3a3a3a"></div>
+        </div>
+        <div class="playhead" style="left:39%"></div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

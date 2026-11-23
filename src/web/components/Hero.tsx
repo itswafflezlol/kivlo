@@ -45,10 +45,10 @@ function HoverPlay({
 
 // floating thumbs: >=1280 only, in the side gutters, never over text
 const THUMBS = [
-  { poster: "/videos/wall/deansocool-1.jpg", video: "/videos/wall/deansocool-1.mp4", cls: "left-[2.5%] top-[9%] w-20 -rotate-6", depth: 1.6 },
-  { poster: "/videos/wall/marlon-1.jpg", video: "/videos/wall/marlon-1.mp4", cls: "left-[3%] top-[36%] w-16 rotate-3", depth: 1.0 },
-  { poster: "/videos/wall/extraemily-1.jpg", video: "/videos/wall/extraemily-1.mp4", cls: "right-[2.5%] top-[6%] w-24 rotate-6", depth: 1.8 },
-  { poster: "/videos/wall/rakai-1.jpg", video: "/videos/wall/rakai-1.mp4", cls: "right-[3%] top-[40%] w-16 -rotate-3", depth: 1.1 },
+  { poster: "/videos/wall/deansocool-1.jpg", video: "/videos/wall/deansocool-1.mp4", cls: "left-[2.5%] top-[9%] w-20 -rotate-6", depth: 1.6, delay: 0 },
+  { poster: "/videos/wall/marlon-1.jpg", video: "/videos/wall/marlon-1.mp4", cls: "left-[3%] top-[36%] w-16 rotate-3", depth: 1.0, delay: 1.1 },
+  { poster: "/videos/wall/extraemily-1.jpg", video: "/videos/wall/extraemily-1.mp4", cls: "right-[2.5%] top-[6%] w-24 rotate-6", depth: 1.8, delay: 0.6 },
+  { poster: "/videos/wall/rakai-1.jpg", video: "/videos/wall/rakai-1.mp4", cls: "right-[3%] top-[40%] w-16 -rotate-3", depth: 1.1, delay: 1.8 },
 ];
 
 function FloatThumb({ t, mx, my }: { t: (typeof THUMBS)[0]; mx: number; my: number }) {
@@ -61,12 +61,17 @@ function FloatThumb({ t, mx, my }: { t: (typeof THUMBS)[0]; mx: number; my: numb
         transition: "transform 300ms cubic-bezier(0.22,1,0.36,1)",
       }}
     >
-      <HoverPlay
-        poster={t.poster}
-        video={t.video}
-        label=""
-        className="block aspect-[9/16] w-full overflow-hidden rounded-2xl shadow-[0_12px_30px_-10px_rgba(0,0,0,0.25)] transition-transform duration-200 ease-out hover:scale-[1.06]"
-      />
+      <span
+        className="float-bob block"
+        style={{ ["--bob-delay" as string]: `${t.delay}s` }}
+      >
+        <HoverPlay
+          poster={t.poster}
+          video={t.video}
+          label=""
+          className="block aspect-[9/16] w-full overflow-hidden rounded-2xl shadow-[0_12px_30px_-10px_rgba(0,0,0,0.25)] transition-transform duration-200 ease-out hover:scale-[1.06]"
+        />
+      </span>
     </span>
   );
 }
@@ -211,7 +216,7 @@ export default function Hero() {
         {/* wavy ribbons, kept low behind the arc area */}
         <svg
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 h-full w-full"
+          className="ribbon-drift pointer-events-none absolute inset-0 h-full w-full"
           viewBox="0 0 1400 700"
           preserveAspectRatio="none"
         >

@@ -225,6 +225,40 @@ body {
   to { stroke-dashoffset: 0; }
 }
 
+/* Ribbon slow drift after draw-in */
+@keyframes ribbon-drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-14px); }
+}
+.ribbon-drift {
+  animation: ribbon-drift 11s ease-in-out 1.5s infinite alternate;
+}
+
+/* Floating thumbs idle bob */
+@keyframes floaty {
+  from { transform: translateY(0); }
+  to { transform: translateY(-9px); }
+}
+.float-bob {
+  animation: floaty 5.5s ease-in-out infinite alternate;
+  animation-delay: var(--bob-delay, 0s);
+}
+
+/* Mobile menu drop */
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.menu-in {
+  animation: menu-in 200ms ease-out;
+}
+
 /* Inline media chip in headline */
 .h-chip {
   display: inline-block;
@@ -256,6 +290,11 @@ body {
   .ribbon-path {
     animation: none;
     stroke-dashoffset: 0;
+  }
+  .ribbon-drift,
+  .float-bob,
+  .menu-in {
+    animation: none;
   }
 }
 

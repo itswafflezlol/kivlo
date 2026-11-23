@@ -4,7 +4,7 @@ export function ArrowCircle({ invert }: { invert?: boolean }) {
   return (
     <span
       aria-hidden="true"
-      className={`flex h-6 w-6 items-center justify-center rounded-full ${
+      className={`flex h-6 w-6 items-center justify-center rounded-full transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 ${
         invert ? "bg-lime text-ink" : "bg-ink text-white"
       }`}
     >
@@ -35,7 +35,7 @@ export default function ArrowPill({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center gap-2.5 rounded-full py-2 pl-6 pr-2 text-sm font-semibold transition-colors duration-200 ease-out ${
+      className={`group inline-flex items-center gap-2.5 rounded-full py-2 pl-6 pr-2 text-sm font-semibold transition-colors duration-200 ease-out ${
         variant === "lime"
           ? "bg-lime text-ink hover:bg-lime-hover"
           : "bg-ink text-white hover:bg-graphite"

@@ -37,7 +37,7 @@ export default function Nav() {
             <li key={l.label}>
               <Link
                 href={l.href}
-                className="font-[family-name:var(--font-jetbrains)] text-xs font-medium uppercase tracking-[0.12em] text-ink transition-colors duration-150 ease-out hover:text-lime-deep"
+                className="text-[15px] font-medium text-ink transition-colors duration-150 ease-out hover:text-lime-deep"
               >
                 {l.label}
               </Link>
@@ -77,7 +77,7 @@ export default function Nav() {
       {open && (
         <div
           id="mobile-menu"
-          className="border-t border-border px-5 pb-5 pt-2 md:hidden"
+          className="menu-in border-t border-border px-5 pb-5 pt-2 md:hidden"
         >
           <ul className="flex flex-col gap-1">
             {links.map((l) => (

@@ -82,11 +82,11 @@ export default function ClipWall() {
               style={{ marginTop: i % 2 === 1 ? "-40px" : "0" }}
             >
               {col.map((t) => (
-                <div key={t.src} className="relative aspect-[9/16] overflow-hidden rounded-[18px] bg-mist">
+                <div key={t.src} className="group relative aspect-[9/16] overflow-hidden rounded-[18px] bg-mist">
                   <InViewVideo
                     src={t.src}
                     poster={t.poster}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     label="Streamer clip in the clip wall"
                   />
                   <span

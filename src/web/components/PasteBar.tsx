@@ -34,7 +34,7 @@ export default function PasteBar() {
       />
       <button
         type="submit"
-        className="flex shrink-0 items-center gap-2 rounded-full bg-lime py-2 pl-5 pr-2 text-sm font-semibold text-ink transition-colors duration-150 ease-out hover:bg-lime-hover"
+        className="group flex shrink-0 items-center gap-2 rounded-full bg-lime py-2 pl-5 pr-2 text-sm font-semibold text-ink transition-colors duration-150 ease-out hover:bg-lime-hover"
       >
         Get clips free
         <ArrowCircle />
