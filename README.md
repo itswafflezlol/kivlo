@@ -17,6 +17,7 @@ CLAUDE.md          Standing rules for the AI agent
 docs/
   PLAN.md          Product scope, stack, architecture, build plan
   BRANDING.md      Name, colors, type, voice
+  DESIGN_PREFERENCES.md  What the founder likes and dislikes in design
   BUDGET.md        Build and running costs, plan margins
   DECISIONS.md     Dated log of every decision and why
   PRD.md           Product requirements (coming next)
