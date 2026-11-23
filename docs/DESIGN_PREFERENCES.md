@@ -69,6 +69,17 @@ Files in `mockups/references/`.
 
 Batch 5 confirms batch 4 patterns: fanned/arc cards over the hero, scattered thumbs, inline media in headlines, stacked offset cards, stats bento.
 
+### App references (batch 6, 2026-11-23): dashboard + workspace
+
+| # | File | What stands out |
+|---|---|---|
+| 14 | `ref-14-torenno-video-editor.png` | Editor inside one rounded dark frame, panels as rounded tiles with gaps. Centered breadcrumb "Projects / file ▾", white Export pill. Floating pill controls over the preview. Timeline: track headers with eye/lock, fully filled saturated clip bars (purple media with thumbnail, teal text blocks), waveform audio, accent playhead with knob |
+| 15 | `ref-15-clideo-video-editor.png` | Left icon+label tool rail, active = filled accent circle. Glassy pill control clusters floating over the video. Inspector with segmented pill tabs, slider rows with numeric value boxes, Reset pill. Timeline toolbar pill (undo/redo/cut/delete), dotted second ruler, accent playhead knob, clips with thick accent end handles |
+| 16 | `ref-16-fitness-dashboard-ink-rail.png` | Floating ink pill sidebar, icon-only, active = lime filled circle. Avatar + name pill with lime chevron circle; round white icon buttons. Ink hero stat card with big number and ring gauges. 2×2 white metric tiles with colored icon. Big lime/white/ink feature cards with imagery bleeding off. Right column plan panel with thumbnail stacks + "+" circles |
+| 17 | `ref-17-mobile-health-app.png` | Mobile: greeting + avatar, soft lime hero card with ring, 2-col stat tiles, week date strip with lime pill for today, list rows with thumb stack + plus, bottom tab bar with raised center lime button. Bar chart with hatched capacity bars and a solid lime highlight bar |
+
+Confirmed direction for the app: big radii, borderless white tiles on light bg, lime as the active/primary signal; workspace = dark rounded tiles, saturated filled timeline clips, floating transport pills.
+
 Patterns shared by most references **[inferred]**:
 
 - The hero sits inside a big rounded card or frame, not edge to edge.

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 function GoogleIcon() {
@@ -41,7 +41,8 @@ function AppleIcon() {
 export default function AuthCard({ mode }: { mode: "login" | "signup" }) {
   const params = useSearchParams();
   const url = mode === "signup" ? params.get("url") : null;
-  const [notice, setNotice] = useState(false);
+  const router = useRouter();
+  const [notice] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -51,7 +52,7 @@ export default function AuthCard({ mode }: { mode: "login" | "signup" }) {
     ? "Free plan · 3 credits a month · No card needed"
     : "Log in to keep clipping.";
 
-  const pending = () => setNotice(true);
+  const pending = () => router.push("/app");
 
   return (
     <div className="hero-in mx-auto w-full max-w-[420px] rounded-[28px] border border-border bg-white p-7 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.25)] sm:p-9">
@@ -155,7 +156,7 @@ export default function AuthCard({ mode }: { mode: "login" | "signup" }) {
 
       {notice && (
         <p className="price-fade mt-4 rounded-xl bg-mist px-3.5 py-2.5 text-center text-[13px] text-ink">
-          Auth isn&apos;t wired up yet — accounts ship with the backend.
+          Demo mode — signing you in to the app.
         </p>
       )}
 
