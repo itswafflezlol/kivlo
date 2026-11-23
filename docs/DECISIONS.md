@@ -1,0 +1,31 @@
+# Decisions
+
+Format: `YYYY-MM-DD: decision. Why.`
+
+- 2026-11-22: App never hosts campaigns, holds funds, or handles payouts; campaign discovery is a later phase. Keeps the product a tool, not a marketplace or money transmitter.
+- 2026-11-22: Working product name is Kivlo; brand packet saved to docs/BRANDING.md. Domain not yet chosen.
+- 2026-11-22: Brand v3 adopted (lime/ink/white, Bricolage Grotesque + Inter + JetBrains Mono, dark editor). Replaces the Apple-blue v1 packet.
+- 2026-11-22: Control border (dark) changed #6A6A6A -> #7C7C7C. Old value failed 3:1 on Graphite (2.8) and Carbon (2.4), where inputs live.
+- 2026-11-22: PLAN.md copied into docs/PLAN.md as the source plan.
+- 2026-11-22: v1 feature priority: highlights > animated captions > auto vertical crop > templates > AI chat helper. Founder's ranking; AI chat helper moves out of the MVP critical path.
+- 2026-11-22: Launch target: before 2027. Solo build with AI agents.
+- 2026-11-22: Stripe account will be owned by founder's mom as legal guardian. Stripe requires an adult owner for under-18 founders.
+- 2026-11-22: Campaigns stay out of the MVP (Phase 4). Founder is not in any campaigns, so there is no first-hand need to design for yet.
+- 2026-11-22: Added to MVP candidates: AI hooks, titles, and hashtags per clip, plus suggested posting times. Founder named these as a top stress, and they're cheap to build.
+- 2026-11-22: Saved edit presets move up in priority. Repeating the same edits is the founder's main burnout cause.
+- 2026-11-22: Pricing rule: entry plan stays cheap; price increases go to the bigger plans.
+- 2026-11-22: v1 imports YouTube/Twitch links by download (founder's call, against PLAN.md section 12 advice). Backup plan required in PRD: rights checkbox, user-responsibility terms, DMCA process, and a switch to turn off link import and fall back to uploads.
+- 2026-11-22: Launch = public paid signup before 2027. Scope must be cut to fit about 5 weeks.
+- 2026-11-22: CapRocket (MIT, Electron + React + FFmpeg) is a candidate to reuse for timeline and caption code. Confirm a LICENSE file exists in the upstream repo before copying code (none in the local checkout).
+- 2026-11-22: No free plan. 7-day free trial, then paid.
+- 2026-11-22: Name Kivlo is final. Domain not bought yet.
+- 2026-11-22: Core loop: link in (Kick/Twitch/YouTube) -> top moments -> auto-edited clips -> schedule posts with AI titles/hashtags. Editor is named KivloWorkspace and is used for fixes and custom templates.
+- 2026-11-22: Scheduling and posting move from "later" into the product vision (PLAN.md had publishing in Phase 4). How much ships before 2027 is still open, because the platform posting approvals are slow.
+- 2026-11-22: Adopted link-import guardrails: public, non-membership, non-age-restricted only; reject anything needing login or payment; user-responsibility ToS + rights checkbox; takedowns within 24h; never market as a downloader. Details in docs/research/ingest-spec-proposal.md.
+- 2026-11-22: Founder spec v2 saved (docs/research/founder-spec-v2-2026-11-22.md). Supersedes the 7-day trial: a Free plan (3 credits, watermark) is the trial.
+- 2026-11-22: Plans and prices: Free $0 / Pro $15 / Creator $30 / Agency $60 monthly. 1 credit = up to 20 source minutes. Yearly discount and credit amounts pending a cost check.
+- 2026-11-22: No Kivlo creator authorization program. Campaigns are link-out only, with no payouts, view tracking, or partner OAuth. Timing (v1 or later) still open.
+- 2026-11-22: Founder already has a domain and logo (updates the earlier "no domain" note).
+- 2026-11-22: Budget written (docs/BUDGET.md): build about $15-35 total, launch about $45/mo fixed + usage, about $0.17 per credit without proxies.
+- 2026-11-22: Proposed: Deepgram Nova-3 for transcription instead of OpenAI Whisper. whisper-1 is OpenAI's only word-timestamp model and shuts down 2027-02-26. Awaiting founder OK.
+- 2026-11-22: Proposed: yearly discount about 20% (Pro $12, Creator $24, Agency $48 per month billed yearly). The spec's $6/$12/$24 loses money on heavy users. Awaiting founder OK.
