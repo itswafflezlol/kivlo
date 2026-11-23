@@ -8,7 +8,7 @@ Paste a YouTube or Twitch link. Kivlo finds the best moments, crops them to vert
 
 ## Status
 
-Planning. No app code yet. Code starts after `docs/PRD.md` is approved. Target launch: before 2027.
+PRD approved. Building the landing and pricing pages first. Target launch: before 2027.
 
 ## Repo layout
 
@@ -20,8 +20,8 @@ docs/
   DESIGN_PREFERENCES.md  What the founder likes and dislikes in design
   BUDGET.md        Build and running costs, plan margins
   DECISIONS.md     Dated log of every decision and why
-  PRD.md           Product requirements (draft, awaiting approval)
-  SCREENS.md       Screen-by-screen descriptions (after the PRD)
+  PRD.md           Product requirements (approved)
+  SCREENS.md       Screen-by-screen descriptions
   research/        Founder answers, specs, clipper survey
 mockups/           Screen designs
 prompts/           Prompts worth reusing
@@ -47,7 +47,7 @@ src/               The app (later)
 
 ## Next steps
 
-1. Approve `docs/PRD.md`.
-2. List and describe every screen in `docs/SCREENS.md`.
+1. Build the landing and pricing pages.
+2. Mock up the app screens from `docs/SCREENS.md`.
 3. Mock up the screens in `mockups/`.
 4. Build.

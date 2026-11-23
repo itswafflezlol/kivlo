@@ -1,6 +1,6 @@
 # Kivlo PRD (v1)
 
-Status: **Draft, waiting for founder approval.** Last updated 2026-11-22.
+Status: **Approved by founder 2026-11-22.** Last updated 2026-11-22.
 Sources: `docs/PLAN.md`, `docs/BRANDING.md`, `docs/BUDGET.md`, `docs/DECISIONS.md`, `docs/research/`.
 
 Items marked **(default)** are calls I made where the founder hasn't answered yet. Change any of them before approving.

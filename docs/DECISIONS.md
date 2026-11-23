@@ -34,3 +34,6 @@ Format: `YYYY-MM-DD: decision. Why.`
 - 2026-11-22: Note: founder's pricing spec matches Ssemble's public pricing ($15/$30/$60, $6/$12/$24 yearly, 1 credit = 20 min). Kivlo needs its own reason to choose it, not just the same price.
 - 2026-11-22: PRD draft written (docs/PRD.md). The founder wants the PRD first; the landing page waits for approval.
 - 2026-11-22: v1 prices set by agent at founder's request: Pro $12 ($8/mo yearly), Creator $25 ($16), Agency $50 ($32). Cheaper monthly than Ssemble, Free plan with no card, every plan profitable at full use without proxies. Replaces $15/$30/$60 and $6/$12/$24.
+- 2026-11-22: PRD approved by founder. All (default) items in it stand.
+- 2026-11-22: Screen list written (docs/SCREENS.md, 24 screens). Sidebar v1: Dashboard, Library, Calendar, Presets, Billing. Campaigns tab removed until Phase 4.
+- 2026-11-22: Landing page built first in src/web (Next.js App Router, TypeScript, Tailwind). Founder asked for it right after PRD approval.
