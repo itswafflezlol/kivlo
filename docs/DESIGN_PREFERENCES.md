@@ -10,10 +10,14 @@ Tags: **[confirmed]** = founder said it. **[inferred]** = read from references, 
 - **Assets (updated 2026-11-23):** use Kivlo's own branding materials (`branding materials/` logos) and founder-provided videos. **Never generate assets** (no AI images, no stock, no made-up illustrations). Replaces the earlier "no images" rule.
 - **Product in the hero:** yes. Show a mock KivloWorkspace / clip UI rising out of the hero. (2026-11-22)
 - **KivloWorkspace mock must not look bland (2026-11-23):** real video playing, interactive (clickable moments and tabs), some color and depth.
+- **Logo (2026-11-23):** use the provided logo image file in the nav (`branding materials/KilvoBlackNoBG.png`, K mark + wordmark). Never retype the wordmark as text.
+- **Follow the references closely (2026-11-23):** founder wants the site to look amazing, like the references. Use their layouts and effects for real, not loosely.
 - **Main CTA:** "Start Free". (2026-11-22)
 - **Sections:** agent's call, whatever looks best. (2026-11-22)
 - **Pricing:** show both monthly and yearly, with a toggle. (2026-11-22)
-- **Fonts (2026-11-23):** wants better fonts than the first build (Bricolage Grotesque + Inter).
+- **Fonts (2026-11-23):** wants better fonts than the first build (Bricolage Grotesque + Inter). After v3: likes the hero, wants better fonts for the features section and other pages; pointed to https://www.figma.com/resource-library/best-fonts-for-websites/ (Inter, DM Sans, Manrope, Rubik, Work Sans, Poppins...).
+- **Clip variety (2026-11-23):** don't reuse the same 3 clips everywhere. Use the raw clips in `CLIPPING/CLIPS_READY_TO_EDIT` (one or more per streamer). Videos can play as you scroll.
+- **Founder reaction to v3:** "looks amazing".
 - **Look and motion (updated 2026-11-23):** nicer, interactive, better looking to the eye, with animations. Still no clutter and nothing crazy: smooth, purposeful motion (reveals, hovers, video, toggles), never flashy or constant. Always respect reduced-motion settings. Replaces "very little animation".
 
 ## Likes
@@ -46,6 +50,24 @@ Files in `mockups/references/`.
 | https://www.choppity.com/tools/free-ai-clip-maker/ | Paste-a-link box right in the hero ("Paste a video URL" or upload). Wall of real clips with view counts. 4 numbered steps. Long FAQ |
 | https://vizard.ai/ | "Try it free. No sign up needed" + Get clips for free in the hero. Scrolling gallery of vertical clips by category. Feature tabs. Editor section showing real controls |
 | https://clipping.net/ | Couldn't load (rate-limited, HTTP 429). Revisit |
+
+### From references (batch 4, 2026-11-23): "really use them"
+
+| # | File | What stands out |
+|---|---|---|
+| 6 | `ref-06-aeline-sky-cards-lime.png` (sent again) | Curved 3D arc of floating cards in the hero (perspective). Two-tone headline (2nd line lighter). Lime pill CTA with an Ink circle arrow icon. Small uppercase mono nav. Logo marquee strip. "• ABOUT US" eyebrow. Statement headline with inline round icon bubbles. Stats bento: media card with white stat overlay, gray quote card, lime stat card, ink stat card |
+| 9 | `ref-09-sense-wavy-ribbon-video-cards.png` | Big rounded hero panel, thick wavy ribbon behind a giant word, rounded media thumbnails scattered around it. Lime pill buttons. Highlighted pill behind a phrase in the section headline. Row of video cards: center play button, bottom label pill with a lime arrow button |
+| 10 | `ref-10-muse-inline-media-stacked-cards.png` | Media thumbnails inline inside the headline between words. Paint-stroke shapes. Carousel of media cards with a play icon and label chip. Services as stacked, offset, overlapping numbered cards (01/02/03), each a different color with a media thumbnail peeking out |
+
+### From references (batch 5, 2026-11-23)
+
+| # | File | What stands out |
+|---|---|---|
+| 11 | `ref-11-aeline-sky-fanned-cards.png` (Aeline again) | Fanned card row in slight 3D perspective floating over sky, "Rated 4.9/5" star strip under it. Stats bento: photo card with white stat chip, quote card with avatar cluster, lime stat card, ink stat card |
+| 12 | `ref-12-sense-scattered-video-thumbs.png` (SENSE again) | Small rounded video thumbs scattered at different rotations around the hero word. Bottom row of tall video cards each with a big circular play button and a label pill + lime arrow chip |
+| 13 | `ref-13-muse-inline-images-services.png` (Muse again) | Small rounded media thumbs inline *inside* the headline words. Numbered services cards (01/02/03) stacked and overlapping, each card a different color with a tilted media element |
+
+Batch 5 confirms batch 4 patterns: fanned/arc cards over the hero, scattered thumbs, inline media in headlines, stacked offset cards, stats bento.
 
 Patterns shared by most references **[inferred]**:
 

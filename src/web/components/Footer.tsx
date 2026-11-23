@@ -5,10 +5,13 @@ export default function Footer() {
   return (
     <footer className="border-t border-border">
       <div className="mx-auto flex max-w-[1200px] flex-col items-start justify-between gap-6 px-5 py-10 sm:flex-row sm:items-center">
-        <span className="flex items-center gap-2 font-display text-xl font-extrabold">
-          <Image src="/kivlo-mark.png" alt="" width={26} height={27} />
-          kivlo
-        </span>
+        <Image
+          src="/kivlo-logo.png"
+          alt="Kivlo"
+          width={64}
+          height={28}
+          className="h-7 w-auto"
+        />
         <nav aria-label="Footer">
           <ul className="flex flex-wrap items-center gap-6 text-sm text-slate">
             <li>

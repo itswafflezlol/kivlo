@@ -97,7 +97,7 @@ export default function PricingPage() {
       <Nav />
       <main className="mx-auto max-w-[1200px] px-5 pb-24">
         <div className="pb-14 pt-16 text-center">
-          <h1 className="font-display text-4xl font-extrabold sm:text-5xl">
+          <h1 className="font-heading text-4xl font-extrabold sm:text-5xl">
             Pricing
           </h1>
           <p className="mt-4 text-lg text-slate">
@@ -120,7 +120,7 @@ export default function PricingPage() {
 
         {/* Comparison table */}
         <div className="mt-16">
-          <h2 className="text-center font-display text-3xl font-extrabold">
+          <h2 className="text-center font-heading text-3xl font-extrabold">
             Compare plans
           </h2>
           <div className="mt-8 overflow-x-auto rounded-[20px] border border-border bg-white" tabIndex={0} aria-label="Plan comparison table">
@@ -179,7 +179,7 @@ export default function PricingPage() {
 
         {/* Billing FAQ */}
         <div className="mx-auto mt-16 max-w-[760px]">
-          <h2 className="text-center font-display text-3xl font-extrabold">
+          <h2 className="text-center font-heading text-3xl font-extrabold">
             Billing questions
           </h2>
           <div className="mt-8 flex flex-col gap-3">

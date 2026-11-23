@@ -212,9 +212,32 @@ export default function HeroMock() {
     return () => io.disconnect();
   }, [reduced]);
 
+  const [inView, setInView] = useState(false);
   useEffect(() => {
-    if (!reduced) videoRef.current?.play().catch(() => {});
-  }, [sel, reduced]);
+    const el = previewRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => setInView(e.isIntersecting),
+      { threshold: 0.2 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (
+      inView &&
+      !reduced &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      v.preload = "auto";
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+    }
+  }, [sel, reduced, inView]);
 
   const select = (i: number) => {
     if (!MOMENTS[i].playable) return;
@@ -334,6 +357,7 @@ export default function HeroMock() {
               ref={videoRef}
               src={moment.video}
               poster={moment.poster}
+              preload="none"
               muted={muted}
               loop
               playsInline

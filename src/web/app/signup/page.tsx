@@ -9,7 +9,7 @@ export default function Page() {
     <>
       <Nav />
       <main className="mx-auto max-w-[1200px] px-5 py-24">
-        <h1 className="font-display text-4xl font-extrabold">
+        <h1 className="font-heading text-4xl font-extrabold">
           Sign up
         </h1>
         <p className="mt-4 text-lg text-slate">Coming soon.</p>

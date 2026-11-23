@@ -45,3 +45,6 @@ Format: `YYYY-MM-DD: decision. Why.`
 - 2026-11-23: Fonts changed to Clash Display (headings) + Satoshi (body) from Fontshare (free for commercial use), JetBrains Mono kept for numbers. Founder asked for better fonts than Bricolage + Inter.
 - 2026-11-23: Risk: the demo clips show real streamers (Kai Cenat, Fanum) and GTA 6 footage. Using them in marketing can read as endorsement. OK for the prototype; get permission or swap clips before public launch.
 - 2026-11-23: Headings use Clash Display at 0 letter-spacing and +0.08em word-spacing. Tighter tracking made words run together.
+- 2026-11-23: Nav uses the founder's logo image (K + wordmark). The logo reads "Kilvo" while the site copy says "Kivlo"; waiting on the founder to confirm which spelling is correct.
+- 2026-11-23: Fonts v3.3: Clash Display only for the hero h1 and final CTA; Manrope for section headings, cards, UI and body. Founder asked for better fonts on the features section and other pages.
+- 2026-11-23: Added raw clips from CLIPS_READY_TO_EDIT (several streamers) as short muted loops, plus a scroll-driven clip wall. Founder asked for variety and videos that play while scrolling.

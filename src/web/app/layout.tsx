@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 
 const clash = localFont({
@@ -11,13 +11,10 @@ const clash = localFont({
   variable: "--font-clash",
 });
 
-const satoshi = localFont({
-  src: [
-    { path: "./fonts/Satoshi-Regular.woff2", weight: "400" },
-    { path: "./fonts/Satoshi-Medium.woff2", weight: "500" },
-    { path: "./fonts/Satoshi-Bold.woff2", weight: "700" },
-  ],
-  variable: "--font-satoshi",
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-body",
 });
 
 const jetbrains = JetBrains_Mono({
@@ -38,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${clash.variable} ${satoshi.variable} ${jetbrains.variable} antialiased`}
+        className={`${clash.variable} ${manrope.variable} ${jetbrains.variable} antialiased`}
       >
         {children}
       </body>

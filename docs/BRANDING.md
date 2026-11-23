@@ -155,11 +155,11 @@ Rules:
 
 | Use | Font | Notes |
 |---|---|---|
-| Display and hero headlines | Clash Display (Fontshare, ITF Free Font License) | 600 to 700, tight tracking. Headings only. Replaces Bricolage Grotesque (v3.2, 2026-11-23) |
-| UI and body | Satoshi (Fontshare, ITF Free Font License) | 400, 500, 700; 14 to 16px, line height 1.5. Replaces Inter (v3.2) |
+| Hero headline | Clash Display (Fontshare, ITF Free Font License) | 600 to 700. Landing hero h1 and the final CTA line only (v3.3, 2026-11-23) |
+| Section headings, card titles, UI, body | Manrope (Google Fonts, OFL) | Headings 700 to 800, tracking -0.02em; body 400 to 500, 15 to 16px, line height 1.55. Replaces Satoshi (v3.3). Picked from Figma's "best fonts for websites" list at founder's request |
 | Numbers and timecodes | JetBrains Mono, or `font-variant-numeric: tabular-nums` | Payout rates (`$1.25 / 1K`), clip durations (`00:42`), post times |
 
-- Fonts are self-hosted (woff2 in the app). Fallback stack for UI: `Satoshi, -apple-system, system-ui, "Segoe UI", sans-serif`. Do not self-host SF Pro.
+- Fonts are self-hosted (woff2 in the app). Fallback stack for UI: `Manrope, -apple-system, system-ui, "Segoe UI", sans-serif`. Do not self-host SF Pro.
 - Keep display type out of dense UI. Buttons, tables, and the editor use Inter.
 - Confirm the fonts are available and licensed for your use before launch.
 

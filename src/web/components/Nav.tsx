@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import ArrowPill from "./ArrowPill";
 
 const links = [
   { label: "Features", href: "/#features" },
@@ -17,16 +18,18 @@ export default function Nav() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-paper/90 backdrop-blur-sm">
       <nav
-        className="mx-auto flex max-w-[1200px] items-center justify-between px-5 py-4"
+        className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-3.5"
         aria-label="Main"
       >
-        <Link
-          href="/"
-          aria-label="Kivlo home"
-          className="flex items-center gap-2 font-display text-2xl font-extrabold"
-        >
-          <Image src="/kivlo-mark.png" alt="" width={27} height={28} priority />
-          kivlo
+        <Link href="/" aria-label="Kivlo home" className="flex items-center">
+          <Image
+            src="/kivlo-logo.png"
+            alt="Kivlo"
+            width={78}
+            height={34}
+            priority
+            className="h-[34px] w-auto"
+          />
         </Link>
 
         <ul className="hidden items-center gap-8 md:flex">
@@ -34,7 +37,7 @@ export default function Nav() {
             <li key={l.label}>
               <Link
                 href={l.href}
-                className="text-sm font-medium text-ink transition-colors duration-150 ease-out hover:text-lime-deep"
+                className="font-[family-name:var(--font-jetbrains)] text-xs font-medium uppercase tracking-[0.12em] text-ink transition-colors duration-150 ease-out hover:text-lime-deep"
               >
                 {l.label}
               </Link>
@@ -42,19 +45,14 @@ export default function Nav() {
           ))}
         </ul>
 
-        <div className="hidden items-center gap-5 md:flex">
+        <div className="hidden items-center gap-6 md:flex">
           <Link
             href="/login"
             className="text-sm font-medium text-ink transition-colors duration-150 ease-out hover:text-lime-deep"
           >
             Log in
           </Link>
-          <Link
-            href="/signup"
-            className="rounded-full bg-lime px-5 py-2.5 text-sm font-semibold text-ink transition-colors duration-150 ease-out hover:bg-lime-hover"
-          >
-            Start Free
-          </Link>
+          <ArrowPill href="/signup">Start Free</ArrowPill>
         </div>
 
         <button
@@ -102,12 +100,9 @@ export default function Nav() {
               </Link>
             </li>
             <li className="pt-2">
-              <Link
-                href="/signup"
-                className="block rounded-full bg-lime px-5 py-3 text-center text-base font-semibold text-ink"
-              >
+              <ArrowPill href="/signup" className="w-full justify-between">
                 Start Free
-              </Link>
+              </ArrowPill>
             </li>
           </ul>
         </div>
