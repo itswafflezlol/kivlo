@@ -60,21 +60,21 @@ export default function TransformShowcase() {
   if (reduced) {
     return (
       <section className="mx-auto max-w-[1200px] px-5 pb-24 pt-8">
-        <p className="text-center font-mono text-xs uppercase tracking-[0.2em] text-slate">
-          • How Kivlo sees it
+        <p className="text-center text-sm font-medium text-slate">
+          How Kivlo sees it
         </p>
         <h2 className="mt-3 text-center font-heading text-3xl font-bold sm:text-4xl">
           From stream <span className="text-slate">to Short</span>
         </h2>
         <div className="mt-10 flex items-center justify-center gap-6">
           <div className="relative aspect-video w-52 overflow-hidden rounded-2xl border border-hairline sm:w-72">
-            <Image src={asset("/videos/raw/jasontheween-1.jpg")} alt="" fill className="object-cover" sizes="300px" />
+            <Image src={asset("/videos/raw/tylil-1.jpg")} alt="" fill className="object-cover" sizes="300px" />
           </div>
           <span aria-hidden className="font-mono text-2xl text-slate">→</span>
           <div className="relative aspect-[9/16] w-36 overflow-hidden rounded-[28px] border border-ink sm:w-44">
-            <Image src={asset("/videos/raw/jasontheween-1.jpg")} alt="Clip cropped to vertical" fill className="object-cover" sizes="180px" />
+            <Image src={asset("/videos/raw/tylil-1.jpg")} alt="Clip cropped to vertical" fill className="object-cover" sizes="180px" />
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-white px-3 py-1 font-heading text-xs font-bold uppercase">
-              No way he <span className="bg-lime px-1 rounded">did that</span>
+              Bro really <span className="bg-lime px-1 rounded">did that</span>
             </div>
           </div>
         </div>
@@ -85,8 +85,8 @@ export default function TransformShowcase() {
   return (
     <section ref={wrap} className="tf-wrap relative h-[180vh] md:h-[250vh]" style={{ ["--p" as string]: 0 }}>
       <div className="sticky top-[8vh] flex h-[84vh] flex-col items-center justify-center overflow-hidden px-5">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-slate">
-          • How Kivlo sees it
+        <p className="text-sm font-medium text-slate">
+          How Kivlo sees it
         </p>
         <h2 className="mt-3 text-center font-heading text-3xl font-bold sm:text-4xl">
           From stream <span className="text-slate">to Short</span>
@@ -97,8 +97,8 @@ export default function TransformShowcase() {
           <div className="tf-frame relative overflow-hidden border border-ink/80 bg-ink">
             <video
               ref={vid}
-              src={asset("/videos/raw/jasontheween-1.mp4")}
-              poster={asset("/videos/raw/jasontheween-1.jpg")}
+              src={asset("/videos/raw/tylil-1.mp4")}
+              poster={asset("/videos/raw/tylil-1.jpg")}
               muted
               loop
               playsInline
@@ -118,7 +118,7 @@ export default function TransformShowcase() {
             {/* caption pill */}
             <div className="tf-caption absolute inset-x-0 bottom-[14%] flex justify-center px-4">
               <span className="text-center font-heading text-2xl font-extrabold uppercase leading-tight tracking-tight text-white [text-shadow:0_2px_0_#181818,0_0_10px_rgba(0,0,0,0.6)] sm:text-3xl">
-                No way he<br /><span className="rounded bg-lime px-1.5 text-ink [text-shadow:none]">did that</span>
+                Bro really<br /><span className="rounded bg-lime px-1.5 text-ink [text-shadow:none]">did that</span>
               </span>
             </div>
           </div>

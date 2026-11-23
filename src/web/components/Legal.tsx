@@ -30,7 +30,7 @@ export default function Legal({
 }) {
   return (
     <main className="mx-auto max-w-[760px] px-5 py-20">
-      <p className="hero-in font-mono text-xs uppercase tracking-[0.2em] text-slate">
+      <p className="hero-in text-sm font-medium text-slate">
         Kivlo
       </p>
       <h1

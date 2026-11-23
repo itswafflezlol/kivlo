@@ -24,7 +24,7 @@ export default function PlatformMarquee() {
 
   return (
     <section className="mx-auto flex max-w-[1200px] items-center gap-8 px-5 py-8">
-      <p className="hidden shrink-0 text-xs font-medium uppercase tracking-[0.12em] text-slate sm:block">
+      <p className="hidden shrink-0 text-sm font-medium text-slate sm:block">
         Clip from Twitch and YouTube. Post to:
       </p>
       <div

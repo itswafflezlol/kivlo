@@ -7,7 +7,7 @@ function Bubble({ bg, children }: { bg: string; children: React.ReactNode }) {
   return (
     <span
       aria-hidden="true"
-      className={`mx-1 inline-flex h-[1.1em] w-[1.1em] translate-y-[0.15em] items-center justify-center rounded-full ${bg}`}
+      className={`mx-[0.12em] inline-flex h-[0.92em] w-[0.92em] items-center justify-center rounded-full align-[-0.1em] ${bg}`}
     >
       {children}
     </span>
@@ -24,8 +24,8 @@ export default function FeaturesBento() {
       className="mx-auto max-w-[1200px] scroll-mt-24 px-5 py-24"
     >
       <Reveal>
-        <p className="text-center font-[family-name:var(--font-jetbrains)] text-xs font-medium uppercase tracking-[0.12em] text-slate">
-          • What Kivlo does
+        <p className="text-center text-sm font-medium text-slate">
+          What Kivlo does
         </p>
         <h2 className="mx-auto mt-4 max-w-3xl text-center font-heading text-balance text-3xl font-semibold leading-[1.15] sm:text-5xl">
           Kivlo finds the
@@ -39,23 +39,15 @@ export default function FeaturesBento() {
           </Bubble>
           moments, frames the
           <Bubble bg="bg-lilac-soft">
-            <svg width="0.55em" height="0.55em" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M5 1v3M5 11v3M11 1v3M11 11v3M1 5h3M11 5h3M1 11h3M11 11h3M5 5h6v6H5z"
-                stroke="#181818"
-                strokeWidth="1.5"
-              />
+            <svg width="0.55em" height="0.55em" viewBox="0 0 16 16" fill="none" stroke="#181818" strokeWidth="1.6" strokeLinecap="round">
+              <path d="M5.5 1.5h-2a2 2 0 0 0-2 2v2M10.5 1.5h2a2 2 0 0 1 2 2v2M14.5 10.5v2a2 2 0 0 1-2 2h-2M5.5 14.5h-2a2 2 0 0 1-2-2v-2" />
             </svg>
           </Bubble>
           shot, and writes the
           <Bubble bg="bg-heat">
-            <svg width="0.55em" height="0.55em" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M6 1L4 15M12 1l-2 14M2.5 5.5h11M2 10.5h11"
-                stroke="#181818"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
+            <svg width="0.6em" height="0.6em" viewBox="0 0 16 16" fill="none" stroke="#181818" strokeWidth="1.5" strokeLinecap="round">
+              <rect x="1.5" y="3" width="13" height="10" rx="2.5" />
+              <path d="M4.5 7h4M4.5 9.5h7" />
             </svg>
           </Bubble>
           caption.
@@ -68,9 +60,9 @@ export default function FeaturesBento() {
           {/* a) tall media card */}
           <div className="relative overflow-hidden rounded-[20px] border-2 border-ink bg-ink transition-transform duration-200 ease-out hover:-translate-y-0.5 lg:row-span-2">
             <InViewVideo
-              src={asset("/videos/kai-launched.mp4")}
-              poster={asset("/videos/kai-launched.jpg")}
-              label="Example clip: Kai gets launched"
+              src={asset("/videos/wall/kai-duke-slam-1.mp4")}
+              poster={asset("/videos/wall/kai-duke-slam-1.jpg")}
+              label="Example clip: Duke slams Kai on stream"
               className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="absolute inset-x-3 bottom-3 rounded-2xl bg-white p-4">
@@ -93,9 +85,9 @@ export default function FeaturesBento() {
             </p>
             <div className="mt-4 flex">
               {[
-                asset("/videos/thumbs/kai-launched-face.jpg"),
-                asset("/videos/thumbs/kai-car-explodes-face.jpg"),
-                asset("/videos/thumbs/fanum-wait-face.jpg"),
+                asset("/videos/thumbs/duke-phone-save-face.jpg"),
+                asset("/videos/thumbs/emily-dance-face.jpg"),
+                asset("/videos/thumbs/kai-museum-face.jpg"),
               ].map((f, i) => (
                 <span
                   key={f}

@@ -5,22 +5,22 @@ import { useRef, useState } from "react";
 
 const CLIPS = [
   {
-    src: asset("/videos/kai-launched.mp4"),
-    poster: asset("/videos/kai-launched.jpg"),
-    label: "GTA 6 · 0:17",
-    title: "Kai gets launched in GTA 6",
+    src: asset("/videos/wall/kai-duke-slam-1.mp4"),
+    poster: asset("/videos/wall/kai-duke-slam-1.jpg"),
+    label: "Just Chatting · 0:06",
+    title: "Duke slams Kai on stream",
   },
   {
-    src: asset("/videos/kai-car-explodes.mp4"),
-    poster: asset("/videos/kai-car-explodes.jpg"),
-    label: "GTA 6 · 0:17",
-    title: "The car explodes mid-chase",
+    src: asset("/videos/wall/kai-duke-pepper-1.mp4"),
+    poster: asset("/videos/wall/kai-duke-pepper-1.jpg"),
+    label: "Just Chatting · 0:06",
+    title: "The Dr Pepper phone save",
   },
   {
-    src: asset("/videos/fanum-wait.mp4"),
-    poster: asset("/videos/fanum-wait.jpg"),
-    label: "Gaming · 0:21",
-    title: "Wait til he does it",
+    src: asset("/videos/wall/emily-dance-1.mp4"),
+    poster: asset("/videos/wall/emily-dance-1.jpg"),
+    label: "IRL · 0:06",
+    title: "Emily & Nova’s dance break",
   },
 ];
 

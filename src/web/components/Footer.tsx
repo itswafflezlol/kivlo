@@ -9,8 +9,8 @@ export default function Footer() {
         <Image
           src={asset("/kivlo-logo.png")}
           alt="Kivlo"
-          width={64}
-          height={28}
+          width={1082}
+          height={480}
           className="h-7 w-auto"
         />
         <nav aria-label="Footer">

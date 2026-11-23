@@ -8,6 +8,7 @@ import { user, projects, clips, scheduledPosts, clipById } from "@/lib/mock";
 import { useSession } from "@/lib/session";
 import { PlatformGlyph, fmtLen, fmtTime, statusChip } from "@/components/app/ui";
 import ImportModal from "@/components/app/ImportModal";
+import { parseVideoLink } from "@/lib/linkParse";
 
 function Ring({ value, color, label }: { value: number; color: string; label: string }) {
   const r = 26;
@@ -41,6 +42,9 @@ function Dash() {
   const displayName = session?.name.split(" ")[0] ?? user.name;
   const urlParam = sp.get("url");
   const [importOpen, setImportOpen] = useState(!!urlParam);
+  const [modalUrl, setModalUrl] = useState(urlParam ?? "");
+  const [link, setLink] = useState("");
+  const [linkErr, setLinkErr] = useState("");
   const left = user.creditsTotal - user.creditsUsed;
   const usedPct = user.creditsUsed / user.creditsTotal;
   const noop = () => () => {};
@@ -56,13 +60,25 @@ function Dash() {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
 
   const pasteBar = (
-    <form className="flex w-full items-center gap-2 rounded-full bg-white p-1.5 shadow-sm ring-1 ring-black/5"
-      onSubmit={(e) => { e.preventDefault(); setImportOpen(true); }}>
-      <label htmlFor="dash-link" className="sr-only">Video link</label>
-      <input id="dash-link" type="url" placeholder="Paste a video link"
-        className="min-w-0 flex-1 rounded-full bg-transparent px-4 py-2.5 text-sm placeholder:text-slate focus:outline-none" />
-      <button type="submit" className="shrink-0 rounded-full bg-lime px-5 py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover">Find highlights</button>
-    </form>
+    <div>
+      <form className="flex w-full items-center gap-2 rounded-full bg-white p-1.5 shadow-sm ring-1 ring-black/5"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const raw = link.trim();
+          if (!raw) { setImportOpen(true); return; }
+          const p = parseVideoLink(raw);
+          if (!p.ok) { setLinkErr(p.message); return; }
+          setModalUrl(p.url);
+          setImportOpen(true);
+        }}>
+        <label htmlFor="dash-link" className="sr-only">Video link</label>
+        <input id="dash-link" type="url" placeholder="Paste a video link" value={link}
+          onChange={(e) => { setLink(e.target.value); setLinkErr(""); }}
+          className="min-w-0 flex-1 rounded-full bg-transparent px-4 py-2.5 text-sm placeholder:text-slate focus:outline-none" />
+        <button type="submit" className="shrink-0 rounded-full bg-lime px-5 py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover">Find highlights</button>
+      </form>
+      {linkErr && <p role="alert" className="mt-2 text-sm font-medium text-[#B3261E]">{linkErr}</p>}
+    </div>
   );
 
   if (empty) {
@@ -71,7 +87,7 @@ function Dash() {
         <h2 className="font-heading text-3xl font-bold">No clips yet.</h2>
         <p className="mt-3 text-slate">Import a VOD to find your first highlight.</p>
         <div className="mt-6">{pasteBar}</div>
-        <ImportModal open={importOpen} onClose={() => setImportOpen(false)} initialUrl={urlParam ?? ""} />
+        <ImportModal key={modalUrl} open={importOpen} onClose={() => setImportOpen(false)} initialUrl={modalUrl} />
       </div>
     );
   }
@@ -241,7 +257,7 @@ function Dash() {
           <Link href="/app/calendar" className="mt-5 block text-center text-xs font-medium text-slate hover:text-ink">Open calendar</Link>
         </div>
       </aside>
-      <ImportModal open={importOpen} onClose={() => setImportOpen(false)} initialUrl={urlParam ?? ""} />
+      <ImportModal key={modalUrl} open={importOpen} onClose={() => setImportOpen(false)} initialUrl={modalUrl} />
     </div>
   );
 }

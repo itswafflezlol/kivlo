@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { projectById, clipsOf, type Clip, type PostPlatform } from "@/lib/mock";
-import { PlatformGlyph, ScoreBadge, fmtLen } from "@/components/app/ui";
+import { PlatformGlyph, ScoreBadge, fmtLen, Modal } from "@/components/app/ui";
 
 const STEPS = ["Downloading", "Transcribing", "Finding moments", "Making clips"];
 const PLATFORMS: PostPlatform[] = ["tiktok", "shorts", "reels", "x"];
@@ -168,16 +168,13 @@ export default function ProjectView({ id }: { id: string }) {
 
       {prep && <PostPrep clip={prep} onClose={() => setPrep(null)} />}
       {confirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4" role="dialog" aria-modal="true" aria-label="Delete clip">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6">
-            <h3 className="font-heading text-base font-bold">Delete this clip?</h3>
-            <p className="mt-1 text-sm text-slate">“{confirm.title}” will be removed. This can&apos;t be undone.</p>
+        <Modal open={!!confirm} onClose={() => setConfirm(null)} label="Delete clip" title="Delete this clip?">
+            <p className="mt-2 text-sm text-slate">“{confirm.title}” will be removed. This can&apos;t be undone.</p>
             <div className="mt-5 flex justify-end gap-2">
               <button onClick={() => setConfirm(null)} className="rounded-full border border-black/10 px-4 py-2 text-sm font-medium">Keep</button>
               <button onClick={() => setConfirm(null)} className="rounded-full bg-[#B3261E] px-4 py-2 text-sm font-semibold text-white">Delete</button>
             </div>
-          </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

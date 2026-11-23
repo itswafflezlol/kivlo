@@ -28,8 +28,8 @@ export default function Nav() {
           <Image
             src={asset("/kivlo-logo.png")}
             alt="Kivlo"
-            width={78}
-            height={34}
+            width={1082}
+            height={480}
             priority
             className="h-[34px] w-auto"
           />

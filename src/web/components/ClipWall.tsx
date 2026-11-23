@@ -8,23 +8,28 @@ import { useReducedMotion } from "./hooks";
 
 const COLS: { src: string; poster: string; score: number }[][] = [
   [
-    { src: asset("/videos/wall/adapt-1.mp4"), poster: asset("/videos/wall/adapt-1.jpg"), score: 91 },
-    { src: asset("/videos/wall/cinna-1.mp4"), poster: asset("/videos/wall/cinna-1.jpg"), score: 84 },
-    { src: asset("/videos/wall/agent00-1.mp4"), poster: asset("/videos/wall/agent00-1.jpg"), score: 78 },
+    { src: asset("/videos/wall/kai-denzel-1.mp4"), poster: asset("/videos/wall/kai-denzel-1.jpg"), score: 91 },
+    { src: asset("/videos/wall/emily-dance-1.mp4"), poster: asset("/videos/wall/emily-dance-1.jpg"), score: 84 },
+    { src: asset("/videos/wall/adapt-1.mp4"), poster: asset("/videos/wall/adapt-1.jpg"), score: 78 },
+    { src: asset("/videos/wall/kai-museum-1.mp4"), poster: asset("/videos/wall/kai-museum-1.jpg"), score: 86 },
   ],
   [
-    { src: asset("/videos/raw/ray-1.mp4"), poster: asset("/videos/raw/ray-1.jpg"), score: 88 },
-    { src: asset("/videos/wall/deansocool-1.mp4"), poster: asset("/videos/wall/deansocool-1.jpg"), score: 96 },
-    { src: asset("/videos/wall/extraemily-1.mp4"), poster: asset("/videos/wall/extraemily-1.jpg"), score: 82 },
+    { src: asset("/videos/wall/cinna-awards-1.mp4"), poster: asset("/videos/wall/cinna-awards-1.jpg"), score: 88 },
+    { src: asset("/videos/wall/kai-duke-slam-1.mp4"), poster: asset("/videos/wall/kai-duke-slam-1.jpg"), score: 96 },
+    { src: asset("/videos/raw/tylil-1.mp4"), poster: asset("/videos/raw/tylil-1.jpg"), score: 82 },
+    { src: asset("/videos/wall/emily-girlset-1.mp4"), poster: asset("/videos/wall/emily-girlset-1.jpg"), score: 79 },
   ],
   [
-    { src: asset("/videos/wall/gta16stage-1.mp4"), poster: asset("/videos/wall/gta16stage-1.jpg"), score: 74 },
-    { src: asset("/videos/raw/tylil-1.mp4"), poster: asset("/videos/raw/tylil-1.jpg"), score: 90 },
-    { src: asset("/videos/wall/clix-2.mp4"), poster: asset("/videos/wall/clix-2.jpg"), score: 70 },
+    { src: asset("/videos/wall/speed-roblox-1.mp4"), poster: asset("/videos/wall/speed-roblox-1.jpg"), score: 90 },
+    { src: asset("/videos/wall/kai-druski-1.mp4"), poster: asset("/videos/wall/kai-druski-1.jpg"), score: 74 },
+    { src: asset("/videos/wall/deansocool-1.mp4"), poster: asset("/videos/wall/deansocool-1.jpg"), score: 87 },
+    { src: asset("/videos/wall/marlon-heat-1.mp4"), poster: asset("/videos/wall/marlon-heat-1.jpg"), score: 81 },
   ],
   [
-    { src: asset("/videos/wall/deansocool-2.mp4"), poster: asset("/videos/wall/deansocool-2.jpg"), score: 87 },
-    { src: asset("/videos/wall/marlon-1.mp4"), poster: asset("/videos/wall/marlon-1.jpg"), score: 80 },
+    { src: asset("/videos/wall/kai-duke-pepper-1.mp4"), poster: asset("/videos/wall/kai-duke-pepper-1.jpg"), score: 93 },
+    { src: asset("/videos/wall/emily-monster-1.mp4"), poster: asset("/videos/wall/emily-monster-1.jpg"), score: 80 },
+    { src: asset("/videos/wall/clix-1.mp4"), poster: asset("/videos/wall/clix-1.jpg"), score: 77 },
+    { src: asset("/videos/wall/agent00-1.mp4"), poster: asset("/videos/wall/agent00-1.jpg"), score: 85 },
   ],
 ];
 
@@ -91,11 +96,14 @@ export default function ClipWall() {
                     label="Streamer clip in the clip wall"
                   />
                   <span
-                    aria-hidden
+                    role="img"
+                    aria-label={`Highlight score ${t.score} out of 100`}
                     className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full bg-black/55 px-2 py-0.5 font-mono text-[11px] text-white"
                   >
-                    <span className={`h-1.5 w-1.5 rounded-full ${t.score >= 85 ? "bg-lime" : "bg-heat"}`} />
-                    {t.score}
+                    <svg viewBox="0 0 12 12" className={`h-3 w-3 ${t.score >= 85 ? "text-lime" : "text-heat"}`} fill="currentColor" aria-hidden>
+                      <path d="M6 1l1.5 3.1 3.4.5-2.5 2.4.6 3.4L6 8.7 3 10.4l.6-3.4L1.1 4.6l3.4-.5L6 1z" />
+                    </svg>
+                    {t.score}/100
                   </span>
                 </div>
               ))}

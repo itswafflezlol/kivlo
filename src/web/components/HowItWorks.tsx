@@ -12,7 +12,7 @@ const steps = [
     sub: "text-ink/70",
     num: "text-ink",
     peek: "img",
-    src: asset("/videos/thumbs/kai-launched-a.jpg"),
+    src: asset("/videos/wall/kai-museum-1.jpg"),
     peekCls: "-top-6 right-8 rotate-6 w-20",
     rotate: "md:-rotate-[1.5deg]",
     offset: "md:ml-0",
@@ -39,7 +39,7 @@ const steps = [
     sub: "text-slate-dark",
     num: "text-lime",
     peek: "img",
-    src: asset("/videos/thumbs/fanum-wait-b.jpg"),
+    src: asset("/videos/wall/emily-dance-1.jpg"),
     peekCls: "-right-4 top-1/2 -translate-y-1/2 rotate-6 w-16",
     rotate: "md:-rotate-[1deg]",
     offset: "md:ml-[16%]",
@@ -50,8 +50,8 @@ export default function HowItWorks() {
   return (
     <section id="how" className="mx-auto max-w-[1100px] scroll-mt-24 px-5 py-24">
       <Reveal>
-        <p className="text-center font-[family-name:var(--font-jetbrains)] text-xs font-medium uppercase tracking-[0.12em] text-slate">
-          • How it works
+        <p className="text-center text-sm font-medium text-slate">
+          How it works
         </p>
         <h2 className="mt-3 text-center font-heading text-balance text-3xl font-bold sm:text-4xl">
           From stream to post in three steps

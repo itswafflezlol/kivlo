@@ -75,8 +75,8 @@ export default function Home() {
         <section className="px-3 pb-24 sm:px-5">
           <div className="dark-focus mx-auto max-w-[1400px] rounded-[32px] bg-ink px-5 py-16 sm:py-20">
             <Reveal>
-              <p className="text-center font-[family-name:var(--font-jetbrains)] text-xs font-medium uppercase tracking-[0.12em] text-lime">
-                • KivloWorkspace
+              <p className="text-center text-sm font-medium text-lime">
+                KivloWorkspace
               </p>
               <h2 className="mt-3 text-center font-heading text-balance text-3xl font-bold text-white sm:text-4xl">
                 Fix anything <span className="text-slate-dark">in seconds</span>

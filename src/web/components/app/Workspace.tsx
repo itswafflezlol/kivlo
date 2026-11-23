@@ -5,8 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Clip } from "@/lib/mock";
-import { presets } from "@/lib/mock";
-import { ScoreBadge, Modal } from "./ui";
+import { clips as allClips, presets } from "@/lib/mock";
+import { ScoreBadge, Modal, fmtMin } from "./ui";
+import { user } from "@/lib/mock";
 
 const fmtTc = (v: number) => `${Math.floor(v / 60)}:${(v % 60).toFixed(1).padStart(4, "0")}`;
 
@@ -37,7 +38,7 @@ const ic = {
   export: <svg className={IC} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M8 10V2.5M5 5l3-3 3 3"/><path d="M2.5 10v2.5a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V10"/></svg>,
 };
 
-type Cfg = { layout: "auto" | "split" | "face"; cropX: number; font: string; size: number; posY: number; color: string; style: string; upper: boolean; reveal: boolean; highlight: boolean; };
+type Cfg = { layout: "auto" | "split" | "face"; cropX: number; font: string; size: number; weight: number; posY: number; color: string; textColor: string; style: string; upper: boolean; reveal: boolean; highlight: boolean; lines: number; lineWords: number; boxOp: number; anim: "none" | "pop" | "bounce" | "type" | "fade"; animSpeed: number; safeGuides: boolean; emphasis: boolean; emoji: boolean; };
 type RailKey = "moments" | "transcript" | "captions" | "layout";
 
 const RAIL: { k: RailKey; label: string; icon: React.ReactNode }[] = [
@@ -46,6 +47,20 @@ const RAIL: { k: RailKey; label: string; icon: React.ReactNode }[] = [
   { k: "captions", label: "Captions", icon: ic.captions },
   { k: "layout", label: "Layout", icon: ic.layout },
 ];
+
+
+function CapSec({ title, children, open = false }: { title: string; children: React.ReactNode; open?: boolean }) {
+  const [on, setOn] = useState(open);
+  return (
+    <div className="rounded-xl bg-carbon">
+      <button onClick={() => setOn(!on)} aria-expanded={on} className="flex w-full items-center justify-between px-3 py-2.5 text-xs font-semibold text-[#A1A5A0] hover:text-white">
+        {title}
+        <svg viewBox="0 0 12 12" className={`h-3 w-3 transition-transform ${on ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4.5l3 3 3-3"/></svg>
+      </button>
+      {on && <div className="space-y-3 px-3 pb-3">{children}</div>}
+    </div>
+  );
+}
 
 function Slider({ label, min, max, step = 1, value, onChange, unit = "" }: { label: string; min: number; max: number; step?: number; value: number; onChange: (v: number) => void; unit?: string }) {
   return (
@@ -67,11 +82,12 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
   const [trim, setTrim] = useState<[number, number]>([0, 6]);
   const [rail, setRail] = useState<RailKey | null>("transcript");
   const [ins, setIns] = useState<"layout" | "captions" | "preset" | "post">("captions");
-  const [cfg, setCfg] = useState<Cfg>({ layout: clip.layout, cropX: 50, font: "Manrope", size: 26, posY: 62, color: "#BDEF72", style: "pop", upper: true, reveal: true, highlight: true });
+  const [cfg, setCfg] = useState<Cfg>({ layout: clip.layout, cropX: 50, font: "Manrope", size: 26, weight: 800, posY: 62, color: "#BDEF72", textColor: "#FFFFFF", style: "pop", upper: true, reveal: true, highlight: true, lines: 2, lineWords: 3, boxOp: 75, anim: "pop", animSpeed: 150, safeGuides: false, emphasis: false, emoji: false });
   const [hist, setHist] = useState<Cfg[]>([]);
   const [future, setFuture] = useState<Cfg[]>([]);
   const [saved, setSaved] = useState<"saved" | "saving">("saved");
   const [exportOpen, setExportOpen] = useState(false);
+  const [quality, setQuality] = useState("1080p");
   const [expPct, setExpPct] = useState(-1);
   const [keysOpen, setKeysOpen] = useState(false);
   const [speed, setSpeed] = useState(1);
@@ -123,22 +139,29 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
   const toggleCut = (idx: number) => { setClip((c) => ({ ...c, words: c.words.map((w, j) => (j === idx ? { ...w, cut: !w.cut } : w)) })); setSaved("saving"); setTimeout(() => setSaved("saved"), 700); };
   const visWords = clip.words.filter((w) => !w.cut);
   const ai = visWords.findIndex((w) => t >= w.start && t < w.end);
-  const line = ai >= 0 ? visWords.slice(Math.max(0, ai - (ai % 3)), Math.max(0, ai - (ai % 3)) + 3) : [];
+  const line = ai >= 0 ? visWords.slice(Math.max(0, ai - (ai % cfg.lineWords)), Math.max(0, ai - (ai % cfg.lineWords)) + cfg.lineWords) : [];
   const fontFam = cfg.font === "Clash Display" ? "var(--font-clash)" : cfg.font === "JetBrains Mono" ? "var(--font-jetbrains)" : "var(--font-body)";
   const L = trim[0], R = trim[1];
 
   const capt = (
     <div className="pointer-events-none absolute inset-x-2 z-10 flex justify-center text-center" style={{ top: `${cfg.posY}%` }}>
-      <p className={`flex flex-wrap justify-center gap-x-[0.3em] leading-tight ${cfg.upper ? "uppercase" : ""}`} style={{ fontFamily: fontFam, fontSize: cfg.size, fontWeight: 800, textShadow: "0 2px 12px rgba(0,0,0,.6)" }}>
-        {line.map((w) => {
+      <p className={`flex flex-wrap justify-center gap-x-[0.3em] leading-tight ${cfg.upper ? "uppercase" : ""}`} style={{ fontFamily: fontFam, fontSize: cfg.size, fontWeight: cfg.weight, textShadow: "0 2px 12px rgba(0,0,0,.6)" }}>
+        {line.slice(0, cfg.lines * cfg.lineWords).map((w) => {
           const on = t >= w.start && t < w.end;
+          const pop = cfg.anim !== "none" && cfg.reveal && on;
           return (
-            <span key={w.start} className={`inline-block transition-transform duration-150 ${cfg.reveal && on ? "scale-110" : ""}`}
-              style={{ color: cfg.highlight && on ? cfg.color : "#fff", background: cfg.style === "box" ? "rgba(24,24,24,.75)" : "none", padding: cfg.style === "box" ? "0 6px" : 0, borderRadius: 6 }}>
+            <span key={w.start} className={`inline-block transition-all ${pop ? "scale-110" : ""} ${cfg.anim === "fade" && on ? "opacity-100" : cfg.anim === "fade" ? "opacity-70" : ""}`}
+              style={{
+                transitionDuration: `${cfg.animSpeed}ms`,
+                color: (cfg.highlight || (cfg.emphasis && on)) && on ? cfg.color : cfg.textColor,
+                background: cfg.style === "box" ? `rgba(24,24,24,${cfg.boxOp / 100})` : "none",
+                padding: cfg.style === "box" ? "0 6px" : 0, borderRadius: 6,
+              }}>
               {w.w}
             </span>
           );
         })}
+        {cfg.emoji && line.length > 0 && <span className="inline-block">⚡️</span>}
       </p>
     </div>
   );
@@ -275,6 +298,14 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
                 className="h-full w-full object-cover" style={{ objectPosition: `${cfg.cropX}% ${cfg.layout === "face" ? "15%" : "50%"}` }} />
             )}
             {capt}
+            {cfg.safeGuides && (
+              <div aria-hidden className="pointer-events-none absolute inset-0 z-[5]">
+                <span className="absolute inset-x-0 top-0 h-[14%] border-b border-dashed border-heat/60" />
+                <span className="absolute inset-x-0 bottom-0 h-[18%] border-t border-dashed border-heat/60" />
+                <span className="absolute right-0 top-[14%] bottom-[18%] w-[16%] border-l border-dashed border-heat/60" />
+                <span className="absolute left-2 top-[15%] rounded bg-black/40 px-1.5 py-0.5 font-mono text-[8px] text-heat/80">TikTok safe zones</span>
+              </div>
+            )}
             {transport}
           </div>
         </section>
@@ -317,34 +348,105 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
             </div>
           )}
           {ins === "captions" && (
-            <div className="space-y-4">
-              <div className="flex gap-2">
-                <select value={cfg.font} onChange={(e) => apply({ ...cfg, font: e.target.value })} aria-label="Caption font"
-                  className="min-w-0 flex-1 rounded-lg border border-[#3A3A3A] bg-carbon px-2 py-1.5 text-xs text-white">
-                  {FONTS.map((f) => <option key={f}>{f}</option>)}
-                </select>
-                <span className="w-14 rounded-lg bg-carbon px-2 py-1.5 text-center font-mono text-xs text-[#F2F2F0]">{cfg.size}</span>
-                <select aria-label="Weight" className="rounded-lg border border-[#3A3A3A] bg-carbon px-2 py-1.5 text-xs text-white"><option>800</option><option>700</option><option>600</option></select>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-20 text-xs text-[#A1A5A0]">Color</span>
-                <div className="flex flex-1 gap-1.5">{COLORS.map((c) => (
-                  <button key={c} onClick={() => apply({ ...cfg, color: c })} aria-label={`Color ${c}`} aria-pressed={cfg.color === c}
-                    className={`h-6 w-6 rounded-full ring-2 ring-offset-2 ring-offset-graphite ${cfg.color === c ? "ring-lime" : "ring-transparent"}`} style={{ background: c }} />
-                ))}</div>
-                <span className="w-12 rounded-lg bg-carbon px-1.5 py-1 text-center font-mono text-[10px] text-[#A1A5A0]">{cfg.color}</span>
-              </div>
-              <Slider label="Size" min={16} max={40} value={cfg.size} onChange={(v) => apply({ ...cfg, size: v })} />
-              <Slider label="Position" min={10} max={85} value={cfg.posY} onChange={(v) => apply({ ...cfg, posY: v })} unit="%" />
-              <Slider label="Opacity" min={40} max={100} value={100} onChange={() => {}} unit="%" />
-              <div className="space-y-2.5 border-t border-[#3A3A3A] pt-3">
-                {([["highlight", "Highlight active word"], ["upper", "Uppercase"], ["reveal", "Word-by-word reveal"]] as const).map(([k, l]) => (
-                  <label key={k} className="flex items-center justify-between text-xs text-[#A1A5A0]">{l}
-                    <input type="checkbox" checked={cfg[k]} onChange={(e) => apply({ ...cfg, [k]: e.target.checked })} className="h-4 w-4 accent-lime" />
-                  </label>
+            <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-2">
+                {presets.filter((p) => p.kind === "captions").map((p, i) => (
+                  <button key={p.id} aria-pressed={cfg.style === p.style} onClick={() => apply({ ...cfg, style: p.style, color: p.color })}
+                    className={`rounded-xl border p-1.5 ${cfg.style === p.style ? "border-lime bg-lime/10" : "border-[#3A3A3A] hover:border-[#7C7C7C]"}`}>
+                    <span className="relative block aspect-[9/16] w-full overflow-hidden rounded-lg bg-ink">
+                      <Image src={allClips[(i * 3 + 1) % allClips.length].poster} alt="" fill sizes="80px" className="object-cover opacity-70" />
+                      <span className="absolute inset-x-0 bottom-1 flex justify-center">
+                        <span className="px-0.5 text-[8px] font-extrabold uppercase leading-none" style={{ color: p.color, textShadow: "0 1px 4px rgba(0,0,0,.9)" }}>Did that</span>
+                      </span>
+                    </span>
+                    <span className="mt-1 block truncate text-[9px] text-[#A1A5A0]">{p.name}</span>
+                  </button>
                 ))}
               </div>
-              <button className="w-full rounded-full border border-[#3A3A3A] py-2 text-xs text-[#A1A5A0] hover:text-white">Reset</button>
+
+              <CapSec title="Text" open>
+                <div className="flex gap-2">
+                  <select value={cfg.font} onChange={(e) => apply({ ...cfg, font: e.target.value })} aria-label="Caption font"
+                    className="min-w-0 flex-1 rounded-lg border border-[#3A3A3A] bg-carbon px-2 py-1.5 text-xs text-white">
+                    {FONTS.map((f) => <option key={f}>{f}</option>)}
+                  </select>
+                  <select value={cfg.weight} onChange={(e) => apply({ ...cfg, weight: Number(e.target.value) })} aria-label="Weight"
+                    className="w-16 rounded-lg border border-[#3A3A3A] bg-carbon px-2 py-1.5 text-xs text-white">
+                    {[800, 700, 600].map((w) => <option key={w}>{w}</option>)}
+                  </select>
+                </div>
+                <Slider label="Size" min={16} max={40} value={cfg.size} onChange={(v) => apply({ ...cfg, size: v })} />
+                <div className="flex items-center justify-between text-xs text-[#A1A5A0]">
+                  <span>Letter case</span>
+                  <div className="flex rounded-full bg-carbon p-0.5">
+                    {([["upper", "AA"], ["mixed", "Aa"]] as const).map(([k, l]) => (
+                      <button key={k} onClick={() => apply({ ...cfg, upper: k === "upper" })}
+                        className={`rounded-full px-2.5 py-1 font-mono text-[10px] ${(k === "upper") === cfg.upper ? "bg-graphite text-white" : "text-[#A1A5A0]"}`}>{l}</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-xs text-[#A1A5A0]">
+                  <span>Lines</span>
+                  <div className="flex rounded-full bg-carbon p-0.5">
+                    {[1, 2, 3].map((n) => (
+                      <button key={n} onClick={() => apply({ ...cfg, lines: n })}
+                        className={`h-6 w-7 rounded-full font-mono text-[10px] ${cfg.lines === n ? "bg-graphite text-white" : "text-[#A1A5A0]"}`}>{n}</button>
+                    ))}
+                  </div>
+                </div>
+                <Slider label="Words per line" min={2} max={5} value={cfg.lineWords} onChange={(v) => apply({ ...cfg, lineWords: v })} />
+              </CapSec>
+
+              <CapSec title="Colors">
+                <div className="space-y-2.5">
+                  {([["textColor", "Text"], ["color", "Active word"]] as const).map(([k, l]) => (
+                    <div key={k} className="flex items-center gap-3">
+                      <span className="w-20 text-xs text-[#A1A5A0]">{l}</span>
+                      <div className="flex flex-1 gap-1.5">{COLORS.map((c) => (
+                        <button key={c} onClick={() => apply({ ...cfg, [k]: c })} aria-label={`${l} ${c}`} aria-pressed={cfg[k] === c}
+                          className={`h-6 w-6 rounded-full ring-2 ring-offset-2 ring-offset-graphite ${cfg[k] === c ? "ring-lime" : "ring-transparent"}`} style={{ background: c }} />
+                      ))}</div>
+                    </div>
+                  ))}
+                  <Slider label="Shadow box" min={0} max={100} value={cfg.boxOp} onChange={(v) => apply({ ...cfg, boxOp: v })} unit="%" />
+                </div>
+              </CapSec>
+
+              <CapSec title="Animation">
+                <div className="flex flex-wrap gap-1.5">
+                  {(["none", "pop", "bounce", "type", "fade"] as const).map((a) => (
+                    <button key={a} aria-pressed={cfg.anim === a} onClick={() => apply({ ...cfg, anim: a, reveal: a !== "none" })}
+                      className={`rounded-full px-3 py-1.5 text-[11px] font-medium capitalize ${cfg.anim === a ? "bg-lime text-ink" : "bg-carbon text-[#A1A5A0] hover:text-white"}`}>{a}</button>
+                  ))}
+                </div>
+                <Slider label="Speed" min={80} max={400} value={cfg.animSpeed} onChange={(v) => apply({ ...cfg, animSpeed: v })} unit="ms" />
+              </CapSec>
+
+              <CapSec title="Position">
+                <div className="flex gap-1.5">
+                  {([["top", 18], ["middle", 45], ["bottom", 68]] as const).map(([l, v]) => (
+                    <button key={l} onClick={() => apply({ ...cfg, posY: v })}
+                      className={`flex-1 rounded-full py-1.5 text-[11px] font-medium capitalize ${Math.abs(cfg.posY - v) < 6 ? "bg-lime text-ink" : "bg-carbon text-[#A1A5A0] hover:text-white"}`}>{l}</button>
+                  ))}
+                </div>
+                <Slider label="Fine tune" min={10} max={85} value={cfg.posY} onChange={(v) => apply({ ...cfg, posY: v })} unit="%" />
+                <label className="flex items-center justify-between text-xs text-[#A1A5A0]">Safe-area guides
+                  <input type="checkbox" checked={cfg.safeGuides} onChange={(e) => apply({ ...cfg, safeGuides: e.target.checked })} className="h-4 w-4 accent-lime" />
+                </label>
+              </CapSec>
+
+              <CapSec title="Emphasis">
+                <div className="space-y-2.5">
+                  {([["highlight", "Highlight active word"], ["emphasis", "Auto-highlight keywords"], ["emoji", "Emoji"], ["reveal", "Word-by-word reveal"]] as const).map(([k, l]) => (
+                    <label key={k} className="flex items-center justify-between text-xs text-[#A1A5A0]">{l}
+                      <input type="checkbox" checked={cfg[k]} onChange={(e) => apply({ ...cfg, [k]: e.target.checked })} className="h-4 w-4 accent-lime" />
+                    </label>
+                  ))}
+                </div>
+              </CapSec>
+
+              <button onClick={() => setCfg((c) => ({ ...c, color: "#BDEF72", textColor: "#FFFFFF", style: "pop", upper: true, reveal: true, highlight: true, lines: 2, lineWords: 3, boxOp: 75, anim: "pop", animSpeed: 150, posY: 62, size: 26, font: "Manrope", weight: 800, emphasis: false, emoji: false, safeGuides: false }))}
+                className="w-full rounded-full border border-[#3A3A3A] py-2 text-xs text-[#A1A5A0] hover:text-white">Reset</button>
             </div>
           )}
           {ins === "post" && (
@@ -373,7 +475,7 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
             {[[ic.video, "Video 1"], [ic.captions, "Captions"], [ic.audio, "Audio"]].map(([icon, name], i) => (
               <div key={i} className="flex flex-1 items-center gap-1.5 pr-1">
                 <span className="text-[#A1A5A0]">{icon}</span>
-                <span className="flex-1 truncate text-[10px] font-semibold uppercase tracking-wider text-[#A1A5A0]">{name as string}</span>
+                <span className="flex-1 truncate text-[11px] font-semibold text-[#A1A5A0]">{name as string}</span>
                 <button aria-label={`Toggle ${name} visibility`} className="text-[#7C7C7C] hover:text-white">{ic.eye}</button>
                 <button aria-label={`Lock ${name}`} className="text-[#7C7C7C] hover:text-white">{ic.lock}</button>
               </div>
@@ -436,31 +538,61 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
         </div>
       </div>
 
-      <Modal open={exportOpen} onClose={() => setExportOpen(false)} label="Export clip">
-        <h3 className="font-heading text-lg font-bold">Export</h3>
+      <Modal open={exportOpen} onClose={() => setExportOpen(false)} label="Export clip" dark title="Export">
         {expPct < 0 ? (
-          <div className="mt-4 space-y-3">
-            <p className="text-sm text-slate">1080 × 1920 · H.264 · no watermark on Pro</p>
-            <button onClick={() => { setExpPct(0); const t = setInterval(() => setExpPct((p) => p >= 100 ? (clearInterval(t), 100) : p + 4), 100); }} className="w-full rounded-full bg-lime py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover">Export clip</button>
+          <div className="mt-4 flex gap-4">
+            {/* clip preview */}
+            <div className="relative w-24 shrink-0 self-start overflow-hidden rounded-xl ring-1 ring-[#3A3A3A]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={clip.poster} alt="" className="block aspect-[9/16] w-full object-cover" />
+              <span className="absolute inset-x-2 bottom-3 text-center text-[13px] font-extrabold uppercase leading-tight text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.8)]">
+                {clip.words.slice(0, 3).map((wd) => wd.w).join(" ")}
+              </span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-[#F2F2F0]">{clip.title}</p>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {["1080×1920", "MP4", `${fmtMin(clip.duration)}`, "~3 MB"].map((s) => (
+                  <span key={s} className="rounded-md bg-[#1f1f1f] px-1.5 py-0.5 font-mono text-[10px] text-[#A1A5A0] ring-1 ring-[#3A3A3A]">{s}</span>
+                ))}
+              </div>
+              <label className="mt-4 block text-xs font-medium text-[#A1A5A0]">
+                Quality
+                <select value={quality} onChange={(e) => setQuality(e.target.value)} className="mt-1 w-full appearance-none rounded-lg border border-[#3A3A3A] bg-[#1f1f1f] px-3 py-2 text-sm text-[#F2F2F0] focus:outline-none focus:ring-2 focus:ring-lime">
+                  <option>1080p</option>
+                  <option>720p</option>
+                </select>
+              </label>
+              {user.plan !== "pro" && <p className="mt-3 text-xs text-[#A1A5A0]">Free plan exports include a Kivlo watermark.</p>}
+              <div className="mt-5 flex justify-end">
+                <button onClick={() => { setExpPct(0); const t = setInterval(() => setExpPct((p) => p >= 100 ? (clearInterval(t), 100) : p + 4), 100); }} className="rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover">Export</button>
+              </div>
+            </div>
           </div>
         ) : expPct < 100 ? (
           <div className="mt-6 text-center">
-            <div className="mx-auto h-2 w-full overflow-hidden rounded-full bg-mist"><div className="h-full bg-lime transition-all" style={{ width: `${expPct}%` }} /></div>
-            <p className="mt-3 font-mono text-sm text-slate">Rendering… {expPct}%</p>
+            <div className="mx-auto h-2 w-full overflow-hidden rounded-full bg-[#3A3A3A]"><div className="h-full bg-lime transition-all" style={{ width: `${expPct}%` }} /></div>
+            <p className="mt-3 font-mono text-sm text-[#A1A5A0]">Rendering… {expPct}%</p>
+            <button onClick={() => setExpPct(-1)} className="mt-2 text-xs text-[#A1A5A0] underline underline-offset-2 hover:text-[#F2F2F0]">Cancel</button>
           </div>
         ) : (
-          <div className="mt-5 space-y-3 text-center">
-            <p className="font-heading text-base font-bold">Your clip is ready.</p>
-            <a href={clip.src} download className="block rounded-full bg-lime py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover">Download</a>
-            <Link href="/app/calendar" className="block rounded-full border border-black/10 py-2.5 text-sm font-medium">Schedule post</Link>
+          <div className="mt-4 text-center">
+            <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-lime text-ink">
+              <svg viewBox="0 0 16 16" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8.5l3.2 3L13 5" /></svg>
+            </span>
+            <p className="mt-3 font-heading text-base font-bold text-[#F2F2F0]">Your clip is ready.</p>
+            <div className="mt-4 space-y-2">
+              <a href={clip.src} download className="block rounded-full bg-lime py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover">Download</a>
+              <Link href="/app/calendar" className="block rounded-full border border-[#3A3A3A] py-2.5 text-sm font-medium text-[#F2F2F0] hover:bg-white/5">Schedule post</Link>
+              <button onClick={() => navigator.clipboard?.writeText(`${clip.hook} ${clip.hashtags.tiktok.join(" ")}`).catch(() => {})} className="w-full text-xs text-[#A1A5A0] underline underline-offset-2 hover:text-[#F2F2F0]">Copy caption</button>
+            </div>
           </div>
         )}
       </Modal>
-      <Modal open={keysOpen} onClose={() => setKeysOpen(false)} label="Keyboard shortcuts">
-        <h3 className="font-heading text-lg font-bold">Shortcuts</h3>
+      <Modal open={keysOpen} onClose={() => setKeysOpen(false)} label="Keyboard shortcuts" dark title="Shortcuts">
         <dl className="mt-4 grid grid-cols-2 gap-y-2 text-sm">
           {[["Space", "Play / pause"], ["J / L", "−1s / +1s"], ["← / →", "Step a frame"], ["Ctrl+Z", "Undo"], ["Ctrl+Shift+Z", "Redo"]].map(([k, d]) => (
-            <div key={k} className="contents"><dt className="font-mono text-xs text-slate">{k}</dt><dd className="text-sm">{d}</dd></div>
+            <div key={k} className="contents"><dt className="font-mono text-xs text-[#A1A5A0]">{k}</dt><dd className="text-sm">{d}</dd></div>
           ))}
         </dl>
       </Modal>

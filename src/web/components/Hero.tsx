@@ -7,12 +7,6 @@ import InViewVideo from "./InViewVideo";
 import PasteBar from "./PasteBar";
 import { useReducedMotion } from "./hooks";
 
-const V = {
-  a: asset("/videos/kai-launched.mp4"),
-  b: asset("/videos/kai-car-explodes.mp4"),
-  c: asset("/videos/fanum-wait.mp4"),
-};
-
 function HoverPlay({
   poster,
   video,
@@ -46,10 +40,10 @@ function HoverPlay({
 
 // floating thumbs: >=1280 only, in the side gutters, never over text
 const THUMBS = [
-  { poster: asset("/videos/wall/deansocool-1.jpg"), video: asset("/videos/wall/deansocool-1.mp4"), cls: "left-[2.5%] top-[9%] w-20 -rotate-6", depth: 1.6, delay: 0 },
-  { poster: asset("/videos/wall/marlon-1.jpg"), video: asset("/videos/wall/marlon-1.mp4"), cls: "left-[3%] top-[36%] w-16 rotate-3", depth: 1.0, delay: 1.1 },
-  { poster: asset("/videos/wall/extraemily-1.jpg"), video: asset("/videos/wall/extraemily-1.mp4"), cls: "right-[2.5%] top-[6%] w-24 rotate-6", depth: 1.8, delay: 0.6 },
-  { poster: asset("/videos/wall/rakai-1.jpg"), video: asset("/videos/wall/rakai-1.mp4"), cls: "right-[3%] top-[40%] w-16 -rotate-3", depth: 1.1, delay: 1.8 },
+  { poster: asset("/videos/wall/kai-duke-slam-1.jpg"), video: asset("/videos/wall/kai-duke-slam-1.mp4"), cls: "left-[2.5%] top-[9%] w-20 -rotate-6", depth: 1.6, delay: 0 },
+  { poster: asset("/videos/wall/emily-dance-1.jpg"), video: asset("/videos/wall/emily-dance-1.mp4"), cls: "left-[3%] top-[36%] w-16 rotate-3", depth: 1.0, delay: 1.1 },
+  { poster: asset("/videos/wall/cinna-awards-1.jpg"), video: asset("/videos/wall/cinna-awards-1.mp4"), cls: "right-[2.5%] top-[6%] w-24 rotate-6", depth: 1.8, delay: 0.6 },
+  { poster: asset("/videos/wall/emily-monster-1.jpg"), video: asset("/videos/wall/emily-monster-1.mp4"), cls: "right-[3%] top-[40%] w-16 -rotate-3", depth: 1.1, delay: 1.8 },
 ];
 
 function FloatThumb({ t, mx, my }: { t: (typeof THUMBS)[0]; mx: number; my: number }) {
@@ -78,11 +72,11 @@ function FloatThumb({ t, mx, my }: { t: (typeof THUMBS)[0]; mx: number; my: numb
 }
 
 const ARC = [
-  { type: "img", src: asset("/videos/wall/deansocool-2.jpg"), w: 132 },
+  { type: "img", src: asset("/videos/wall/emily-girlset-1.jpg"), w: 132 },
   { type: "score", w: 140 },
-  { type: "video", src: asset("/videos/wall/clix-1.mp4"), poster: asset("/videos/wall/clix-1.jpg"), w: 150 },
+  { type: "video", src: asset("/videos/wall/kai-denzel-1.mp4"), poster: asset("/videos/wall/kai-denzel-1.jpg"), w: 150 },
   { type: "center", w: 190 },
-  { type: "video", src: asset("/videos/wall/cinna-1.mp4"), poster: asset("/videos/wall/cinna-1.jpg"), w: 150 },
+  { type: "video", src: asset("/videos/wall/cinna-awards-1.mp4"), poster: asset("/videos/wall/cinna-awards-1.jpg"), w: 150 },
   { type: "time", w: 150 },
   { type: "tags", w: 160 },
 ];
@@ -103,33 +97,33 @@ function ArcCard({
   if (item.type === "img")
     body = (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={item.src} alt="" className="aspect-[9/16] w-full object-cover" />
+      <img src={item.src} alt="" className="absolute inset-0 h-full w-full object-cover" />
     );
   if (item.type === "score")
     body = (
-      <div className="flex aspect-[3/4] w-full flex-col justify-center gap-1 bg-white p-4">
+      <div className="absolute inset-0 flex w-full flex-col justify-center gap-1 bg-white p-4">
         <p className="text-xs text-slate">Highlight score</p>
         <p className="font-[family-name:var(--font-jetbrains)] text-4xl font-medium">
           94
         </p>
-        <p className="text-xs text-slate">Kai gets launched</p>
+        <p className="text-xs text-slate">Duke slams Kai</p>
       </div>
     );
   if (item.type === "video")
     body = (
-      <InViewVideo src={item.src!} poster={item.poster!} className="aspect-[9/16] w-full object-cover" label="Example clip" />
+      <InViewVideo src={item.src!} poster={item.poster!} className="absolute inset-0 h-full w-full object-cover" label="Example clip" />
     );
   if (item.type === "center")
     body = (
-      <div className="dark-focus flex aspect-[3/4] w-full flex-col gap-2 bg-ink p-4">
+      <div className="dark-focus absolute inset-0 flex w-full flex-col gap-2 bg-ink p-4">
         <div className="flex items-center gap-1.5 text-white">
-          <Image src={asset("/kivlo-mark-white.png")} alt="" width={14} height={14} />
+          <Image src={asset("/kivlo-mark-white.png")} alt="" width={94} height={96} className="h-3.5 w-auto" />
           <span className="text-xs font-semibold">KivloWorkspace</span>
         </div>
         {[
-          ["94", "Kai gets launched", "bg-lime text-ink"],
-          ["88", "The car explodes", "bg-lime text-ink"],
-          ["81", "Wait til he does it", "bg-heat text-ink"],
+          ["94", "Duke slams Kai", "bg-lime text-ink"],
+          ["88", "Emily & Nova dance", "bg-lime text-ink"],
+          ["81", "Speed vs Roblox kids", "bg-heat text-ink"],
         ].map(([s, t, c]) => (
           <div key={s} className="flex items-center gap-2 rounded-md bg-carbon px-2 py-1.5">
             <span className={`rounded px-1 py-0.5 font-[family-name:var(--font-jetbrains)] text-[10px] ${c}`}>
@@ -142,7 +136,7 @@ function ArcCard({
     );
   if (item.type === "time")
     body = (
-      <div className="flex aspect-[3/4] w-full flex-col justify-center gap-2 bg-white p-4">
+      <div className="absolute inset-0 flex w-full flex-col justify-center gap-2 bg-white p-4">
         <p className="text-xs text-slate">Best time to post</p>
         <p className="flex items-center gap-1.5 font-[family-name:var(--font-jetbrains)] text-2xl font-medium">
           <span className="h-2 w-2 rounded-full bg-lime" />
@@ -153,8 +147,8 @@ function ArcCard({
     );
   if (item.type === "tags")
     body = (
-      <div className="flex aspect-[3/4] w-full flex-wrap content-center gap-1.5 bg-lime p-4">
-        {["#kaicenat", "#gta6", "#streamclips"].map((h) => (
+      <div className="absolute inset-0 flex w-full flex-wrap content-center gap-1.5 bg-lime p-4">
+        {["#kaicenat", "#justchatting", "#streamclips"].map((h) => (
           <span key={h} className="rounded-full bg-ink px-2 py-1 text-[10px] text-white">
             {h}
           </span>
@@ -163,7 +157,7 @@ function ArcCard({
     );
   return (
     <div
-      className="shrink-0 snap-center overflow-hidden rounded-2xl border border-border shadow-[0_18px_40px_-14px_rgba(0,0,0,0.25)] transition-transform duration-300 ease-out hover:-translate-y-2"
+      className="relative aspect-[9/16] shrink-0 snap-center overflow-hidden rounded-2xl border border-border shadow-[0_18px_40px_-14px_rgba(0,0,0,0.25)] transition-transform duration-300 ease-out hover:-translate-y-2"
       style={{ width: item.w * scale, transform: arcOn ? transform : undefined }}
     >
       {body}
@@ -212,7 +206,7 @@ export default function Hero() {
       <div
         ref={panelRef}
         onMouseMove={onMove}
-        className="relative mx-auto min-h-[640px] max-w-[1400px] overflow-hidden rounded-[32px] border border-border bg-white px-5 pb-16 pt-16 text-center sm:pt-20"
+        className="relative mx-auto min-h-[640px] max-w-[1400px] overflow-hidden rounded-[32px] border border-border bg-white px-5 pb-24 pt-16 text-center sm:pt-20"
       >
         {/* wavy ribbons, kept low behind the arc area */}
         <svg
@@ -248,8 +242,8 @@ export default function Hero() {
           <h1 className="hero-in mx-auto w-fit max-w-full text-balance font-display text-[40px] font-semibold leading-[1.08] text-ink sm:text-6xl lg:text-[56px] xl:text-[64px]">
             Turn long{" "}
             <HoverPlay
-              poster={asset("/videos/thumbs/kai-launched-face.jpg")}
-              video={V.a}
+              poster={asset("/videos/thumbs/kai-museum-face.jpg")}
+              video={asset("/videos/wall/kai-museum-1.mp4")}
               label="Kai Cenat clip"
               className="h-chip -rotate-2 shadow-md"
             />{" "}
@@ -257,9 +251,9 @@ export default function Hero() {
             <br />
             into clips{" "}
             <HoverPlay
-              poster={asset("/videos/thumbs/fanum-wait-face.jpg")}
-              video={V.c}
-              label="Fanum clip"
+              poster={asset("/videos/thumbs/emily-dance-face.jpg")}
+              video={asset("/videos/wall/emily-dance-1.mp4")}
+              label="ExtraEmily clip"
               className="h-chip rotate-2 shadow-md"
             />{" "}
             <span className="text-slate">worth posting.</span>
@@ -285,7 +279,7 @@ export default function Hero() {
         {/* arc */}
         <div className="relative z-10 mt-14 md:mt-10">
           <div
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-2 pb-4 md:snap-none md:justify-center md:overflow-visible md:px-0"
+            className="flex snap-x snap-mandatory items-start gap-4 overflow-x-auto px-2 pb-4 md:snap-none md:items-start md:justify-center md:overflow-visible md:px-0"
             style={{ perspective: "1200px" }}
             tabIndex={0}
             role="region"

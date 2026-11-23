@@ -201,10 +201,9 @@ export default function AuthCard({ mode }: { mode: "login" | "signup" }) {
 
         {!isSignup && (
           <div className="flex justify-end">
-            <button type="button" onClick={() => demo(email.split("@")[0] || "Kivlo user", email || "demo@kivlo.app", "email")}
-              className="text-[13px] font-medium text-slate underline-offset-4 hover:text-ink hover:underline">
+            <Link href="/reset-password" className="text-[13px] font-medium text-slate underline-offset-4 hover:text-ink hover:underline">
               Forgot password?
-            </button>
+            </Link>
           </div>
         )}
 
