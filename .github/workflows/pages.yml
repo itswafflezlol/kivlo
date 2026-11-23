@@ -30,8 +30,8 @@ jobs:
         working-directory: src/web
         env:
           NEXT_PUBLIC_BASE_PATH: /kivlo
-          NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
-          NEXT_PUBLIC_APPLE_SERVICE_ID: ${{ vars.APPLE_SERVICE_ID }}
+          NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          NEXT_PUBLIC_APPLE_SERVICE_ID: ${{ secrets.APPLE_SERVICE_ID }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
