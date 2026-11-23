@@ -19,6 +19,7 @@ docs/
   BRANDING.md      Name, colors, type, voice
   DESIGN_PREFERENCES.md  What the founder likes and dislikes in design
   BUDGET.md        Build and running costs, plan margins
+  TECH_STACK.md    Services, MCP servers, external APIs
   DECISIONS.md     Dated log of every decision and why
   PRD.md           Product requirements (approved)
   SCREENS.md       Screen-by-screen descriptions

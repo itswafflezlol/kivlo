@@ -7,6 +7,7 @@ short vertical clips from streamers' long-form content.
 - docs/PLAN.md (scope, stack, architecture, build plan)
 - docs/BRANDING.md (name, colors, type, voice)
 - docs/DESIGN_PREFERENCES.md (founder likes and dislikes, read before any design work)
+- docs/TECH_STACK.md (services, MCP servers, external APIs)
 - docs/PRD.md and docs/DECISIONS.md once they exist
 
 ## Rules

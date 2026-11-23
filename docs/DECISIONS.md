@@ -39,4 +39,5 @@ Format: `YYYY-MM-DD: decision. Why.`
 - 2026-11-22: Landing page built first in src/web (Next.js App Router, TypeScript, Tailwind). Founder asked for it right after PRD approval.
 - 2026-11-22: Landing (/) and pricing (/pricing) pages built in src/web: Next.js 16.4.6, React 19.3.0, Tailwind 4.3.3, prices from src/web/lib/pricing.ts. Lint and build clean; axe shows 0 violations; no overflow at 390px.
 - 2026-11-22: Site uses only the K mark from branding materials/. The wordmark files spell "Kilvo", not "Kivlo", so the nav uses a text wordmark until a corrected file exists.
-- 2026-11-22: Founder's required stack (branding materials/required_startup_tech_stack.md) hosts on an existing Sylant VPS instead of Vercel/Modal. BUDGET.md needs updating once VPS specs are known.
+- 2026-11-22: Founder's required stack (docs/TECH_STACK.md) hosts on an existing Sylant VPS instead of Vercel/Modal. BUDGET.md needs updating once VPS specs are known.
+- 2026-11-22: Founder's tech stack moved to docs/TECH_STACK.md (from branding materials/required_startup_tech_stack.md).
