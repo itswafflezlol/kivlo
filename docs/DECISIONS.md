@@ -30,3 +30,5 @@ Format: `YYYY-MM-DD: decision. Why.`
 - 2026-11-22: Proposed: Deepgram Nova-3 for transcription instead of OpenAI Whisper. whisper-1 is OpenAI's only word-timestamp model and shuts down 2027-02-26. Awaiting founder OK.
 - 2026-11-22: Proposed: yearly discount about 20% (Pro $12, Creator $24, Agency $48 per month billed yearly). The spec's $6/$12/$24 loses money on heavy users. Awaiting founder OK.
 - 2026-11-22: Docs live in private GitHub repo itswafflezlol/kivlo (branch main).
+- 2026-11-22: Landing page: colors from BRANDING.md only, no images, product UI mock in the hero, "Start Free" CTA, monthly + yearly pricing toggle, minimal animation. Founder dislikes clutter and heavy animation.
+- 2026-11-22: Note: founder's pricing spec matches Ssemble's public pricing ($15/$30/$60, $6/$12/$24 yearly, 1 credit = 20 min). Kivlo needs its own reason to choose it, not just the same price.

@@ -4,6 +4,16 @@ What the founder likes and dislikes in page and site design. Read this before de
 
 Tags: **[confirmed]** = founder said it. **[inferred]** = read from references, not yet confirmed. Turn inferred items into confirmed or remove them as answers come in.
 
+## Rules [confirmed, 2026-11-22]
+
+- **Colors:** use `docs/BRANDING.md` only (lime, ink, white). Reference colors (sky blue etc.) are for layout ideas, not color.
+- **Images:** none for now. No hero art, no stock photos, no AI images.
+- **Product in the hero:** yes. Show a mock KivloWorkspace / clip UI rising out of the hero.
+- **Main CTA:** "Start Free".
+- **Sections:** agent's call, whatever looks best.
+- **Pricing:** show both monthly and yearly, with a toggle.
+- **Keep it simple.** No clutter, not too many elements, very little animation. Nothing crazy.
+
 ## Likes
 
 ### From references (batch 1, 2026-11-22)
@@ -18,6 +28,15 @@ Files in `mockups/references/`.
 | 4 | `ref-04-capsule-cloud-cards.png` | Full sky-blue cloud background. Floating frosted pill nav. Huge white headline. Tilted product cards floating over the headline. One white pill CTA |
 | 5 | `ref-05-studioa-3d-keycaps.png` | White rounded card on black. Massive, tight, bold sans headline. Playful 3D objects (keycaps) floating in the middle. Small pill CTA and a scroll arrow |
 
+### From references (batch 2, 2026-11-22)
+
+| # | File | What stands out |
+|---|---|---|
+| 6 | `ref-06-aeline-sky-cards-lime.png` | Lime pill CTA next to a dark pill. Two-tone headline (second line lighter). Product cards arranged in a curved row. Stats bento below: big numbers in mixed cards, one lime card, one ink card. Small "• ABOUT US" eyebrow labels |
+| 7 | `ref-07-baseclub-bold-blue-lime.png` | Huge heavy display type, lime hand-drawn arrows, round rotated "get started free" sticker. Three step cards with lime number pills. Loud, brand-moment style |
+| 8 | `ref-08-melius-curved-gallery.png` | Calm serif headline over a curved gallery of media cards. Chat-style prompt pill as the CTA. Alternating light and dark sections. Use-case tabs (Agencies / Creators / Marketers) |
+| - | https://www.ssemble.com/ (direct competitor) | Structure: rotating headline ("Reassemble streams/podcasts/... into Viral Shorts"), Get Clips Now + "Plans from $6/mo · Cancel anytime", Game Mode before/after, real view stats, How it works in 3 steps, sources list, pricing with monthly/yearly toggle, credit cost table, features grid, Schedule and Post. Borrow structure only, never copy text |
+
 Patterns shared by most references **[inferred]**:
 
 - The hero sits inside a big rounded card or frame, not edge to edge.
@@ -30,8 +49,10 @@ Patterns shared by most references **[inferred]**:
 
 ## Dislikes
 
-(None recorded yet.)
+- **[confirmed]** Too much stuff on the page.
+- **[confirmed]** Too many animations. Keep motion minimal.
 
 ## Open conflicts
 
-- References are sky blue and white; brand v3 (`docs/BRANDING.md`) is lime, ink and white. Not decided yet which wins on the landing page.
+- (Resolved 2026-11-22) Sky-blue references vs lime brand: brand wins.
+- Ref 7's loud stickers and arrows vs "keep it simple": use at most one brand-moment sticker on the whole page, if any.
