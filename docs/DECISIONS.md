@@ -29,3 +29,4 @@ Format: `YYYY-MM-DD: decision. Why.`
 - 2026-11-22: Budget written (docs/BUDGET.md): build about $15-35 total, launch about $45/mo fixed + usage, about $0.17 per credit without proxies.
 - 2026-11-22: Proposed: Deepgram Nova-3 for transcription instead of OpenAI Whisper. whisper-1 is OpenAI's only word-timestamp model and shuts down 2027-02-26. Awaiting founder OK.
 - 2026-11-22: Proposed: yearly discount about 20% (Pro $12, Creator $24, Agency $48 per month billed yearly). The spec's $6/$12/$24 loses money on heavy users. Awaiting founder OK.
+- 2026-11-22: Docs live in private GitHub repo itswafflezlol/kivlo (branch main).
