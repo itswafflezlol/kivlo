@@ -35,13 +35,18 @@ export default function Pricing() {
         aria-label="Billing period"
         className="mb-10 flex items-center justify-center gap-3"
       >
-        <div className="inline-flex rounded-full border border-control-border bg-white p-1">
+        <div className="relative inline-flex rounded-full border border-control-border bg-white p-1">
+          <span
+            aria-hidden="true"
+            className="absolute bottom-1 left-1 top-1 w-[calc(50%-4px)] rounded-full bg-ink transition-transform duration-250 ease-out"
+            style={{ transform: yearly ? "translateX(100%)" : "translateX(0)" }}
+          />
           <button
             type="button"
             aria-pressed={!yearly}
             onClick={() => setYearly(false)}
-            className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-150 ease-out ${
-              !yearly ? "bg-ink text-white" : "text-slate hover:text-ink"
+            className={`relative z-10 rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-150 ease-out ${
+              !yearly ? "text-white" : "text-slate hover:text-ink"
             }`}
           >
             Monthly
@@ -50,8 +55,8 @@ export default function Pricing() {
             type="button"
             aria-pressed={yearly}
             onClick={() => setYearly(true)}
-            className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-150 ease-out ${
-              yearly ? "bg-ink text-white" : "text-slate hover:text-ink"
+            className={`relative z-10 rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-150 ease-out ${
+              yearly ? "text-white" : "text-slate hover:text-ink"
             }`}
           >
             Yearly
@@ -68,7 +73,7 @@ export default function Pricing() {
           return (
             <div
               key={plan.id}
-              className={`relative flex flex-col rounded-[20px] bg-white p-6 transition-shadow duration-200 ease-out ${
+              className={`relative flex flex-col rounded-[20px] bg-white p-6 transition-all duration-200 ease-out hover:-translate-y-0.5 ${
                 plan.popular ? "border-2 border-ink" : "border border-border"
               }`}
             >
@@ -79,7 +84,10 @@ export default function Pricing() {
               )}
               <h2 className="text-lg font-semibold">{plan.name}</h2>
               <div className="mt-4 flex items-end gap-1.5">
-                <span className="font-[family-name:var(--font-jetbrains)] text-4xl font-medium tracking-tight">
+                <span
+                  key={String(yearly)}
+                  className="price-fade font-[family-name:var(--font-jetbrains)] text-4xl font-medium tracking-tight"
+                >
                   ${price}
                 </span>
                 <span className="pb-1.5 text-sm text-slate">/mo</span>

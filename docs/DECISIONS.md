@@ -41,3 +41,7 @@ Format: `YYYY-MM-DD: decision. Why.`
 - 2026-11-22: Site uses only the K mark from branding materials/. The wordmark files spell "Kilvo", not "Kivlo", so the nav uses a text wordmark until a corrected file exists.
 - 2026-11-22: Founder's required stack (docs/TECH_STACK.md) hosts on an existing Sylant VPS instead of Vercel/Modal. BUDGET.md needs updating once VPS specs are known.
 - 2026-11-22: Founder's tech stack moved to docs/TECH_STACK.md (from branding materials/required_startup_tech_stack.md).
+- 2026-11-23: Landing redesign. Use founder's logos and 3 founder-provided clips (Kai Cenat GTA 6 x2, Fanum). Never generate assets. Interactive KivloWorkspace mock with real video. Nicer animations, but nothing crazy, and reduced-motion is respected.
+- 2026-11-23: Fonts changed to Clash Display (headings) + Satoshi (body) from Fontshare (free for commercial use), JetBrains Mono kept for numbers. Founder asked for better fonts than Bricolage + Inter.
+- 2026-11-23: Risk: the demo clips show real streamers (Kai Cenat, Fanum) and GTA 6 footage. Using them in marketing can read as endorsement. OK for the prototype; get permission or swap clips before public launch.
+- 2026-11-23: Headings use Clash Display at 0 letter-spacing and +0.08em word-spacing. Tighter tracking made words run together.

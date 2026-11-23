@@ -4,15 +4,17 @@ What the founder likes and dislikes in page and site design. Read this before de
 
 Tags: **[confirmed]** = founder said it. **[inferred]** = read from references, not yet confirmed. Turn inferred items into confirmed or remove them as answers come in.
 
-## Rules [confirmed, 2026-11-22]
+## Rules [confirmed]
 
-- **Colors:** use `docs/BRANDING.md` only (lime, ink, white). Reference colors (sky blue etc.) are for layout ideas, not color.
-- **Images:** none for now. No hero art, no stock photos, no AI images.
-- **Product in the hero:** yes. Show a mock KivloWorkspace / clip UI rising out of the hero.
-- **Main CTA:** "Start Free".
-- **Sections:** agent's call, whatever looks best.
-- **Pricing:** show both monthly and yearly, with a toggle.
-- **Keep it simple.** No clutter, not too many elements, very little animation. Nothing crazy.
+- **Colors:** use `docs/BRANDING.md` only (lime, ink, white). Reference colors (sky blue etc.) are for layout ideas, not color. (2026-11-22)
+- **Assets (updated 2026-11-23):** use Kivlo's own branding materials (`branding materials/` logos) and founder-provided videos. **Never generate assets** (no AI images, no stock, no made-up illustrations). Replaces the earlier "no images" rule.
+- **Product in the hero:** yes. Show a mock KivloWorkspace / clip UI rising out of the hero. (2026-11-22)
+- **KivloWorkspace mock must not look bland (2026-11-23):** real video playing, interactive (clickable moments and tabs), some color and depth.
+- **Main CTA:** "Start Free". (2026-11-22)
+- **Sections:** agent's call, whatever looks best. (2026-11-22)
+- **Pricing:** show both monthly and yearly, with a toggle. (2026-11-22)
+- **Fonts (2026-11-23):** wants better fonts than the first build (Bricolage Grotesque + Inter).
+- **Look and motion (updated 2026-11-23):** nicer, interactive, better looking to the eye, with animations. Still no clutter and nothing crazy: smooth, purposeful motion (reveals, hovers, video, toggles), never flashy or constant. Always respect reduced-motion settings. Replaces "very little animation".
 
 ## Likes
 
@@ -37,6 +39,14 @@ Files in `mockups/references/`.
 | 8 | `ref-08-melius-curved-gallery.png` | Calm serif headline over a curved gallery of media cards. Chat-style prompt pill as the CTA. Alternating light and dark sections. Use-case tabs (Agencies / Creators / Marketers) |
 | - | https://www.ssemble.com/ (direct competitor) | Structure: rotating headline ("Reassemble streams/podcasts/... into Viral Shorts"), Get Clips Now + "Plans from $6/mo · Cancel anytime", Game Mode before/after, real view stats, How it works in 3 steps, sources list, pricing with monthly/yearly toggle, credit cost table, features grid, Schedule and Post. Borrow structure only, never copy text |
 
+### From references (batch 3, 2026-11-23)
+
+| Site | What stands out |
+|---|---|
+| https://www.choppity.com/tools/free-ai-clip-maker/ | Paste-a-link box right in the hero ("Paste a video URL" or upload). Wall of real clips with view counts. 4 numbered steps. Long FAQ |
+| https://vizard.ai/ | "Try it free. No sign up needed" + Get clips for free in the hero. Scrolling gallery of vertical clips by category. Feature tabs. Editor section showing real controls |
+| https://clipping.net/ | Couldn't load (rate-limited, HTTP 429). Revisit |
+
 Patterns shared by most references **[inferred]**:
 
 - The hero sits inside a big rounded card or frame, not edge to edge.
@@ -50,7 +60,8 @@ Patterns shared by most references **[inferred]**:
 ## Dislikes
 
 - **[confirmed]** Too much stuff on the page.
-- **[confirmed]** Too many animations. Keep motion minimal.
+- **[confirmed]** Too many animations / crazy motion. (Wants nice animations, just not overdone.)
+- **[confirmed, 2026-11-23]** Bland, flat UI mocks (first KivloWorkspace mock was "a little too bland").
 
 ## Open conflicts
 

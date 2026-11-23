@@ -155,11 +155,11 @@ Rules:
 
 | Use | Font | Notes |
 |---|---|---|
-| Display and hero headlines | Bricolage Grotesque (Google Fonts) | Expressive, heavy weights (700 to 800), tight tracking. Marketing and large headings only |
-| UI and body | Inter | 400 and 500, 14 to 16px, line height 1.5 |
+| Display and hero headlines | Clash Display (Fontshare, ITF Free Font License) | 600 to 700, tight tracking. Headings only. Replaces Bricolage Grotesque (v3.2, 2026-11-23) |
+| UI and body | Satoshi (Fontshare, ITF Free Font License) | 400, 500, 700; 14 to 16px, line height 1.5. Replaces Inter (v3.2) |
 | Numbers and timecodes | JetBrains Mono, or `font-variant-numeric: tabular-nums` | Payout rates (`$1.25 / 1K`), clip durations (`00:42`), post times |
 
-- Fallback stack for UI: `Inter, -apple-system, system-ui, "Segoe UI", sans-serif`. Do not self-host SF Pro.
+- Fonts are self-hosted (woff2 in the app). Fallback stack for UI: `Satoshi, -apple-system, system-ui, "Segoe UI", sans-serif`. Do not self-host SF Pro.
 - Keep display type out of dense UI. Buttons, tables, and the editor use Inter.
 - Confirm the fonts are available and licensed for your use before launch.
 

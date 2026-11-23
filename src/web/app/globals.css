@@ -54,22 +54,17 @@ html {
   scroll-behavior: smooth;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
-}
-
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-inter), -apple-system, system-ui, "Segoe UI", sans-serif;
+  font-family: var(--font-satoshi), -apple-system, system-ui, "Segoe UI",
+    sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-clash), var(--font-satoshi), sans-serif;
+  letter-spacing: 0;
+  word-spacing: 0.08em;
 }
 
 :focus-visible {
@@ -80,4 +75,105 @@ body {
 .dark-focus :focus-visible,
 .focus-dark:focus-visible {
   outline-color: var(--lime);
+}
+
+/* Reveal-on-scroll (components/Reveal.tsx toggles .is-visible) */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 500ms ease-out,
+    transform 500ms ease-out;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hero load animation */
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.hero-in {
+  opacity: 0;
+  animation: hero-in 500ms ease-out forwards;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+/* Smooth <details> open */
+.faq-item .faq-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 250ms ease-out;
+}
+.faq-item[open] .faq-body {
+  grid-template-rows: 1fr;
+}
+.faq-item .faq-body > div {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+  }
+  .reveal,
+  .hero-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* How-it-works step details */
+.step-pill {
+  transform: scale(0.8);
+  transition: transform 400ms ease-out;
+}
+.step-line {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 800ms ease-out 200ms;
+}
+.reveal.is-visible .step-pill,
+.reveal.is-visible ~ * .step-pill {
+  transform: scale(1);
+}
+.reveal.is-visible .step-line {
+  transform: scaleX(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .step-pill {
+    transform: none;
+  }
+  .step-line {
+    transform: none;
+  }
+}
+
+@keyframes price-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.price-fade {
+  animation: price-fade-in 200ms ease-out;
 }

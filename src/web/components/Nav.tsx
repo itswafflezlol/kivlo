@@ -23,7 +23,7 @@ export default function Nav() {
         <Link
           href="/"
           aria-label="Kivlo home"
-          className="flex items-center gap-2 font-[family-name:var(--font-bricolage)] text-2xl font-extrabold tracking-tight"
+          className="flex items-center gap-2 font-display text-2xl font-extrabold"
         >
           <Image src="/kivlo-mark.png" alt="" width={27} height={28} priority />
           kivlo
