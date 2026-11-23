@@ -20,10 +20,10 @@ export default function ProjectsPage() {
     <div className="mx-auto max-w-4xl">
       <div className="flex flex-wrap items-center gap-3">
         <h2 className="font-heading text-2xl font-bold">Projects</h2>
-        <div role="tablist" aria-label="Filter projects" className="ml-auto flex rounded-full bg-white p-1 shadow-sm ring-1 ring-black/5">
+        <div role="tablist" aria-label="Filter projects" className="ml-auto flex rounded-full bg-surface p-1 shadow-sm ring-1 ring-line">
           {FILTERS.map((x) => (
             <button key={x.id} role="tab" aria-selected={f === x.id} onClick={() => setF(x.id)}
-              className={`rounded-full px-4 py-1.5 text-xs font-medium ${f === x.id ? "bg-ink text-white" : "text-slate"}`}>{x.label}</button>
+              className={`rounded-full px-4 py-1.5 text-xs font-medium ${f === x.id ? "bg-fg text-canvas" : "text-slate"}`}>{x.label}</button>
           ))}
         </div>
       </div>
@@ -33,12 +33,12 @@ export default function ProjectsPage() {
           return (
             <li key={p.id}>
               <Link href={`/app/projects/${p.id}`}
-                className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5 transition-shadow hover:shadow">
+                className="flex items-center gap-4 rounded-2xl bg-surface p-4 shadow-sm ring-1 ring-line transition-shadow hover:shadow">
                 <span className="flex -space-x-3">
                   {cs.slice(0, 3).map((c) => (
                     <Image key={c.id} src={c.poster} alt="" width={404} height={720} className="h-14 w-8 rounded-lg object-cover ring-2 ring-white" />
                   ))}
-                  {!cs.length && <span className="flex h-14 w-8 items-center justify-center rounded-lg bg-mist text-xs text-slate">—</span>}
+                  {!cs.length && <span className="flex h-14 w-8 items-center justify-center rounded-lg bg-surface-2 text-xs text-slate">—</span>}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2">

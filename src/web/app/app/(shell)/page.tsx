@@ -61,7 +61,7 @@ function Dash() {
 
   const pasteBar = (
     <div>
-      <form className="flex w-full items-center gap-2 rounded-full bg-white p-1.5 shadow-sm ring-1 ring-black/5"
+      <form className="flex w-full items-center gap-2 rounded-full bg-surface p-1.5 shadow-sm ring-1 ring-line"
         onSubmit={(e) => {
           e.preventDefault();
           const raw = link.trim();
@@ -77,7 +77,7 @@ function Dash() {
           className="min-w-0 flex-1 rounded-full bg-transparent px-4 py-2.5 text-sm placeholder:text-slate focus:outline-none" />
         <button type="submit" className="shrink-0 rounded-full bg-lime px-5 py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover">Find highlights</button>
       </form>
-      {linkErr && <p role="alert" className="mt-2 text-sm font-medium text-[#B3261E]">{linkErr}</p>}
+      {linkErr && <p role="alert" className="mt-2 text-sm font-medium text-error">{linkErr}</p>}
     </div>
   );
 
@@ -92,7 +92,7 @@ function Dash() {
     );
   }
 
-  const cardSkin = ["bg-lime text-ink", "bg-white text-ink ring-1 ring-black/5", "bg-ink text-[#F2F2F0]"];
+  const cardSkin = ["bg-lime text-ink", "bg-surface text-fg ring-1 ring-line", "bg-ink text-[#F2F2F0] dark:bg-[#202020] dark:ring-1 dark:ring-line"];
 
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -108,13 +108,13 @@ function Dash() {
         <section aria-labelledby="ov">
           <div className="mb-3 flex items-center justify-between">
             <h3 id="ov" className="font-heading text-xl font-bold">Overview</h3>
-            <button className="flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-medium shadow-sm ring-1 ring-black/5">
+            <button className="flex items-center gap-1.5 rounded-full bg-surface px-4 py-2 text-xs font-medium shadow-sm ring-1 ring-line">
               This week
               <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4.5 6 7.5 9 4.5"/></svg>
             </button>
           </div>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-            <div className="rounded-[28px] bg-ink p-6 text-[#F2F2F0]">
+            <div className="rounded-[28px] bg-ink p-6 text-[#F2F2F0] dark:bg-[#202020] dark:ring-1 dark:ring-line">
               <p className="text-sm text-[#A1A5A0]">You’ve clipped 14 moments this week, keep it up!</p>
               <p className="mt-1 font-heading text-4xl font-bold">{left} <span className="text-xl font-medium text-[#A1A5A0]">credits left</span></p>
               {low && <p className="mt-2 inline-block rounded-full bg-heat/15 px-3 py-1 text-xs text-heat">Running low — upgrade for more.</p>}
@@ -126,7 +126,7 @@ function Dash() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               {METRICS.map(([l, v, sub, dot]) => (
-                <div key={l} className="flex flex-col justify-between rounded-[24px] bg-white p-4 shadow-sm ring-1 ring-black/5">
+                <div key={l} className="flex flex-col justify-between rounded-[24px] bg-surface p-4 shadow-sm ring-1 ring-line">
                   <div className="flex items-start justify-between">
                     <p className="text-xs text-slate">{l}</p>
                     <span className="h-2.5 w-2.5 rounded-full" style={{ background: dot }} />
@@ -142,7 +142,7 @@ function Dash() {
         </section>
 
         {/* weekly bar chart */}
-        <section className="rounded-[24px] bg-white p-5 shadow-sm ring-1 ring-black/5" aria-labelledby="wk">
+        <section className="rounded-[24px] bg-surface p-5 shadow-sm ring-1 ring-line" aria-labelledby="wk">
           <div className="mb-4 flex items-center justify-between">
             <h3 id="wk" className="text-sm font-semibold">Clips per day</h3>
             <p className="text-xs text-slate">This week</p>
@@ -150,9 +150,9 @@ function Dash() {
           <div className="flex h-40 items-end justify-between gap-3">
             {weekBars.map((v, i) => (
               <div key={i} className="flex flex-1 flex-col items-center gap-2">
-                <span className="font-mono text-[11px] text-ink/70">{v || ""}</span>
+                <span className="font-mono text-[11px] text-fg/70">{v || ""}</span>
                 <div className="relative flex h-28 w-8 items-end overflow-hidden rounded-full">
-                  <div className="absolute inset-0 rounded-full" style={{ background: "repeating-linear-gradient(135deg, rgba(24,24,24,0.05) 0 2px, transparent 2px 8px), #F1F4EA" }} />
+                  <div className="absolute inset-0 rounded-full" style={{ background: "repeating-linear-gradient(135deg, var(--hatch-line) 0 2px, transparent 2px 8px), var(--hatch-a)" }} />
                   <div className={`relative w-full rounded-full ${i === today ? "bg-lime" : "bg-[#CBF590]"}`} style={{ height: `${Math.min(100, v * 22)}%` }} />
                 </div>
                 <span className={`text-[11px] ${i === today ? "font-bold" : "text-slate"}`}>{days[i]}</span>
@@ -165,7 +165,7 @@ function Dash() {
         <section aria-labelledby="rp">
           <div className="mb-3 flex items-center justify-between">
             <h3 id="rp" className="font-heading text-xl font-bold">Recent projects</h3>
-            <Link href="/app/library" className="text-xs font-medium text-slate hover:text-ink">See all</Link>
+            <Link href="/app/library" className="text-xs font-medium text-slate hover:text-fg">See all</Link>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {projects.slice(0, 3).map((p, i) => {
@@ -176,16 +176,16 @@ function Dash() {
                   <div>
                     <div className="flex items-center justify-between">
                       <PlatformGlyph p={p.platform} size={20} />
-                      <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium capitalize ${p.status === "processing" ? "bg-black/10" : "bg-black/10"}`}>
+                      <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium capitalize ${p.status === "processing" ? "bg-line-2" : "bg-line-2"}`}>
                         {p.status === "processing" && <span className="mr-1.5 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-current align-middle" />}
                         {p.status}
                       </span>
                     </div>
                     <h4 className="mt-3 font-heading text-lg font-bold leading-snug">{p.title}</h4>
-                    <p className={`mt-1 text-xs ${i === 2 ? "text-[#A1A5A0]" : "text-ink/70"}`}>{p.clipIds.length} clips · {fmtLen(p.sourceLength)}</p>
+                    <p className={`mt-1 text-xs ${i === 0 ? "text-ink/70" : i === 2 ? "text-[#A1A5A0]" : "text-fg/70"}`}>{p.clipIds.length} clips · {fmtLen(p.sourceLength)}</p>
                   </div>
                   <div className="flex items-end justify-between">
-                    <span className={`flex h-11 w-11 items-center justify-center rounded-full transition-transform group-hover:scale-105 ${i === 1 ? "bg-ink text-white" : "bg-white/90 text-ink shadow-sm"}`} aria-hidden="true">
+                    <span className={`flex h-11 w-11 items-center justify-center rounded-full transition-transform group-hover:scale-105 ${i === 1 ? "bg-fg text-canvas" : "bg-surface/90 text-fg shadow-sm"}`} aria-hidden="true">
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
                     </span>
                     <span className="flex -space-x-4">
@@ -206,13 +206,13 @@ function Dash() {
         {/* mobile week strip */}
         <div className="mb-4 flex gap-2 md:hidden">
           {days.map((d, i) => (
-            <span key={i} className={`flex-1 rounded-full py-1.5 text-center text-xs ${i === today ? "bg-lime font-bold text-ink" : "bg-white text-slate ring-1 ring-black/5"}`}>{d}</span>
+            <span key={i} className={`flex-1 rounded-full py-1.5 text-center text-xs ${i === today ? "bg-lime font-bold text-ink" : "bg-surface text-slate ring-1 ring-line"}`}>{d}</span>
           ))}
         </div>
-        <div className="rounded-[24px] bg-white p-5 shadow-sm ring-1 ring-black/5">
+        <div className="rounded-[24px] bg-surface p-5 shadow-sm ring-1 ring-line">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="font-heading text-xl font-bold">Up next</h3>
-            <button className="flex items-center gap-1 rounded-full bg-paper px-3 py-1.5 text-xs font-medium">
+            <button className="flex items-center gap-1 rounded-full bg-canvas px-3 py-1.5 text-xs font-medium">
               Sat, 28 Nov
               <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4.5 6 7.5 9 4.5"/></svg>
             </button>
@@ -221,7 +221,7 @@ function Dash() {
             {upcoming.slice(0, 4).map((s) => {
               const c = clipById(s.clipId)!;
               return (
-                <div key={s.id} className="flex items-center gap-3 rounded-2xl bg-paper/60 p-2.5">
+                <div key={s.id} className="flex items-center gap-3 rounded-2xl bg-canvas/60 p-2.5">
                   <span className="flex -space-x-3">
                     <Image src={c.poster} alt="" width={404} height={720} className="h-auto w-[30px] rounded-lg object-cover ring-2 ring-white" />
                     <Image src={c.poster} alt="" width={404} height={720} className="h-auto w-[30px] rounded-lg object-cover ring-2 ring-white" style={{ transform: "rotate(6deg)" }} />
@@ -236,8 +236,8 @@ function Dash() {
               );
             })}
           </div>
-          <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-black/10 py-2.5 text-sm text-slate hover:text-ink">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ink text-white"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2v8M2 6h8"/></svg></span>
+          <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-line-2 py-2.5 text-sm text-slate hover:text-fg">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-fg text-canvas"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2v8M2 6h8"/></svg></span>
             Schedule a post
           </button>
           <div className="mt-6">
@@ -246,15 +246,15 @@ function Dash() {
               {mix.map(([n, v]) => (
                 <div key={n} className="flex items-center gap-3">
                   <span className="w-12 text-xs text-slate">{n}</span>
-                  <div className="h-3.5 flex-1 overflow-hidden rounded-full bg-mist/50">
-                    <div className="h-full rounded-full bg-ink" style={{ width: `${(v / mixMax) * 100}%` }} />
+                  <div className="h-3.5 flex-1 overflow-hidden rounded-full bg-surface-2/50">
+                    <div className="h-full rounded-full bg-fg" style={{ width: `${(v / mixMax) * 100}%` }} />
                   </div>
                   <span className="w-4 text-right font-mono text-xs">{v}</span>
                 </div>
               ))}
             </div>
           </div>
-          <Link href="/app/calendar" className="mt-5 block text-center text-xs font-medium text-slate hover:text-ink">Open calendar</Link>
+          <Link href="/app/calendar" className="mt-5 block text-center text-xs font-medium text-slate hover:text-fg">Open calendar</Link>
         </div>
       </aside>
       <ImportModal key={modalUrl} open={importOpen} onClose={() => setImportOpen(false)} initialUrl={modalUrl} />

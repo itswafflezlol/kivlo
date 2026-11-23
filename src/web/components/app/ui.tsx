@@ -8,7 +8,7 @@ export function PlatformGlyph({ p, size = 22 }: { p: PostPlatform | "youtube" | 
   return (
     <span
       title={platformLabel(p)}
-      className="inline-flex shrink-0 items-center justify-center rounded-md bg-white ring-1 ring-black/5"
+      className="inline-flex shrink-0 items-center justify-center rounded-md bg-white ring-1 ring-line"
       style={{ width: size, height: size }}
     >
       <PlatformIcon p={p} size={Math.round(size * 0.62)} />
@@ -28,7 +28,7 @@ export function ScoreBadge({ score, glass }: { score: number; glass?: boolean })
   const star = score >= 85 ? "text-lime" : score >= 70 ? "text-heat" : "text-[#A1A5A0]";
   return (
     <span role="img" aria-label={`Highlight score ${score} out of 100`}
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[11px] font-medium tabular-nums ${glass ? "bg-black/55 text-white" : "bg-carbon text-[#F2F2F0]"}`}>
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[11px] font-medium tabular-nums ${glass ? "bg-line5 text-white" : "bg-carbon text-[#F2F2F0]"}`}>
       <Star className={`h-3 w-3 ${star}`} />{score}/100
     </span>
   );
@@ -38,7 +38,7 @@ export function Toggle({ checked, onChange, label }: { checked: boolean; onChang
   return (
     <label className="inline-flex cursor-pointer items-center">
       <input type="checkbox" className="peer sr-only" checked={checked} onChange={(e) => onChange?.(e.target.checked)} aria-label={label} />
-      <span aria-hidden className="relative h-6 w-11 rounded-full bg-black/15 transition-colors peer-checked:bg-lime-deep peer-focus-visible:ring-2 peer-focus-visible:ring-lime-deep after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:after:translate-x-5" />
+      <span aria-hidden className="relative h-6 w-11 rounded-full bg-line-2 transition-colors peer-checked:bg-lime-deep peer-focus-visible:ring-2 peer-focus-visible:ring-lime-deep after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:after:translate-x-5" />
     </label>
   );
 }
@@ -49,7 +49,7 @@ export function Select({ value, onChange, label, children, className = "" }: {
   return (
     <span className={`relative inline-block ${className}`}>
       <select value={value} onChange={(e) => onChange?.(e.target.value)} aria-label={label}
-        className="w-full appearance-none rounded-xl border border-black/10 bg-white px-3 py-2 pr-9 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-lime">
+        className="w-full appearance-none rounded-xl border border-line-2 bg-surface px-3 py-2 pr-9 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-lime">
         {children}
       </select>
       <svg aria-hidden viewBox="0 0 12 12" className="pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-slate" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4.5l3 3 3-3"/></svg>
@@ -87,17 +87,17 @@ export function Modal({
         className={`dialog-in max-h-[90vh] w-full overflow-y-auto rounded-[24px] p-6 shadow-xl ring-1 ${
           dark
             ? "bg-[#272727] text-[#F2F2F0] ring-[#3A3A3A]"
-            : "bg-white text-ink ring-black/5"
+            : "bg-surface text-fg ring-line"
         } ${wide ? "max-w-2xl" : "max-w-md"}`}
       >
         {title !== undefined && (
           <div className="flex items-center justify-between gap-4">
-            <h2 className={`font-heading text-[17px] font-bold ${dark ? "text-[#F2F2F0]" : "text-ink"}`}>{title}</h2>
+            <h2 className={`font-heading text-[17px] font-bold ${dark ? "text-[#F2F2F0]" : "text-fg"}`}>{title}</h2>
             <button
               onClick={onClose}
               aria-label="Close"
               className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors ${
-                dark ? "text-[#A1A5A0] hover:bg-white/10 hover:text-white" : "text-slate hover:bg-mist hover:text-ink"
+                dark ? "text-[#A1A5A0] hover:bg-surface/10 hover:text-white" : "text-slate hover:bg-surface-2 hover:text-fg"
               }`}
             >
               <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M4 4l8 8M12 4l-8 8" /></svg>
@@ -126,9 +126,9 @@ export function fmtTime(iso: string) {
 }
 export const statusChip: Record<string, string> = {
   scheduled: "bg-lime-soft text-ink",
-  reminder: "bg-[#F5A524]/15 text-[#8A5300]",
-  posted: "bg-mist text-slate",
-  failed: "bg-[#FF6B63]/15 text-[#B3261E]",
+  reminder: "bg-[#F5A524]/15 text-heat-text",
+  posted: "bg-surface-2 text-slate",
+  failed: "bg-[#FF6B63]/15 text-error",
   processing: "bg-lilac-soft text-lilac-deep",
   ready: "bg-lime-soft text-ink",
 };

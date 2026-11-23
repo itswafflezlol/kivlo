@@ -494,7 +494,7 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
               <div className="absolute inset-x-0 top-1 h-[38%]">
                 <div className="absolute top-1 bottom-1 overflow-hidden rounded-xl bg-lilac-deep" style={{ left: `${(L / dur) * 100}%`, width: `${((R - L) / dur) * 100}%` }}>
                   <div className="absolute inset-y-0 left-0 w-20 bg-cover bg-center" style={{ backgroundImage: `url(${clip.poster})` }} />
-                  <span className="absolute left-24 top-1/2 -translate-y-1/2 truncate font-mono text-[10px] font-medium text-white/90">{clip.id}.mp4</span>
+                  <span className="absolute left-24 top-1/2 -translate-y-1/2 truncate font-mono text-[10px] font-medium text-ink/80">{clip.id}.mp4</span>
                 </div>
                 {([0, 1] as const).map((k) => (
                   <div key={k} role="slider" aria-label={k ? "Trim end" : "Trim start"} aria-valuenow={trim[k]} tabIndex={0}

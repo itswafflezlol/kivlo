@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useRef, useState, useSyncExternalStore } from "react";
 import { user, notifications, clips } from "@/lib/mock";
 import { useSession, clearSession } from "@/lib/session";
+import { useTheme, type Theme } from "@/lib/theme";
 import { useRouter } from "next/navigation";
 import ImportModal from "./ImportModal";
 import UpgradeModal from "./UpgradeModal";
@@ -22,6 +23,12 @@ const ICONS: Record<string, React.ReactNode> = {
   Billing: <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="2" y="4" width="14" height="11" rx="2"/><path d="M2 8h14"/></svg>,
   Settings: <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="9" cy="9" r="2.5"/><path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.7 3.7l1.4 1.4M12.9 12.9l1.4 1.4M14.3 3.7l-1.4 1.4M5.1 12.9l-1.4 1.4"/></svg>,
 };
+
+const THEME_OPTS: { v: Theme; l: string; ic: React.ReactNode }[] = [
+  { v: "light", l: "Light", ic: <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4"><circle cx="6" cy="6" r="2.4"/><path d="M6 .8v1.4M6 9.8v1.4M.8 6h1.4M9.8 6h1.4M2.3 2.3l1 1M8.7 8.7l1 1M9.7 2.3l-1 1M3.3 8.7l-1 1"/></svg> },
+  { v: "dark", l: "Dark", ic: <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M10.2 7.4A4.6 4.6 0 0 1 4.6 1.8a4.6 4.6 0 1 0 5.6 5.6Z"/></svg> },
+  { v: "system", l: "Auto", ic: <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4"><rect x="1.6" y="2.2" width="8.8" height="6" rx="1"/><path d="M4.4 10h3.2"/></svg> },
+];
 
 const latestEdit = `/app/clips/${clips[0].id}/edit`;
 const NAV = [
@@ -67,6 +74,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useTheme();
   const [hover, setHover] = useState(false);
   const storedPinned = useSyncExternalStore(
     () => () => {},
@@ -103,7 +111,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-colors ${active ? "bg-lime text-ink" : "text-[#A1A5A0] hover:text-white"}`}>
           {ICONS[n.label]}
           {n.label === "Notifications" && unread > 0 && (
-            <span aria-hidden className="absolute right-2 top-2 h-2 w-2 rounded-full bg-lime ring-2 ring-ink" />
+            <span aria-hidden className="absolute right-2 top-2 h-2 w-2 rounded-full bg-lime ring-2 ring-fg" />
           )}
         </span>
         <span
@@ -118,7 +126,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-paper text-ink">
+    <div className="min-h-screen bg-canvas text-fg">
       {/* floating ink pill rail — expands on hover/focus or when pinned */}
       <aside
         ref={railRef}
@@ -128,7 +136,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         onFocus={() => setHover(true)}
         onBlur={(e) => { if (!railRef.current?.contains(e.relatedTarget as Node)) setHover(false); }}
         onKeyDown={(e) => { if (e.key === "Escape" && !pinned) setHover(false); }}
-        className={`fixed inset-y-4 left-3 z-40 hidden flex-col rounded-[32px] bg-ink py-5 shadow-xl transition-[width] duration-200 ease-out md:flex ${expanded ? "w-[220px]" : "w-[72px] items-center"}`}
+        className={`fixed inset-y-4 left-3 z-40 hidden flex-col rounded-[32px] bg-ink py-5 shadow-xl dark:bg-[#202020] dark:ring-1 dark:ring-line transition-[width] duration-200 ease-out md:flex ${expanded ? "w-[220px]" : "w-[72px] items-center"}`}
       >
         <Link href="/app" aria-label="Kivlo dashboard" className={`mb-6 flex h-11 w-11 items-center justify-center ${expanded ? "ml-3" : ""}`}>
           <Image src={asset("/kivlo-mark-white.png")} alt="Kivlo" width={94} height={96} className="h-[26px] w-auto" />
@@ -165,7 +173,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           <h1 className="sr-only">{title}</h1>
           <div className="relative">
             <button onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen}
-              className="flex items-center gap-2 rounded-full bg-white p-1.5 pr-1.5 shadow-sm ring-1 ring-black/5 hover:shadow">
+              className="flex items-center gap-2 rounded-full bg-surface p-1.5 pr-1.5 shadow-sm ring-1 ring-line hover:shadow">
               <span aria-hidden="true" className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-ink font-heading text-xs font-bold text-lime">
                 {session?.picture ? <Image src={session.picture} alt="" width={32} height={32} unoptimized className="h-full w-full object-cover" /> : initial}
               </span>
@@ -175,35 +183,43 @@ export default function Shell({ children }: { children: React.ReactNode }) {
               </span>
             </button>
             {menuOpen && (
-              <div className="absolute left-0 mt-2 w-56 rounded-2xl bg-white p-3 shadow-lg ring-1 ring-black/5">
+              <div className="absolute left-0 mt-2 w-56 rounded-2xl bg-surface p-3 shadow-lg ring-1 ring-line">
                 <p className="px-2 text-sm font-medium">{displayName} · <span className="capitalize text-slate">{user.plan}</span></p>
                 <p className="px-2 font-mono text-xs text-slate">{user.creditsTotal - user.creditsUsed} credits left</p>
+                <div role="group" aria-label="Theme" className="mt-2 flex rounded-full bg-surface-2 p-1">
+                  {THEME_OPTS.map(({ v, l, ic }) => (
+                    <button key={v} onClick={() => setTheme(v)} aria-pressed={theme === v}
+                      className={`flex flex-1 items-center justify-center gap-1 rounded-full py-1.5 text-[11px] font-medium transition-colors ${theme === v ? "bg-surface text-fg shadow-sm" : "text-slate hover:text-fg"}`}>
+                      {ic}{l}
+                    </button>
+                  ))}
+                </div>
                 <button onClick={() => { setMenuOpen(false); setUpgradeOpen(true); }} className="mt-2 w-full rounded-full bg-lime py-2 text-sm font-semibold text-ink">Upgrade</button>
                 {session && (
-                  <button onClick={() => { clearSession(); router.push("/"); }} className="mt-1.5 w-full rounded-full bg-mist/60 py-2 text-sm font-medium text-slate hover:text-ink">Sign out</button>
+                  <button onClick={() => { clearSession(); router.push("/"); }} className="mt-1.5 w-full rounded-full bg-surface-2/60 py-2 text-sm font-medium text-slate hover:text-fg">Sign out</button>
                 )}
               </div>
             )}
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <button aria-label="Search" className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-black/5 hover:shadow">
+            <button aria-label="Search" className="flex h-10 w-10 items-center justify-center rounded-full bg-surface shadow-sm ring-1 ring-line hover:shadow">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
             </button>
             <div className="relative">
               <button aria-label="Notifications" aria-expanded={bellOpen} onClick={() => setBellOpen(!bellOpen)}
-                className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-black/5 hover:shadow">
+                className="relative flex h-10 w-10 items-center justify-center rounded-full bg-surface shadow-sm ring-1 ring-line hover:shadow">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M8 2a4 4 0 0 0-4 4v2.5L2.8 11h10.4L12 8.5V6a4 4 0 0 0-4-4Z"/><path d="M6.5 13a1.5 1.5 0 0 0 3 0"/></svg>
                 {unread > 0 && <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-lime ring-2 ring-white" />}
               </button>
               {bellOpen && (
-                <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white p-2 shadow-lg ring-1 ring-black/5">
+                <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-surface p-2 shadow-lg ring-1 ring-line">
                   {notifications.slice(0, 4).map((n) => (
-                    <div key={n.id} className="rounded-xl px-3 py-2 text-sm hover:bg-paper">
-                      <p className="text-ink">{n.text}</p>
+                    <div key={n.id} className="rounded-xl px-3 py-2 text-sm hover:bg-canvas">
+                      <p className="text-fg">{n.text}</p>
                       <p className="mt-0.5 text-xs text-slate">{n.time}</p>
                     </div>
                   ))}
-                  <Link href="/app/notifications" onClick={() => setBellOpen(false)} className="mt-1 block rounded-xl px-3 py-2 text-center text-sm font-medium text-lime-deep hover:bg-paper">See all</Link>
+                  <Link href="/app/notifications" onClick={() => setBellOpen(false)} className="mt-1 block rounded-xl px-3 py-2 text-center text-sm font-medium text-lime-deep hover:bg-canvas">See all</Link>
                 </div>
               )}
             </div>
@@ -213,7 +229,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* mobile bottom tab bar with raised center + */}
-      <nav aria-label="Primary" className="fixed inset-x-3 bottom-3 z-40 flex items-center justify-around rounded-[28px] bg-ink py-2.5 shadow-xl md:hidden">
+      <nav aria-label="Primary" className="fixed inset-x-3 bottom-3 z-40 flex items-center justify-around rounded-[28px] bg-ink py-2.5 shadow-xl dark:bg-[#202020] dark:ring-1 dark:ring-line md:hidden">
         {[NAV[0], NAV[1]].map((n) => (
           <Link key={n.href} href={n.href} aria-label={n.label} className={`flex h-10 w-10 items-center justify-center rounded-full ${isActive(n) ? "bg-lime text-ink" : "text-[#A1A5A0]"}`}>{ICONS[n.label]}</Link>
         ))}

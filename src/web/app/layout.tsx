@@ -29,11 +29,16 @@ export const metadata: Metadata = {
     "Paste a YouTube or Twitch link. Kivlo finds the best moments, crops them to vertical, and adds captions. Fix anything in KivloWorkspace, then post.",
 };
 
+const themeScript = `(function(){try{var t=localStorage.getItem('kivlo.theme')||'system';var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d&&/(?:^|\\/)(app|admin)(?=\\/|$)/.test(location.pathname))document.documentElement.classList.add('dark');}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body
         className={`${clash.variable} ${manrope.variable} ${jetbrains.variable} antialiased`}
       >
