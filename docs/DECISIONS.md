@@ -32,3 +32,5 @@ Format: `YYYY-MM-DD: decision. Why.`
 - 2026-11-22: Docs live in private GitHub repo itswafflezlol/kivlo (branch main).
 - 2026-11-22: Landing page: colors from BRANDING.md only, no images, product UI mock in the hero, "Start Free" CTA, monthly + yearly pricing toggle, minimal animation. Founder dislikes clutter and heavy animation.
 - 2026-11-22: Note: founder's pricing spec matches Ssemble's public pricing ($15/$30/$60, $6/$12/$24 yearly, 1 credit = 20 min). Kivlo needs its own reason to choose it, not just the same price.
+- 2026-11-22: PRD draft written (docs/PRD.md). The founder wants the PRD first; the landing page waits for approval.
+- 2026-11-22: v1 prices set by agent at founder's request: Pro $12 ($8/mo yearly), Creator $25 ($16), Agency $50 ($32). Cheaper monthly than Ssemble, Free plan with no card, every plan profitable at full use without proxies. Replaces $15/$30/$60 and $6/$12/$24.

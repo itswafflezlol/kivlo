@@ -20,7 +20,7 @@ docs/
   DESIGN_PREFERENCES.md  What the founder likes and dislikes in design
   BUDGET.md        Build and running costs, plan margins
   DECISIONS.md     Dated log of every decision and why
-  PRD.md           Product requirements (coming next)
+  PRD.md           Product requirements (draft, awaiting approval)
   SCREENS.md       Screen-by-screen descriptions (after the PRD)
   research/        Founder answers, specs, clipper survey
 mockups/           Screen designs
@@ -36,18 +36,18 @@ src/               The app (later)
 
 ## Plans (draft)
 
-| Plan | Monthly | Credits/mo |
-|---|---|---|
-| Free | $0 | 3 (watermarked) |
-| Pro | $15 | 30 |
-| Creator | $30 | 70 |
-| Agency | $60 | 150 |
+| Plan | Monthly | Yearly (per mo) | Credits/mo |
+|---|---|---|---|
+| Free | $0 | - | 3 (watermarked) |
+| Pro | $12 | $8 | 30 |
+| Creator | $25 | $16 | 70 |
+| Agency | $50 | $32 | 150 |
 
-1 credit = up to 20 minutes of source video. Yearly pricing is still open, see `docs/BUDGET.md`.
+1 credit = up to 20 minutes of source video. Reasoning in `docs/PRD.md` section 6 and `docs/BUDGET.md`.
 
 ## Next steps
 
-1. Finish the PRD questions, then write `docs/PRD.md`.
+1. Approve `docs/PRD.md`.
 2. List and describe every screen in `docs/SCREENS.md`.
 3. Mock up the screens in `mockups/`.
 4. Build.

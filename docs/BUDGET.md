@@ -59,6 +59,10 @@ Profit per user per month after payment fees and usage, at about $0.17 per credi
 
 Free users cost about $0.50 a month each if they use all 3 credits.
 
+### Chosen v1 prices (see PRD section 6)
+
+Pro $12 / $8 yearly, Creator $25 / $16 yearly, Agency $50 / $32 yearly. Profit per user per month, no proxies: half the credits used +$5.16 to +$35.20, all credits used +$2.67 to +$22.75. Every plan stays positive. With proxies at about $0.47 per credit, heavy users lose money on every plan, so keeping proxy cost low is required.
+
 ## 5. Example months after launch
 
 Assumes paid users use half their credits, free users use all 3, monthly billing only.
