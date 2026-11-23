@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 import { useEffect, useRef, useState } from "react";
 
 interface Moment {
@@ -19,8 +20,8 @@ const MOMENTS: Moment[] = [
     score: 94,
     title: "Kai gets launched in GTA 6",
     len: "0:17",
-    video: "/videos/kai-launched.mp4",
-    poster: "/videos/kai-launched.jpg",
+    video: asset("/videos/kai-launched.mp4"),
+    poster: asset("/videos/kai-launched.jpg"),
     postTitle: "Kai got launched in GTA 6",
     hashtags: ["#kaicenat", "#gta6", "#streamclips"],
     playable: true,
@@ -29,8 +30,8 @@ const MOMENTS: Moment[] = [
     score: 88,
     title: "The car explodes mid-chase",
     len: "0:17",
-    video: "/videos/kai-car-explodes.mp4",
-    poster: "/videos/kai-car-explodes.jpg",
+    video: asset("/videos/kai-car-explodes.mp4"),
+    poster: asset("/videos/kai-car-explodes.jpg"),
     postTitle: "Kai's car explodes mid-chase",
     hashtags: ["#kaicenat", "#gta6", "#streamclips"],
     playable: true,
@@ -39,8 +40,8 @@ const MOMENTS: Moment[] = [
     score: 81,
     title: "Wait til he does it",
     len: "0:21",
-    video: "/videos/fanum-wait.mp4",
-    poster: "/videos/fanum-wait.jpg",
+    video: asset("/videos/fanum-wait.mp4"),
+    poster: asset("/videos/fanum-wait.jpg"),
     postTitle: "Wait til he does it",
     hashtags: ["#fanum", "#streamclips", "#gaming"],
     playable: true,
@@ -567,7 +568,7 @@ export default function HeroMock() {
           </div>
           <span className="flex items-center gap-1.5 text-xs font-medium text-slate-dark">
             <Image
-              src="/kivlo-mark-white.png"
+              src={asset("/kivlo-mark-white.png")}
               alt=""
               width={14}
               height={14}

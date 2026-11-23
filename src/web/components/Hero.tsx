@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "@/lib/asset";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import InViewVideo from "./InViewVideo";
@@ -7,9 +8,9 @@ import PasteBar from "./PasteBar";
 import { useReducedMotion } from "./hooks";
 
 const V = {
-  a: "/videos/kai-launched.mp4",
-  b: "/videos/kai-car-explodes.mp4",
-  c: "/videos/fanum-wait.mp4",
+  a: asset("/videos/kai-launched.mp4"),
+  b: asset("/videos/kai-car-explodes.mp4"),
+  c: asset("/videos/fanum-wait.mp4"),
 };
 
 function HoverPlay({
@@ -45,10 +46,10 @@ function HoverPlay({
 
 // floating thumbs: >=1280 only, in the side gutters, never over text
 const THUMBS = [
-  { poster: "/videos/wall/deansocool-1.jpg", video: "/videos/wall/deansocool-1.mp4", cls: "left-[2.5%] top-[9%] w-20 -rotate-6", depth: 1.6, delay: 0 },
-  { poster: "/videos/wall/marlon-1.jpg", video: "/videos/wall/marlon-1.mp4", cls: "left-[3%] top-[36%] w-16 rotate-3", depth: 1.0, delay: 1.1 },
-  { poster: "/videos/wall/extraemily-1.jpg", video: "/videos/wall/extraemily-1.mp4", cls: "right-[2.5%] top-[6%] w-24 rotate-6", depth: 1.8, delay: 0.6 },
-  { poster: "/videos/wall/rakai-1.jpg", video: "/videos/wall/rakai-1.mp4", cls: "right-[3%] top-[40%] w-16 -rotate-3", depth: 1.1, delay: 1.8 },
+  { poster: asset("/videos/wall/deansocool-1.jpg"), video: asset("/videos/wall/deansocool-1.mp4"), cls: "left-[2.5%] top-[9%] w-20 -rotate-6", depth: 1.6, delay: 0 },
+  { poster: asset("/videos/wall/marlon-1.jpg"), video: asset("/videos/wall/marlon-1.mp4"), cls: "left-[3%] top-[36%] w-16 rotate-3", depth: 1.0, delay: 1.1 },
+  { poster: asset("/videos/wall/extraemily-1.jpg"), video: asset("/videos/wall/extraemily-1.mp4"), cls: "right-[2.5%] top-[6%] w-24 rotate-6", depth: 1.8, delay: 0.6 },
+  { poster: asset("/videos/wall/rakai-1.jpg"), video: asset("/videos/wall/rakai-1.mp4"), cls: "right-[3%] top-[40%] w-16 -rotate-3", depth: 1.1, delay: 1.8 },
 ];
 
 function FloatThumb({ t, mx, my }: { t: (typeof THUMBS)[0]; mx: number; my: number }) {
@@ -77,11 +78,11 @@ function FloatThumb({ t, mx, my }: { t: (typeof THUMBS)[0]; mx: number; my: numb
 }
 
 const ARC = [
-  { type: "img", src: "/videos/wall/deansocool-2.jpg", w: 132 },
+  { type: "img", src: asset("/videos/wall/deansocool-2.jpg"), w: 132 },
   { type: "score", w: 140 },
-  { type: "video", src: "/videos/wall/clix-1.mp4", poster: "/videos/wall/clix-1.jpg", w: 150 },
+  { type: "video", src: asset("/videos/wall/clix-1.mp4"), poster: asset("/videos/wall/clix-1.jpg"), w: 150 },
   { type: "center", w: 190 },
-  { type: "video", src: "/videos/wall/cinna-1.mp4", poster: "/videos/wall/cinna-1.jpg", w: 150 },
+  { type: "video", src: asset("/videos/wall/cinna-1.mp4"), poster: asset("/videos/wall/cinna-1.jpg"), w: 150 },
   { type: "time", w: 150 },
   { type: "tags", w: 160 },
 ];
@@ -122,7 +123,7 @@ function ArcCard({
     body = (
       <div className="dark-focus flex aspect-[3/4] w-full flex-col gap-2 bg-ink p-4">
         <div className="flex items-center gap-1.5 text-white">
-          <Image src="/kivlo-mark-white.png" alt="" width={14} height={14} />
+          <Image src={asset("/kivlo-mark-white.png")} alt="" width={14} height={14} />
           <span className="text-xs font-semibold">KivloWorkspace</span>
         </div>
         {[
@@ -247,7 +248,7 @@ export default function Hero() {
           <h1 className="hero-in mx-auto w-fit max-w-full text-balance font-display text-[40px] font-semibold leading-[1.08] text-ink sm:text-6xl lg:text-[56px] xl:text-[64px]">
             Turn long{" "}
             <HoverPlay
-              poster="/videos/thumbs/kai-launched-face.jpg"
+              poster={asset("/videos/thumbs/kai-launched-face.jpg")}
               video={V.a}
               label="Kai Cenat clip"
               className="h-chip -rotate-2 shadow-md"
@@ -256,7 +257,7 @@ export default function Hero() {
             <br />
             into clips{" "}
             <HoverPlay
-              poster="/videos/thumbs/fanum-wait-face.jpg"
+              poster={asset("/videos/thumbs/fanum-wait-face.jpg")}
               video={V.c}
               label="Fanum clip"
               className="h-chip rotate-2 shadow-md"

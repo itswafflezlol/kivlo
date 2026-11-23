@@ -1,23 +1,24 @@
 "use client";
 
+import { asset } from "@/lib/asset";
 import { useRef, useState } from "react";
 
 const CLIPS = [
   {
-    src: "/videos/kai-launched.mp4",
-    poster: "/videos/kai-launched.jpg",
+    src: asset("/videos/kai-launched.mp4"),
+    poster: asset("/videos/kai-launched.jpg"),
     label: "GTA 6 · 0:17",
     title: "Kai gets launched in GTA 6",
   },
   {
-    src: "/videos/kai-car-explodes.mp4",
-    poster: "/videos/kai-car-explodes.jpg",
+    src: asset("/videos/kai-car-explodes.mp4"),
+    poster: asset("/videos/kai-car-explodes.jpg"),
     label: "GTA 6 · 0:17",
     title: "The car explodes mid-chase",
   },
   {
-    src: "/videos/fanum-wait.mp4",
-    poster: "/videos/fanum-wait.jpg",
+    src: asset("/videos/fanum-wait.mp4"),
+    poster: asset("/videos/fanum-wait.jpg"),
     label: "Gaming · 0:21",
     title: "Wait til he does it",
   },

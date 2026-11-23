@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 import Link from "next/link";
 
 export default function Footer() {
@@ -6,7 +7,7 @@ export default function Footer() {
     <footer className="border-t border-border">
       <div className="mx-auto flex max-w-[1200px] flex-col items-start justify-between gap-6 px-5 py-10 sm:flex-row sm:items-center">
         <Image
-          src="/kivlo-logo.png"
+          src={asset("/kivlo-logo.png")}
           alt="Kivlo"
           width={64}
           height={28}
@@ -17,6 +18,11 @@ export default function Footer() {
             <li>
               <Link href="/pricing" className="transition-colors duration-150 ease-out hover:text-ink">
                 Pricing
+              </Link>
+            </li>
+            <li>
+              <Link href="/app" className="transition-colors duration-150 ease-out hover:text-ink">
+                Dashboard
               </Link>
             </li>
             <li>

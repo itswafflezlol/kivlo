@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 import Link from "next/link";
 import { useState } from "react";
+import { useSession } from "@/lib/session";
 import ArrowPill from "./ArrowPill";
 
 const links = [
@@ -14,6 +16,7 @@ const links = [
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
+  const session = useSession();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-paper/90 backdrop-blur-sm">
@@ -23,7 +26,7 @@ export default function Nav() {
       >
         <Link href="/" aria-label="Kivlo home" className="flex items-center">
           <Image
-            src="/kivlo-logo.png"
+            src={asset("/kivlo-logo.png")}
             alt="Kivlo"
             width={78}
             height={34}
@@ -46,13 +49,19 @@ export default function Nav() {
         </ul>
 
         <div className="hidden items-center gap-6 md:flex">
-          <Link
-            href="/login"
-            className="text-sm font-medium text-ink transition-colors duration-150 ease-out hover:text-lime-deep"
-          >
-            Log in
-          </Link>
-          <ArrowPill href="/signup">Start Free</ArrowPill>
+          {session ? (
+            <>
+              <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-ink font-heading text-xs font-bold text-lime">
+                {session.picture ? <Image src={session.picture} alt="" width={32} height={32} unoptimized className="h-full w-full object-cover" /> : session.name[0]?.toUpperCase()}
+              </span>
+              <ArrowPill href="/app">Dashboard</ArrowPill>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm font-medium text-ink transition-colors duration-150 ease-out hover:text-lime-deep">Log in</Link>
+              <ArrowPill href="/signup">Start Free</ArrowPill>
+            </>
+          )}
         </div>
 
         <button
@@ -91,19 +100,20 @@ export default function Nav() {
                 </Link>
               </li>
             ))}
-            <li>
-              <Link
-                href="/login"
-                className="block rounded-lg px-2 py-2.5 text-base font-medium"
-              >
-                Log in
-              </Link>
-            </li>
-            <li className="pt-2">
-              <ArrowPill href="/signup" className="w-full justify-between">
-                Start Free
-              </ArrowPill>
-            </li>
+            {session ? (
+              <li className="pt-2">
+                <ArrowPill href="/app" className="w-full justify-between">Dashboard</ArrowPill>
+              </li>
+            ) : (
+              <>
+                <li>
+                  <Link href="/login" className="block rounded-lg px-2 py-2.5 text-base font-medium">Log in</Link>
+                </li>
+                <li className="pt-2">
+                  <ArrowPill href="/signup" className="w-full justify-between">Start Free</ArrowPill>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       )}

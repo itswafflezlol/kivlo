@@ -10,6 +10,7 @@ import HowItWorks from "@/components/HowItWorks";
 import ExamplesClips from "@/components/ExamplesClips";
 import TransformShowcase from "@/components/TransformShowcase";
 import ClipWall from "@/components/ClipWall";
+import DashboardShowcase from "@/components/DashboardShowcase";
 import Reveal from "@/components/Reveal";
 import ArrowPill from "@/components/ArrowPill";
 
@@ -86,6 +87,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Dashboard showcase */}
+        <DashboardShowcase />
 
         {/* Pricing */}
         <section id="pricing" className="mx-auto max-w-[1200px] scroll-mt-24 px-5 pb-24">

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 import Reveal from "./Reveal";
 
 const steps = [
@@ -11,7 +12,7 @@ const steps = [
     sub: "text-ink/70",
     num: "text-ink",
     peek: "img",
-    src: "/videos/thumbs/kai-launched-a.jpg",
+    src: asset("/videos/thumbs/kai-launched-a.jpg"),
     peekCls: "-top-6 right-8 rotate-6 w-20",
     rotate: "md:-rotate-[1.5deg]",
     offset: "md:ml-0",
@@ -38,7 +39,7 @@ const steps = [
     sub: "text-slate-dark",
     num: "text-lime",
     peek: "img",
-    src: "/videos/thumbs/fanum-wait-b.jpg",
+    src: asset("/videos/thumbs/fanum-wait-b.jpg"),
     peekCls: "-right-4 top-1/2 -translate-y-1/2 rotate-6 w-16",
     rotate: "md:-rotate-[1deg]",
     offset: "md:ml-[16%]",

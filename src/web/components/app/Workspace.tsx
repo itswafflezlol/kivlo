@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "@/lib/asset";
 import Link from "next/link";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -167,7 +168,7 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
       <header className="relative flex h-12 shrink-0 items-center rounded-2xl bg-graphite px-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
         <Link href={`/app/projects/${clip.projectId}`} aria-label="Back to project — KivloWorkspace" className="flex items-center gap-2">
           <h1 className="sr-only">KivloWorkspace</h1>
-          <Image src="/kivlo-mark-white.png" alt="" width={94} height={96} className="h-[22px] w-auto" />
+          <Image src={asset("/kivlo-mark-white.png")} alt="" width={94} height={96} className="h-[22px] w-auto" />
           <span className="hidden font-heading text-sm font-bold sm:block">KivloWorkspace</span>
         </Link>
         <div className="absolute left-1/2 -translate-x-1/2">

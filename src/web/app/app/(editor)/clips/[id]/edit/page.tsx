@@ -1,5 +1,8 @@
-export const instant = false;
-import { clipById, clipsOf } from "@/lib/mock";
+import { clipById, clipsOf, clips } from "@/lib/mock";
+
+export function generateStaticParams() {
+  return clips.map((c) => ({ id: c.id }));
+}
 import Workspace from "@/components/app/Workspace";
 
 export default async function EditPage({ params }: { params: Promise<{ id: string }> }) {

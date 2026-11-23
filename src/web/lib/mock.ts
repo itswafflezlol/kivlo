@@ -1,3 +1,4 @@
+import { asset } from "./asset";
 export type Platform = "youtube" | "twitch";
 export type PostPlatform = "tiktok" | "shorts" | "reels" | "x";
 export type ProjectStatus = "processing" | "ready" | "failed";
@@ -41,9 +42,9 @@ const clip = (
 ): Clip => ({
   id, projectId, title, reason, score, startSec,
   endSec: startSec + 6, duration: 6,
-  src: `/videos/wall/${file}.mp4`,
-  poster: `/videos/wall/${file}.jpg`,
-  strip: `/videos/strips/${file}.jpg`,
+  src: asset(`/videos/wall/${file}.mp4`),
+  poster: asset(`/videos/wall/${file}.jpg`),
+  strip: asset(`/videos/strips/${file}.jpg`),
   layout, captionPreset: "Karaoke pop",
   words: w(words),
   hook: title,

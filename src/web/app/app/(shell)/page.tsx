@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Suspense, useState, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 import { user, projects, clips, scheduledPosts, clipById } from "@/lib/mock";
+import { useSession } from "@/lib/session";
 import { PlatformGlyph, fmtLen, fmtTime, statusChip } from "@/components/app/ui";
 import ImportModal from "@/components/app/ImportModal";
 
@@ -36,7 +37,10 @@ function Dash() {
   const state = sp.get("state");
   const empty = state === "empty";
   const low = state === "low" || user.creditsTotal - user.creditsUsed < 5;
-  const [importOpen, setImportOpen] = useState(false);
+  const session = useSession();
+  const displayName = session?.name.split(" ")[0] ?? user.name;
+  const urlParam = sp.get("url");
+  const [importOpen, setImportOpen] = useState(!!urlParam);
   const left = user.creditsTotal - user.creditsUsed;
   const usedPct = user.creditsUsed / user.creditsTotal;
   const noop = () => () => {};
@@ -67,7 +71,7 @@ function Dash() {
         <h2 className="font-heading text-3xl font-bold">No clips yet.</h2>
         <p className="mt-3 text-slate">Import a VOD to find your first highlight.</p>
         <div className="mt-6">{pasteBar}</div>
-        <ImportModal open={importOpen} onClose={() => setImportOpen(false)} />
+        <ImportModal open={importOpen} onClose={() => setImportOpen(false)} initialUrl={urlParam ?? ""} />
       </div>
     );
   }
@@ -80,7 +84,7 @@ function Dash() {
         {/* greeting */}
         <div>
           <p className="text-sm text-slate">{greet}!</p>
-          <h2 className="font-heading text-3xl font-bold tracking-tight">{user.name}</h2>
+          <h2 className="font-heading text-3xl font-bold tracking-tight">{displayName}</h2>
           <div className="mt-4 max-w-xl">{pasteBar}</div>
         </div>
 
@@ -237,7 +241,7 @@ function Dash() {
           <Link href="/app/calendar" className="mt-5 block text-center text-xs font-medium text-slate hover:text-ink">Open calendar</Link>
         </div>
       </aside>
-      <ImportModal open={importOpen} onClose={() => setImportOpen(false)} />
+      <ImportModal open={importOpen} onClose={() => setImportOpen(false)} initialUrl={urlParam ?? ""} />
     </div>
   );
 }

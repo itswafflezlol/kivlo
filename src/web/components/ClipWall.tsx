@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "@/lib/asset";
 import { useEffect, useRef } from "react";
 import InViewVideo from "./InViewVideo";
 import Reveal from "./Reveal";
@@ -7,23 +8,23 @@ import { useReducedMotion } from "./hooks";
 
 const COLS: { src: string; poster: string; score: number }[][] = [
   [
-    { src: "/videos/wall/adapt-1.mp4", poster: "/videos/wall/adapt-1.jpg", score: 91 },
-    { src: "/videos/wall/cinna-1.mp4", poster: "/videos/wall/cinna-1.jpg", score: 84 },
-    { src: "/videos/wall/agent00-1.mp4", poster: "/videos/wall/agent00-1.jpg", score: 78 },
+    { src: asset("/videos/wall/adapt-1.mp4"), poster: asset("/videos/wall/adapt-1.jpg"), score: 91 },
+    { src: asset("/videos/wall/cinna-1.mp4"), poster: asset("/videos/wall/cinna-1.jpg"), score: 84 },
+    { src: asset("/videos/wall/agent00-1.mp4"), poster: asset("/videos/wall/agent00-1.jpg"), score: 78 },
   ],
   [
-    { src: "/videos/raw/ray-1.mp4", poster: "/videos/raw/ray-1.jpg", score: 88 },
-    { src: "/videos/wall/deansocool-1.mp4", poster: "/videos/wall/deansocool-1.jpg", score: 96 },
-    { src: "/videos/wall/extraemily-1.mp4", poster: "/videos/wall/extraemily-1.jpg", score: 82 },
+    { src: asset("/videos/raw/ray-1.mp4"), poster: asset("/videos/raw/ray-1.jpg"), score: 88 },
+    { src: asset("/videos/wall/deansocool-1.mp4"), poster: asset("/videos/wall/deansocool-1.jpg"), score: 96 },
+    { src: asset("/videos/wall/extraemily-1.mp4"), poster: asset("/videos/wall/extraemily-1.jpg"), score: 82 },
   ],
   [
-    { src: "/videos/wall/gta16stage-1.mp4", poster: "/videos/wall/gta16stage-1.jpg", score: 74 },
-    { src: "/videos/raw/tylil-1.mp4", poster: "/videos/raw/tylil-1.jpg", score: 90 },
-    { src: "/videos/wall/clix-2.mp4", poster: "/videos/wall/clix-2.jpg", score: 70 },
+    { src: asset("/videos/wall/gta16stage-1.mp4"), poster: asset("/videos/wall/gta16stage-1.jpg"), score: 74 },
+    { src: asset("/videos/raw/tylil-1.mp4"), poster: asset("/videos/raw/tylil-1.jpg"), score: 90 },
+    { src: asset("/videos/wall/clix-2.mp4"), poster: asset("/videos/wall/clix-2.jpg"), score: 70 },
   ],
   [
-    { src: "/videos/wall/deansocool-2.mp4", poster: "/videos/wall/deansocool-2.jpg", score: 87 },
-    { src: "/videos/wall/marlon-1.mp4", poster: "/videos/wall/marlon-1.jpg", score: 80 },
+    { src: asset("/videos/wall/deansocool-2.mp4"), poster: asset("/videos/wall/deansocool-2.jpg"), score: 87 },
+    { src: asset("/videos/wall/marlon-1.mp4"), poster: asset("/videos/wall/marlon-1.jpg"), score: 80 },
   ],
 ];
 

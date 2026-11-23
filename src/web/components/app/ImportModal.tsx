@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "@/lib/asset";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -76,7 +77,7 @@ export default function ImportModal({ open, onClose, initialUrl = "" }: { open: 
           {phase === "ok" && (
             <div className="space-y-4">
               <div className="flex items-center gap-3 rounded-xl bg-paper p-3 ring-1 ring-black/5">
-                <Image src="/videos/raw/jasontheween-1.jpg" alt="" width={1280} height={720} className="h-[54px] w-auto rounded-lg" />
+                <Image src={asset("/videos/raw/jasontheween-1.jpg")} alt="" width={1280} height={720} className="h-[54px] w-auto rounded-lg" />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">Adapt &amp; Marlon collab stream</p>
                   <p className="text-xs text-slate">Twitch · 2h 23m</p>

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 import Reveal from "./Reveal";
 import InViewVideo from "./InViewVideo";
 
@@ -67,8 +68,8 @@ export default function FeaturesBento() {
           {/* a) tall media card */}
           <div className="relative overflow-hidden rounded-[20px] border-2 border-ink bg-ink transition-transform duration-200 ease-out hover:-translate-y-0.5 lg:row-span-2">
             <InViewVideo
-              src="/videos/kai-launched.mp4"
-              poster="/videos/kai-launched.jpg"
+              src={asset("/videos/kai-launched.mp4")}
+              poster={asset("/videos/kai-launched.jpg")}
               label="Example clip: Kai gets launched"
               className="absolute inset-0 h-full w-full object-cover"
             />
@@ -92,9 +93,9 @@ export default function FeaturesBento() {
             </p>
             <div className="mt-4 flex">
               {[
-                "/videos/thumbs/kai-launched-face.jpg",
-                "/videos/thumbs/kai-car-explodes-face.jpg",
-                "/videos/thumbs/fanum-wait-face.jpg",
+                asset("/videos/thumbs/kai-launched-face.jpg"),
+                asset("/videos/thumbs/kai-car-explodes-face.jpg"),
+                asset("/videos/thumbs/fanum-wait-face.jpg"),
               ].map((f, i) => (
                 <span
                   key={f}

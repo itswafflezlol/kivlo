@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { asset } from "@/lib/asset";
 import Image from "next/image";
 import { useReducedMotion } from "./hooks";
 
@@ -67,11 +68,11 @@ export default function TransformShowcase() {
         </h2>
         <div className="mt-10 flex items-center justify-center gap-6">
           <div className="relative aspect-video w-52 overflow-hidden rounded-2xl border border-hairline sm:w-72">
-            <Image src="/videos/raw/jasontheween-1.jpg" alt="" fill className="object-cover" sizes="300px" />
+            <Image src={asset("/videos/raw/jasontheween-1.jpg")} alt="" fill className="object-cover" sizes="300px" />
           </div>
           <span aria-hidden className="font-mono text-2xl text-slate">→</span>
           <div className="relative aspect-[9/16] w-36 overflow-hidden rounded-[28px] border border-ink sm:w-44">
-            <Image src="/videos/raw/jasontheween-1.jpg" alt="Clip cropped to vertical" fill className="object-cover" sizes="180px" />
+            <Image src={asset("/videos/raw/jasontheween-1.jpg")} alt="Clip cropped to vertical" fill className="object-cover" sizes="180px" />
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-white px-3 py-1 font-heading text-xs font-bold uppercase">
               No way he <span className="bg-lime px-1 rounded">did that</span>
             </div>
@@ -96,8 +97,8 @@ export default function TransformShowcase() {
           <div className="tf-frame relative overflow-hidden border border-ink/80 bg-ink">
             <video
               ref={vid}
-              src="/videos/raw/jasontheween-1.mp4"
-              poster="/videos/raw/jasontheween-1.jpg"
+              src={asset("/videos/raw/jasontheween-1.mp4")}
+              poster={asset("/videos/raw/jasontheween-1.jpg")}
               muted
               loop
               playsInline

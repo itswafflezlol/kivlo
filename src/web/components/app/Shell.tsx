@@ -1,10 +1,13 @@
 "use client";
 
+import { asset } from "@/lib/asset";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { user, notifications } from "@/lib/mock";
+import { useSession, clearSession } from "@/lib/session";
+import { useRouter } from "next/navigation";
 import ImportModal from "./ImportModal";
 import UpgradeModal from "./UpgradeModal";
 
@@ -40,6 +43,10 @@ const TITLES: [RegExp, string][] = [
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
+  const router = useRouter();
+  const session = useSession();
+  const displayName = session?.name ?? user.name;
+  const initial = (displayName[0] ?? "S").toUpperCase();
   const title = TITLES.find(([re]) => re.test(path))?.[1] ?? "Kivlo";
   const [importOpen, setImportOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -58,7 +65,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       {/* floating ink pill rail */}
       <aside aria-label="App" className="fixed inset-y-4 left-3 z-40 hidden w-[72px] flex-col items-center rounded-[32px] bg-ink py-5 shadow-xl md:flex">
         <Link href="/app" aria-label="Kivlo dashboard" className="mb-6 flex h-11 w-11 items-center justify-center">
-          <Image src="/kivlo-mark-white.png" alt="Kivlo" width={94} height={96} className="h-[26px] w-auto" />
+          <Image src={asset("/kivlo-mark-white.png")} alt="Kivlo" width={94} height={96} className="h-[26px] w-auto" />
         </Link>
         <button onClick={() => setImportOpen(true)} aria-label="New import" title="New import"
           className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-lime text-ink transition-transform hover:scale-105">
@@ -74,17 +81,22 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           <div className="relative">
             <button onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen}
               className="flex items-center gap-2 rounded-full bg-white p-1.5 pr-1.5 shadow-sm ring-1 ring-black/5 hover:shadow">
-              <span aria-hidden="true" className="flex h-8 w-8 items-center justify-center rounded-full bg-ink font-heading text-xs font-bold text-lime">S</span>
-              <span className="hidden pr-1 text-sm font-medium sm:block">{user.name}</span><span className="sr-only">{user.name} profile menu</span>
+              <span aria-hidden="true" className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-ink font-heading text-xs font-bold text-lime">
+                {session?.picture ? <Image src={session.picture} alt="" width={32} height={32} unoptimized className="h-full w-full object-cover" /> : initial}
+              </span>
+              <span className="hidden pr-1 text-sm font-medium sm:block">{displayName}</span><span className="sr-only">{displayName} profile menu</span>
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-lime text-ink">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4.5 6 7.5 9 4.5"/></svg>
               </span>
             </button>
             {menuOpen && (
               <div className="absolute left-0 mt-2 w-56 rounded-2xl bg-white p-3 shadow-lg ring-1 ring-black/5">
-                <p className="px-2 text-sm font-medium">{user.name} · <span className="capitalize text-slate">{user.plan}</span></p>
+                <p className="px-2 text-sm font-medium">{displayName} · <span className="capitalize text-slate">{user.plan}</span></p>
                 <p className="px-2 font-mono text-xs text-slate">{user.creditsTotal - user.creditsUsed} credits left</p>
                 <button onClick={() => { setMenuOpen(false); setUpgradeOpen(true); }} className="mt-2 w-full rounded-full bg-lime py-2 text-sm font-semibold text-ink">Upgrade</button>
+                {session && (
+                  <button onClick={() => { clearSession(); router.push("/"); }} className="mt-1.5 w-full rounded-full bg-mist/60 py-2 text-sm font-medium text-slate hover:text-ink">Sign out</button>
+                )}
               </div>
             )}
           </div>
