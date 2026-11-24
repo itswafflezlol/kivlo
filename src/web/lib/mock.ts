@@ -93,7 +93,10 @@ export const clips: Clip[] = [
     [["That's", 0.2], ["not", 0.5], ["a", 0.7], ["monster", 1.0]], "auto", "#irl"),
 ];
 
-export const projects: Project[] = [
+// Hidden demo dataset. User-facing lists read from lib/localStore.ts instead —
+// these stay reachable for projectById/clipsOf/generateStaticParams so direct
+// visits to /app/projects/<id> still render.
+export const demoProjects: Project[] = [
   { id: "p1", title: "Kai & the squad — Just Chatting", platform: "youtube", sourceLength: 22800, status: "ready", createdAt: "2026-11-16", clipIds: ["c1", "c2", "c3", "c4", "c11"] },
   { id: "p2", title: "Dean & Clix GTA 6 marathon", platform: "twitch", sourceLength: 14400, status: "ready", createdAt: "2026-11-17", clipIds: ["c5", "c6", "c13", "c14"] },
   { id: "p3", title: "Emily IRL week", platform: "twitch", sourceLength: 9600, status: "processing", createdAt: "2026-11-19", clipIds: ["c7", "c8", "c12"] },
@@ -101,7 +104,7 @@ export const projects: Project[] = [
   { id: "new-demo", title: "Marlon Heat game IRL", platform: "twitch", sourceLength: 18000, status: "processing", createdAt: "2026-11-22", clipIds: ["c10"] },
 ];
 
-export const scheduledPosts: ScheduledPost[] = [
+export const demoPosts: ScheduledPost[] = [
   { id: "s1", clipId: "c1", platform: "tiktok", time: "2026-11-23T09:30:00", status: "scheduled" },
   { id: "s2", clipId: "c2", platform: "shorts", time: "2026-11-23T12:00:00", status: "reminder" },
   { id: "s3", clipId: "c5", platform: "reels", time: "2026-11-23T18:00:00", status: "scheduled" },
@@ -203,9 +206,9 @@ export const connectedAccounts = [
 ];
 
 export const clipById = (id: string) => clips.find((c) => c.id === id);
-export const projectById = (id: string) => projects.find((p) => p.id === id);
+export const projectById = (id: string) => demoProjects.find((p) => p.id === id);
 export const clipsOf = (projectId: string) => clips.filter((c) => c.projectId === projectId);
-export const postOf = (id: string) => scheduledPosts.find((s) => s.id === id);
+export const postOf = (id: string) => demoPosts.find((s) => s.id === id);
 
 /** 1 credit per 20 minutes of source, rounded up. */
 export function creditsFor(minutes: number) {

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useRef, useState, useSyncExternalStore } from "react";
 import { user, notifications, clips } from "@/lib/mock";
+import { useLocalData } from "@/lib/localStore";
 import { IconButton } from "@/components/app/ui";
 import { useSession, clearSession } from "@/lib/session";
 import { useTheme, type Theme } from "@/lib/theme";
@@ -77,6 +78,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useTheme();
   const [hover, setHover] = useState(false);
+  const { creditsUsed, readNotifs } = useLocalData();
   const storedPinned = useSyncExternalStore(
     () => () => {},
     () => { try { return localStorage.getItem("kivlo.rail") === "1"; } catch { return false; } },
@@ -95,7 +97,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   };
 
   type NavItem = (typeof NAV)[number];
-  const unread = notifications.filter((n) => !n.read).length;
+  const unread = notifications.filter((n) => !n.read && !readNotifs.includes(n.id)).length;
 
   const railItem = (n: NavItem, i: number) => {
     const active = isActive(n);
@@ -140,7 +142,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         className={`fixed inset-y-4 left-3 z-40 hidden flex-col rounded-[32px] bg-ink py-5 shadow-xl dark:bg-[#202020] dark:ring-1 dark:ring-line transition-[width] duration-200 ease-out md:flex ${expanded ? "w-[220px]" : "w-[72px] items-center"}`}
       >
         <Link href="/app" aria-label="Kivlo dashboard" className={`mb-6 flex h-11 w-11 items-center justify-center ${expanded ? "ml-3" : ""}`}>
-          <Image src={asset("/kivlo-mark-white.png")} alt="Kivlo" width={94} height={96} className="h-[26px] w-auto" />
+          <Image src={asset("/kivlo-mark-white.png")} alt="Kivlo" width={94} height={96} className="h-[36px] w-auto" />
         </Link>
         <button onClick={() => setImportOpen(true)} aria-label="New import" title="New import"
           className={`mb-5 flex h-11 items-center rounded-full bg-lime text-ink transition-transform hover:scale-105 ${expanded ? "mx-3 justify-start gap-2 px-4" : "w-11 justify-center"}`}>
@@ -186,7 +188,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             {menuOpen && (
               <div className="absolute left-0 mt-2 w-56 rounded-2xl bg-surface p-3 shadow-lg ring-1 ring-line">
                 <p className="px-2 text-sm font-medium">{displayName} · <span className="capitalize text-slate">{user.plan}</span></p>
-                <p className="px-2 font-mono text-xs text-slate">{user.creditsTotal - user.creditsUsed} credits left</p>
+                <p className="px-2 font-mono text-xs text-slate">{user.creditsTotal - creditsUsed} credits left</p>
                 <div role="group" aria-label="Theme" className="mt-2 flex rounded-full bg-surface-2 p-1">
                   {THEME_OPTS.map(({ v, l, ic }) => (
                     <button key={v} onClick={() => setTheme(v)} aria-pressed={theme === v}

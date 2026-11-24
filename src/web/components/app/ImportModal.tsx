@@ -5,9 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Modal, PlatformGlyph } from "./ui";
 import UpgradeModal from "./UpgradeModal";
-import { user, presets, clips } from "@/lib/mock";
+import { user, presets, clips, projectById } from "@/lib/mock";
+import { addProject } from "@/lib/localStore";
 import { parseVideoLink, type ParsedLink } from "@/lib/linkParse";
-import { ApiError, createProject } from "@/lib/data";
+import { ApiError, apiEnabled, createProject } from "@/lib/data";
 import { errorMessage, fieldError } from "@/lib/error-message";
 import { styledCaption } from "@/app/app/(shell)/presets/page";
 
@@ -126,6 +127,10 @@ export default function ImportModal({ open, onClose, initialUrl = "" }: { open: 
         url: parsed.url, rightsConfirmed: true, layout,
         presetId: preset, idempotencyKey: crypto.randomUUID(),
       });
+      if (!apiEnabled) {
+        const demo = projectById(r.id);
+        if (demo) addProject(demo);
+      }
       onClose();
       router.push(`/app/projects/${r.id}`);
     } catch (e) {

@@ -1,7 +1,7 @@
 // Single place pages get data from. With NEXT_PUBLIC_API_URL unset everything
 // resolves to the mock dataset so the Pages demo never changes.
 import { api, apiEnabled, ApiError } from "./api-client";
-import { user, projects, projectById, clipsOf, type Project, type Clip } from "./mock";
+import { user, demoProjects, projectById, clipsOf, type Project, type Clip } from "./mock";
 
 export { apiEnabled, ApiError };
 
@@ -25,7 +25,7 @@ export const getMe = (): Promise<Me> =>
   apiEnabled ? api<Me>("/v1/me") : Promise.resolve(mockMe);
 
 export const getProjects = (): Promise<(Project | ApiProject)[]> =>
-  apiEnabled ? api<{ projects: ApiProject[] }>("/v1/projects").then((r) => r.projects) : Promise.resolve(projects);
+  apiEnabled ? api<{ projects: ApiProject[] }>("/v1/projects").then((r) => r.projects) : Promise.resolve(demoProjects);
 
 export const getProject = (id: string): Promise<Project | ApiProject | undefined> =>
   apiEnabled ? api<{ project: ApiProject }>(`/v1/projects/${id}`).then((r) => r.project) : Promise.resolve(projectById(id));

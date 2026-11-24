@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { notifications as seed, type AppNotification } from "@/lib/mock";
+import { useLocalData } from "@/lib/localStore";
 
 const FILTERS: { id: string; label: string; match: (n: AppNotification) => boolean }[] = [
   { id: "all", label: "All", match: () => true },
@@ -12,7 +13,8 @@ const FILTERS: { id: string; label: string; match: (n: AppNotification) => boole
 ];
 
 export default function NotificationsPage() {
-  const [list, setList] = useState(seed);
+  const { readNotifs, markNotifRead, markAllNotifsRead } = useLocalData();
+  const list = seed.map((n) => (readNotifs.includes(n.id) ? { ...n, read: true } : n));
   const [f, setF] = useState("all");
   const shown = list.filter(FILTERS.find((x) => x.id === f)!.match);
   const unread = list.filter((n) => !n.read).length;
@@ -21,7 +23,7 @@ export default function NotificationsPage() {
       <div className="flex flex-wrap items-center gap-3">
         <h2 className="font-heading text-2xl font-bold">Notifications</h2>
         {unread > 0 && (
-          <button onClick={() => setList(list.map((n) => ({ ...n, read: true })))}
+          <button onClick={() => markAllNotifsRead(seed.map((n) => n.id))}
             className="ml-auto rounded-full bg-surface px-4 py-2 text-xs font-medium shadow-sm ring-1 ring-line hover:shadow">
             Mark all read
           </button>
@@ -42,7 +44,7 @@ export default function NotificationsPage() {
               <p className="mt-0.5 text-xs text-slate">{n.time} · {n.kind}</p>
             </div>
             {!n.read && (
-              <button onClick={() => setList(list.map((x) => x.id === n.id ? { ...x, read: true } : x))}
+              <button onClick={() => markNotifRead(n.id)}
                 className="shrink-0 text-xs font-medium text-lime-deep hover:underline">Mark read</button>
             )}
           </li>

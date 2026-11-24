@@ -99,10 +99,13 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
   const vid = useRef<HTMLVideoElement>(null);
   const vid2 = useRef<HTMLVideoElement>(null);
   const raf = useRef(0);
+  const [muted, setMuted] = useState(false);
+  const [volume, setVolume] = useState(1);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => { saveDoc(clip.id, doc); }, [doc, clip.id]);
 
-  const dur = totalDur(doc.segments);
+  const dur = Math.max(0.001, totalDur(doc.segments));
   const markSaving = () => { setSaved("saving"); setTimeout(() => setSaved("saved"), 700); };
 
   const mutate = useCallback((fn: (s: Snap) => Snap) => {
@@ -111,25 +114,28 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
   const update = useCallback((fn: (s: Snap) => Snap) => setSnap((s) => fn(s)), []);
   const beginGesture = useCallback(() => { gestureSnap.current = snap; }, [snap]);
   const endGesture = useCallback(() => {
+    // Capture the pre-gesture snap NOW — gestureSnap.current is cleared before
+    // the queued hist updater runs, so reading it inside the updater pushed null.
+    const g = gestureSnap.current;
+    gestureSnap.current = null;
     setSnap((s) => {
-      if (gestureSnap.current && gestureSnap.current !== s) {
-        setHist((h) => [...h.slice(-40), gestureSnap.current!]); setFuture([]);
-      }
-      gestureSnap.current = null;
+      if (g && g !== s) { setHist((h) => [...h.slice(-40), g]); setFuture([]); }
       return s;
     });
     markSaving();
   }, []);
   const undo = useCallback(() => {
-    if (!hist.length) return;
+    const prev = hist[hist.length - 1];
+    if (!prev?.doc) { setHist((h) => h.filter((x) => x?.doc)); return; }
     setFuture((f) => [snap, ...f]);
-    setSnap(hist[hist.length - 1]);
+    setSnap(prev);
     setHist(hist.slice(0, -1));
   }, [hist, snap]);
   const redo = useCallback(() => {
-    if (!future.length) return;
+    const nxt = future[0];
+    if (!nxt?.doc) { setFuture((f) => f.filter((x) => x?.doc)); return; }
     setHist((h) => [...h, snap]);
-    setSnap(future[0]);
+    setSnap(nxt);
     setFuture(future.slice(1));
   }, [future, snap]);
 
@@ -143,7 +149,28 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
     [vid.current, vid2.current].forEach((x) => { if (x) x.currentTime = src; });
     setT(c);
   }, [dur, snap.doc.segments]);
-  const toggle = () => { const v = vid.current; if (!v) return; if (v.paused) { v.play().catch(() => {}); vid2.current?.play().catch(() => {}); } else { v.pause(); vid2.current?.pause(); } };
+  const toggle = () => { const v = vid.current; if (!v || videoError) return; if (v.paused) { v.play().catch(() => {}); vid2.current?.play().catch(() => {}); } else { v.pause(); vid2.current?.pause(); } };
+
+  const retryVideo = useCallback(() => {
+    setVideoError(false);
+    const src = tlToSrc(snap.doc.segments, t);
+    [vid.current, vid2.current].forEach((x) => { if (x) { x.load(); x.currentTime = src; } });
+  }, [snap.doc.segments, t]);
+
+  // Apply volume + muted as properties (React doesn't reliably sync `muted`).
+  useEffect(() => { if (vid.current) vid.current.volume = volume; }, [volume]);
+  useEffect(() => { if (vid.current) vid.current.muted = muted; }, [muted]);
+  useEffect(() => {
+    if (cfg.layout === "split" && vid.current && vid2.current) vid2.current.currentTime = vid.current.currentTime;
+  }, [cfg.layout]);
+  // Keep the playhead inside the timeline if an edit shortens it.
+  // (Adjust state during render — the React-endorsed pattern; the video
+  // resyncs itself on the first playback frame.)
+  const [prevDur, setPrevDur] = useState(dur);
+  if (prevDur !== dur) {
+    setPrevDur(dur);
+    if (t > dur) setT(dur);
+  }
 
   // Playback: track source time, skip over cut (removed) regions.
   useEffect(() => {
@@ -165,6 +192,9 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
           }
         }
         if (src >= (segs[segs.length - 1]?.srcEnd ?? 0)) setTime(0);
+        // secondary pane can drift (loop/seek race) — snap it back
+        const b = vid2.current;
+        if (b && Math.abs(b.currentTime - v.currentTime) > 0.35) b.currentTime = v.currentTime;
       }
       raf.current = requestAnimationFrame(step);
     };
@@ -260,6 +290,8 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
     mutate, update, beginGesture, endGesture, setDoc, setCfg, setClipWords,
     setTime, toggle, undo, redo, canUndo: hist.length > 0, canRedo: future.length > 0,
     splitAtPlayhead, deleteSel, toggleMagnet: () => setMagnet((m) => !m), setCompare,
+    muted, volume, setMuted, setVolume, videoError, retryVideo,
+    failVideo: () => setVideoError(true),
   };
 
   return (

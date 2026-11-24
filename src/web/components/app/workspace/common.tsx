@@ -18,6 +18,7 @@ export const ic = {
   back: <svg className={IC} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 3 5 8l5 5"/></svg>,
   fwd: <svg className={IC} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 3l5 5-5 5"/></svg>,
   vol: <svg className={IC} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2.5 6h3l4-3v10l-4-3h-3V6Z"/><path d="M11.5 5.5a4 4 0 0 1 0 5"/></svg>,
+  volOff: <svg className={IC} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2.5 6h3l4-3v10l-4-3h-3V6Z"/><path d="m11 6.5 3 3m0-3-3 3"/></svg>,
   split: <svg className={IC} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 2v12M8 8h5M2 8h4"/><circle cx="4" cy="5" r="1.5"/><circle cx="12" cy="11" r="1.5"/></svg>,
   trash: <svg className={IC} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2.5 4h11M6 4V2.5h4V4M3.5 4l.7 9.5h7.6l.7-9.5"/></svg>,
   video: <svg className={IC} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="1.5" y="4" width="9" height="8" rx="1.5"/><path d="m10.5 7 4-2.5v7L10.5 9"/></svg>,
@@ -88,6 +89,13 @@ export interface Ws {
   setCompare: (v: boolean) => void;
   ins: InsTab;
   setIns: (t: InsTab) => void;
+  muted: boolean;
+  volume: number;             // 0–1
+  setMuted: (b: boolean) => void;
+  setVolume: (n: number) => void;
+  videoError: boolean;
+  retryVideo: () => void;
+  failVideo: () => void;
 }
 
 export function CapSec({ title, children, open = false }: { title: string; children: React.ReactNode; open?: boolean }) {

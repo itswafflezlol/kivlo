@@ -139,11 +139,14 @@ export default function Stage({ ws, vid, vid2, onVideoEvent }: {
   const filt = videoFilters(doc.adjust, fid, compare);
 
   const videoEl = (rect: { x: number; y: number; scale: number; rotation: number }, objPos: string, ref?: React.RefObject<HTMLVideoElement | null>, label?: string) => (
-    <video ref={ref} src={clip.src} poster={clip.poster} muted loop playsInline preload="metadata"
+    // Only the primary (labeled) video carries audio — the second pane in split
+    // layout stays muted so the two elements can't play audio over each other.
+    <video ref={ref} src={clip.src} poster={clip.poster} muted={label ? ws.muted : true} loop={!!label} playsInline preload="metadata"
       aria-label={label} aria-hidden={label ? undefined : true}
       onPlay={ref ? onVideoEvent.onPlay : undefined}
       onPause={ref ? onVideoEvent.onPause : undefined}
       onLoadedMetadata={ref ? (e) => onVideoEvent.onLoaded(e.currentTarget.duration) : undefined}
+      onError={label ? ws.failVideo : undefined}
       className="absolute inset-0 h-full w-full object-cover will-change-transform"
       style={{
         objectPosition: objPos,
@@ -282,7 +285,10 @@ export default function Stage({ ws, vid, vid2, onVideoEvent }: {
       <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/40 py-1.5 pl-1.5 pr-2.5 backdrop-blur">
         <button onClick={ws.toggle} aria-label={ws.playing ? "Pause" : "Play"} className="grid h-7 w-7 place-items-center rounded-full bg-white text-ink [&>svg]:h-4 [&>svg]:w-4">{ws.playing ? ic.pause : ic.play}</button>
         <span className="whitespace-nowrap font-mono text-[11px] tabular-nums text-white">{fmtTc(t)} <span className="text-white/50">/ {fmtTc(ws.dur)}</span></span>
-        <button aria-label="Mute" className="text-white/70 hover:text-white">{ic.vol}</button>
+        <button onClick={() => ws.setMuted(!ws.muted)} aria-label={ws.muted ? "Unmute" : "Mute"} aria-pressed={ws.muted} className="text-white/70 hover:text-white">{ws.muted ? ic.volOff : ic.vol}</button>
+        <input type="range" min={0} max={100} value={ws.muted ? 0 : Math.round(ws.volume * 100)} aria-label="Volume"
+          onChange={(e) => { const v = +e.target.value / 100; ws.setVolume(v); if (v > 0) ws.setMuted(false); }}
+          className="hidden w-14 accent-lime sm:block" />
       </div>
       <div className="hidden items-center gap-1 rounded-full border border-white/10 bg-black/40 px-2 py-1.5 backdrop-blur sm:flex">
         <button aria-label="Loop" className="rounded-full p-1.5 text-lime">{ic.loop}</button>
@@ -358,6 +364,12 @@ export default function Stage({ ws, vid, vid2, onVideoEvent }: {
         {guides.v !== undefined && <span aria-hidden className="absolute inset-y-0 z-[35] w-px bg-lime" style={{ left: `${guides.v * 100}%` }} />}
         {guides.h !== undefined && <span aria-hidden className="absolute inset-x-0 z-[35] h-px bg-lime" style={{ top: `${guides.h * 100}%` }} />}
         {transport}
+        {ws.videoError && (
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-3 rounded-[20px] bg-black/80 text-center">
+            <p className="px-6 text-sm text-white/80">This clip couldn’t load.<br /><span className="text-white/50">Check your connection and try again.</span></p>
+            <button onClick={ws.retryVideo} className="rounded-full bg-lime px-4 py-2 text-sm font-semibold text-ink">Retry</button>
+          </div>
+        )}
       </div>
       </ViewTransition>
     </section>

@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { projectById, clipsOf, type Clip, type PostPlatform } from "@/lib/mock";
+import { clipsOf, TODAY_ISO, type Clip, type PostPlatform } from "@/lib/mock";
+import { useLocalData } from "@/lib/localStore";
 import { apiEnabled, getProject, eventsTicket, eventsUrl, type ApiProject } from "@/lib/data";
-import { PlatformGlyph, ScoreBadge, fmtLen, Modal } from "@/components/app/ui";
+import { DotsMenu, PlatformGlyph, ScoreBadge, Select, fmtLen, Modal } from "@/components/app/ui";
 
 const ViewTransition = (React as unknown as { ViewTransition?: React.ComponentType<{ name: string; children?: React.ReactNode }> }).ViewTransition ?? (({ children }: { children?: React.ReactNode }) => <>{children}</>);
 
@@ -43,11 +45,28 @@ function Processing({ onDone }: { onDone: () => void }) {
   );
 }
 
+const SUGGESTED_TIMES = ["19:30", "21:00", "12:15"] as const;
+const SUGGESTED_LABELS = ["7:30 PM", "9:00 PM", "12:15 PM"];
+
+function nextDayIso() {
+  const d = new Date(TODAY_ISO + "T00:00:00");
+  d.setDate(d.getDate() + 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 function PostPrep({ clip, onClose }: { clip: Clip; onClose: () => void }) {
+  const { schedulePost } = useLocalData();
   const [plat, setPlat] = useState<PostPlatform>("tiktok");
   const [title, setTitle] = useState(clip.hook);
   const [gen, setGen] = useState(false);
+  const [timeIdx, setTimeIdx] = useState(0);
+  const [done, setDone] = useState(false);
   const regen = () => { setGen(true); setTimeout(() => { setTitle(clip.hook + " — you have to see this"); setGen(false); }, 700); };
+  const schedule = () => {
+    schedulePost({ clipId: clip.id, platform: plat, time: `${nextDayIso()}T${SUGGESTED_TIMES[timeIdx]}:00`, status: "scheduled" });
+    setDone(true);
+    setTimeout(onClose, 700);
+  };
   return (
     <aside className="fixed inset-y-0 right-0 z-40 flex w-full max-w-sm flex-col border-l border-hairline bg-surface shadow-xl" role="dialog" aria-label="Post prep">
       <div className="flex items-center justify-between border-b border-hairline px-5 py-4">
@@ -75,14 +94,17 @@ function PostPrep({ clip, onClose }: { clip: Clip; onClose: () => void }) {
             <button onClick={() => navigator.clipboard?.writeText(title)} className="rounded-full border border-line-2 px-3 py-1.5 text-xs font-medium hover:border-fg">Copy</button>
           </div>
           <div>
-            <p className="text-sm font-medium">Suggested times</p>
-            <div className="mt-1.5 flex gap-1.5">
-              {["7:30 PM", "9:00 PM", "12:15 PM"].map((t, i) => (
-                <button key={t} className={`rounded-full px-3 py-1.5 font-mono text-xs ${i === 0 ? "bg-lime text-ink" : "bg-surface-2 text-slate"}`}>{t}</button>
+            <p className="text-sm font-medium">Suggested times · tomorrow</p>
+            <div className="mt-1.5 flex gap-1.5" role="group" aria-label="Suggested times">
+              {SUGGESTED_LABELS.map((t, i) => (
+                <button key={t} aria-pressed={timeIdx === i} onClick={() => setTimeIdx(i)}
+                  className={`rounded-full px-3 py-1.5 font-mono text-xs ${timeIdx === i ? "bg-lime text-ink" : "bg-surface-2 text-slate"}`}>{t}</button>
               ))}
             </div>
           </div>
-          <button className="w-full rounded-full bg-lime py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover">Schedule</button>
+          <button onClick={schedule} disabled={done} className="w-full rounded-full bg-lime py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover disabled:opacity-60">
+            {done ? "Scheduled ✓" : "Schedule"}
+          </button>
         </div>
       </div>
     </aside>
@@ -167,49 +189,93 @@ export default function ProjectView({ id }: { id: string }) {
   return apiEnabled ? <ApiProjectView id={id} /> : <MockProjectView id={id} />;
 }
 
+const SORT_OPTS = [
+  { value: "score-desc", label: "Score · high to low" },
+  { value: "score-asc", label: "Score · low to high" },
+  { value: "newest", label: "Newest" },
+  { value: "duration", label: "Duration" },
+];
+const SORT_FN: Record<string, (a: Clip, b: Clip) => number> = {
+  "score-desc": (a, b) => b.score - a.score,
+  "score-asc": (a, b) => a.score - b.score,
+  newest: (a, b) => b.startSec - a.startSec,
+  duration: (a, b) => b.duration - a.duration,
+};
+
 function MockProjectView({ id }: { id: string }) {
+  const router = useRouter();
+  const { projectById, isDeleted, addProject, renameProject, deleteProject, deleteClip } = useLocalData();
   const project = projectById(id);
   const [processing, setProcessing] = useState(project?.status === "processing");
-  const [sort, setSort] = useState<"score" | "time">("score");
+  const [sort, setSort] = useState("score-desc");
   const [prep, setPrep] = useState<Clip | null>(null);
   const [confirm, setConfirm] = useState<Clip | null>(null);
+  const [renaming, setRenaming] = useState(false);
+  const [delProject, setDelProject] = useState(false);
+  const nameRef = useRef<HTMLInputElement>(null);
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
+  const clipList = useMemo(
+    () => (project ? clipsOf(project.id).filter((c) => !isDeleted(c.id)) : []),
+    [project, isDeleted]
+  );
   const dots = useMemo(() => {
     const len = project?.sourceLength ?? 100;
     const n = Math.min(160, Math.max(60, Math.round(len / 120)));
     return Array.from({ length: n }, (_, i) => {
       const t = i / n;
       const h = 0.15 + 0.85 * Math.abs(Math.sin(i * 12.9898) * 0.5 + Math.sin(i * 3.7) * 0.5);
-      const moment = (project ? clipsOf(project.id) : []).find((c) => Math.abs(c.startSec / len - t) < 0.02);
+      const moment = clipList.find((c) => Math.abs(c.startSec / len - t) < 0.02);
       return { h, moment };
     });
-  }, [project]);
+  }, [project, clipList]);
 
-  if (!project) return <p className="mt-10 text-slate">Project not found.</p>;
+  if (!project) {
+    return (
+      <div className="mx-auto mt-16 max-w-md rounded-2xl bg-surface p-8 text-center ring-1 ring-line">
+        <h2 className="font-heading text-lg font-bold">Project not found.</h2>
+        <Link href="/app/projects" className="mt-4 inline-block text-sm font-medium text-lime-deep hover:underline">Back to projects</Link>
+      </div>
+    );
+  }
   if (processing) return <Processing onDone={() => setProcessing(false)} />;
   if (project.status === "failed") {
     return (
       <div className="mx-auto mt-16 max-w-md rounded-2xl bg-surface p-8 text-center ring-1 ring-line">
         <h2 className="font-heading text-lg font-bold">That import failed.</h2>
         <p className="mt-1 text-sm text-slate">Your 3 credits were refunded.</p>
-        <button className="mt-5 rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover">Retry import</button>
+        <button onClick={() => { addProject({ ...project, status: "processing" }); setProcessing(true); }}
+          className="mt-5 rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover">Retry import</button>
       </div>
     );
   }
 
-  const list = clipsOf(project.id).sort((a, b) => (sort === "score" ? b.score - a.score : a.startSec - b.startSec));
+  const list = clipList.sort(SORT_FN[sort] ?? SORT_FN["score-desc"]);
+  const commitRename = () => {
+    const v = nameRef.current?.value.trim();
+    if (v) renameProject(project.id, v);
+    setRenaming(false);
+  };
 
   return (
     <div>
       <div className="flex flex-wrap items-baseline gap-3">
         <PlatformGlyph p={project.platform} />
-        <h2 className="font-heading text-lg font-bold">{project.title}</h2>
+        {renaming ? (
+          <input ref={nameRef} autoFocus defaultValue={project.title} aria-label="Project name"
+            onKeyDown={(e) => { if (e.key === "Enter") commitRename(); if (e.key === "Escape") setRenaming(false); }}
+            onBlur={commitRename}
+            className="min-w-0 max-w-md flex-1 rounded-lg border border-lime bg-surface px-2 py-1 font-heading text-lg font-bold focus:outline-none" />
+        ) : (
+          <h2 className="font-heading text-lg font-bold" title={project.title}>{project.title}</h2>
+        )}
         <span className="text-sm text-slate">{fmtLen(project.sourceLength)}</span>
-        <label className="ml-auto text-xs text-slate">Sort
-          <select value={sort} onChange={(e) => setSort(e.target.value as "score")} className="ml-1 rounded-lg border border-line-2 bg-surface px-2 py-1 text-xs text-fg">
-            <option value="score">Score</option><option value="time">Time</option>
-          </select>
+        <DotsMenu label={`${project.title} options`} items={[
+          { label: "Rename", onClick: () => setRenaming(true) },
+          { label: "Delete project", danger: true, onClick: () => setDelProject(true) },
+        ]} />
+        <label className="ml-auto flex items-center gap-2 text-xs text-slate">Sort
+          <Select label="Sort clips" value={sort} onChange={setSort} options={SORT_OPTS} className="w-44" />
         </label>
       </div>
 
@@ -223,9 +289,9 @@ function MockProjectView({ id }: { id: string }) {
         ))}
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-6 grid gap-4 grid-cols-[repeat(auto-fill,minmax(230px,1fr))]">
         {list.map((c) => (
-          <div key={c.id} ref={(n) => { cardRefs.current[c.id] = n; }} className="group rounded-2xl bg-surface p-3 ring-1 ring-line">
+          <div key={c.id} ref={(n) => { cardRefs.current[c.id] = n; }} className="group w-full max-w-[340px] rounded-2xl bg-surface p-3 ring-1 ring-line">
             <div className="relative aspect-[9/16] overflow-hidden rounded-xl bg-ink ring-1 ring-line">
               <ViewTransition name={`clip-thumb-${c.id}`}>
               <video src={c.src} poster={c.poster} muted loop playsInline preload="none" aria-label={c.title}
@@ -239,7 +305,7 @@ function MockProjectView({ id }: { id: string }) {
             <div className="mt-3 px-1">
               <p className="text-sm font-semibold">{c.title}</p>
               <p className="mt-0.5 text-xs text-slate">{c.reason}</p>
-              <div className="mt-3 flex gap-1.5">
+              <div className="mt-3 flex flex-wrap gap-1.5">
                 <Link href={`/app/clips/${c.id}/edit`} className="rounded-full bg-fg px-3 py-1.5 text-xs font-semibold text-canvas hover:opacity-90">Edit</Link>
                 <button onClick={() => setPrep(c)} className="rounded-full border border-line-2 px-3 py-1.5 text-xs font-medium hover:border-fg">Post prep</button>
                 <a href={c.src} download className="rounded-full border border-line-2 px-3 py-1.5 text-xs font-medium hover:border-fg">Download</a>
@@ -251,12 +317,20 @@ function MockProjectView({ id }: { id: string }) {
       </div>
 
       {prep && <PostPrep clip={prep} onClose={() => setPrep(null)} />}
+      <Modal open={delProject} onClose={() => setDelProject(false)} label="Delete project" title="Delete this project?">
+        <p className="mt-2 text-sm text-slate">“{project.title}” and its {project.clipIds.length} clips will be removed. This can&apos;t be undone.</p>
+        <div className="mt-5 flex justify-end gap-2">
+          <button onClick={() => setDelProject(false)} className="rounded-full border border-line-2 px-4 py-2 text-sm font-medium">Keep</button>
+          <button onClick={() => { deleteProject(project.id); router.push("/app/projects"); }}
+            className="rounded-full bg-[#B3261E] px-4 py-2 text-sm font-semibold text-white">Delete</button>
+        </div>
+      </Modal>
       {confirm && (
         <Modal open={!!confirm} onClose={() => setConfirm(null)} label="Delete clip" title="Delete this clip?">
             <p className="mt-2 text-sm text-slate">“{confirm.title}” will be removed. This can&apos;t be undone.</p>
             <div className="mt-5 flex justify-end gap-2">
               <button onClick={() => setConfirm(null)} className="rounded-full border border-line-2 px-4 py-2 text-sm font-medium">Keep</button>
-              <button onClick={() => setConfirm(null)} className="rounded-full bg-[#B3261E] px-4 py-2 text-sm font-semibold text-white">Delete</button>
+              <button onClick={() => { deleteClip(confirm.id); setConfirm(null); }} className="rounded-full bg-[#B3261E] px-4 py-2 text-sm font-semibold text-white">Delete</button>
             </div>
         </Modal>
       )}

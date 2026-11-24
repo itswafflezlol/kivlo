@@ -54,18 +54,45 @@ export function defaultDoc(clip: { duration: number; words: { start: number; end
   };
 }
 
+const num = (v: unknown, lo: number, hi: number, dflt: number) =>
+  typeof v === "number" && Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : dflt;
+const rect = (r: unknown, dflt: Rect): Rect => {
+  const o = (r ?? {}) as Partial<Rect>;
+  return { x: num(o.x, -1, 1, dflt.x), y: num(o.y, -1, 1, dflt.y), scale: num(o.scale, 0.5, 4, dflt.scale), rotation: num(o.rotation, -360, 360, dflt.rotation) };
+};
+
 export function loadDoc(clipId: string, clip: { duration: number; words: { start: number; end: number; cut?: boolean }[] }): EditDoc {
   const base = defaultDoc(clip);
   try {
     const raw = localStorage.getItem(`kivlo.edit.${clipId}`);
     if (!raw) return base;
     const d = JSON.parse(raw) as Partial<EditDoc>;
+    // Segments drive every timeline calculation — reject a doc whose segments
+    // can't produce a positive duration instead of letting NaNs break the editor.
+    const segs = Array.isArray(d.segments)
+      ? d.segments
+          .filter((s): s is Segment => !!s && num(s.srcStart, 0, clip.duration, -1) >= 0 && num(s.srcEnd, 0, Infinity, -1) > s.srcStart)
+          .sort((a, b) => a.srcStart - b.srcStart)
+      : [];
+    if (!segs.length) return base;
     return {
       ...base, ...d,
-      adjust: { ...base.adjust, ...d.adjust },
-      crop: { ...base.crop, ...d.crop },
-      caption: { ...base.caption, ...d.caption },
-      split: { ...base.split, ...(d.split ?? {}), face: { ...base.split.face, ...d.split?.face }, game: { ...base.split.game, ...d.split?.game } },
+      adjust: Object.fromEntries(Object.entries({ ...base.adjust, ...d.adjust }).map(([k, v]) => {
+        const lim = k === "sharpen" || k === "vignette" ? [0, 100] : [-100, 100];
+        return [k, num(v, lim[0], lim[1], 0)];
+      })) as Adjust,
+      crop: rect(d.crop, base.crop),
+      caption: {
+        x: num(d.caption?.x, 0, 1, base.caption.x), y: num(d.caption?.y, 0, 1, base.caption.y),
+        w: num(d.caption?.w, 0.3, 1, base.caption.w), scale: num(d.caption?.scale, 0.5, 2, base.caption.scale),
+      },
+      split: { divider: num(d.split?.divider, 0.15, 0.85, base.split.divider), face: rect(d.split?.face, base.split.face), game: rect(d.split?.game, base.split.game) },
+      overlays: (Array.isArray(d.overlays) ? d.overlays : [])
+        .filter((o): o is TextOverlay => !!o && typeof o.id === "string" && num(o.end, 0, Infinity, -1) > num(o.start, 0, Infinity, 0))
+        .map((o) => ({ ...o, x: num(o.x, 0, 1, 0.5), y: num(o.y, 0, 1, 0.5), w: num(o.w, 0.1, 1.4, 0.6), rotation: num(o.rotation, -360, 360, 0) })),
+      segments: segs,
+      captionBlocks: (Array.isArray(d.captionBlocks) ? d.captionBlocks : base.captionBlocks)
+        .filter((b): b is CaptionBlock => !!b && b.wordIdx >= 0 && b.wordIdx < clip.words.length && num(b.end, 0, Infinity, -1) > num(b.start, 0, Infinity, 0)),
     };
   } catch {
     return base;

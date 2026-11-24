@@ -4,10 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
-import { user, projects as mockProjects, clips, scheduledPosts, clipById, type Project } from "@/lib/mock";
+import { user, clips, clipById, WEEK_START_ISO, type Project } from "@/lib/mock";
+import { useLocalData } from "@/lib/localStore";
 import { apiEnabled, getMe, getProjects, type Me, type ApiProject } from "@/lib/data";
 import { useSession } from "@/lib/session";
-import { PlatformGlyph, fmtLen, fmtTime, statusChip } from "@/components/app/ui";
+import { PlatformGlyph, Select, fmtLen, fmtTime, statusChip } from "@/components/app/ui";
 import ImportModal from "@/components/app/ImportModal";
 import { parseVideoLink } from "@/lib/linkParse";
 
@@ -27,17 +28,34 @@ function Ring({ value, color, label }: { value: number; color: string; label: st
   );
 }
 
-const METRICS: [string, string, string, string][] = [
-  ["Clips this week", "7", "+3 vs last week", "#BDEF72"],
-  ["Source hours", "4.2h", "3 credits used", "#BAAEF0"],
-  ["Avg score", "86", "Top 10%", "#F5A524"],
-  ["Scheduled", "5", "Next: Sat 18:00", "#7BC8E4"],
+type Range = "week" | "month" | "all";
+const RANGE_OPTS = [
+  { value: "week", label: "This week" },
+  { value: "month", label: "This month" },
+  { value: "all", label: "All time" },
 ];
+const RANGE_LABEL: Record<Range, string> = { week: "this week", month: "this month", all: "so far" };
+// demo "today" is Monday 23 Nov 2026 — the current week/month derives from it
+const WEEK_DAYS = Array.from({ length: 7 }, (_, i) => {
+  const d = new Date(WEEK_START_ISO + "T00:00:00");
+  d.setDate(d.getDate() + i);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+});
+const MONTH_PREFIX = WEEK_START_ISO.slice(0, 7); // "2026-11"
+
+function inRange(iso: string, range: Range) {
+  const day = iso.slice(0, 10);
+  if (range === "all") return true;
+  if (range === "month") return day.startsWith(MONTH_PREFIX);
+  return WEEK_DAYS.includes(day);
+}
+
+const cardSkin = ["bg-lime text-ink", "bg-surface text-fg ring-1 ring-line", "bg-ink text-[#F2F2F0] dark:bg-[#202020] dark:ring-1 dark:ring-line"];
 
 function Dash() {
   const sp = useSearchParams();
   const state = sp.get("state");
-  const empty = state === "empty";
+  const emptyParam = state === "empty";
   const low = state === "low";
   const session = useSession();
   const displayName = session?.name.split(" ")[0] ?? user.name;
@@ -46,8 +64,10 @@ function Dash() {
   const [modalUrl, setModalUrl] = useState(urlParam ?? "");
   const [link, setLink] = useState("");
   const [linkErr, setLinkErr] = useState("");
+  const [range, setRange] = useState<Range>("week");
   const [me, setMe] = useState<Me | null>(null);
-  const [plist, setPlist] = useState<(Project | ApiProject)[] | null>(apiEnabled ? null : mockProjects);
+  const [plist, setPlist] = useState<(Project | ApiProject)[] | null>(apiEnabled ? null : []);
+  const local = useLocalData();
   useEffect(() => {
     if (!apiEnabled) return;
     let on = true;
@@ -55,20 +75,39 @@ function Dash() {
     getProjects().then((l) => on && setPlist(l)).catch(() => on && setPlist([]));
     return () => { on = false; };
   }, []);
-  const used = me?.credits.used ?? user.creditsUsed;
+  const used = me?.credits.used ?? local.creditsUsed;
   const total = me?.credits.total ?? user.creditsTotal;
   const left = me?.credits.left ?? total - used;
-  const usedPct = used / total;
+  const usedPct = total ? used / total : 0;
   const noop = () => () => {};
   const greet = useSyncExternalStore(noop, () => {
     const h = new Date().getHours();
     return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
   }, () => "Good day");
   const today = useSyncExternalStore(noop, () => new Date().getDay(), () => -1);
-  const upcoming = scheduledPosts.filter((s) => s.status !== "posted" && s.status !== "failed");
-  const mix: [string, number][] = [["TikTok", 3], ["Shorts", 2], ["Reels", 2], ["X", 1]];
-  const mixMax = Math.max(...mix.map((m) => m[1]));
-  const weekBars = [2, 1, 0, 3, 1, 4, 0];
+
+  const view = apiEnabled ? (plist ?? []) : local.projects;
+  const noProjects = !apiEnabled ? local.projects.length === 0 : plist !== null && plist.length === 0;
+  const localClips = clips.filter((c) => local.clipIds.has(c.id));
+  const rangeProjects = local.projects.filter((p) => inRange(p.createdAt, range));
+  const rangeClipIds = new Set(rangeProjects.flatMap((p) => p.clipIds));
+  const rangeClips = clips.filter((c) => rangeClipIds.has(c.id));
+  const posts = local.posts;
+  const upcoming = posts.filter((s) => s.status !== "posted" && s.status !== "failed").sort((a, b) => a.time.localeCompare(b.time));
+  const rangePosts = posts.filter((p) => inRange(p.time, range));
+  const sourceHours = rangeProjects.reduce((a, p) => a + p.sourceLength, 0) / 3600;
+  const avgScore = rangeClips.length ? Math.round(rangeClips.reduce((a, c) => a + c.score, 0) / rangeClips.length) : 0;
+  const postedPct = posts.length ? posts.filter((p) => p.status === "posted").length / posts.length : 0;
+  const metrics: [string, string, string, string][] = [
+    [`Clips ${RANGE_LABEL[range]}`, String(rangeClips.length), `${localClips.length} total`, "#BDEF72"],
+    ["Source hours", `${sourceHours.toFixed(1)}h`, `${used} credits used`, "#BAAEF0"],
+    ["Avg score", rangeClips.length ? String(avgScore) : "—", rangeClips.length ? `of ${rangeClips.length} clips` : "No clips yet", "#F5A524"],
+    ["Scheduled", String(rangePosts.length), upcoming[0] ? `Next: ${fmtTime(upcoming[0].time)}` : "Nothing queued", "#7BC8E4"],
+  ];
+  const platCounts = upcoming.reduce<Record<string, number>>((a, p) => ((a[p.platform] = (a[p.platform] ?? 0) + 1), a), {});
+  const mix = (["tiktok", "shorts", "reels", "x"] as const).map((p) => [p, platCounts[p] ?? 0] as [string, number]).filter(([, v]) => v > 0);
+  const mixMax = Math.max(1, ...mix.map((m) => m[1]));
+  const weekBars = WEEK_DAYS.map((d) => posts.filter((p) => p.time.slice(0, 10) === d).length);
   const days = ["S", "M", "T", "W", "T", "F", "S"];
 
   const pasteBar = (
@@ -93,7 +132,7 @@ function Dash() {
     </div>
   );
 
-  if (empty) {
+  if (emptyParam || noProjects) {
     return (
       <div className="mx-auto mt-24 max-w-xl text-center">
         <h2 className="font-heading text-3xl font-bold">No clips yet.</h2>
@@ -103,8 +142,6 @@ function Dash() {
       </div>
     );
   }
-
-  const cardSkin = ["bg-lime text-ink", "bg-surface text-fg ring-1 ring-line", "bg-ink text-[#F2F2F0] dark:bg-[#202020] dark:ring-1 dark:ring-line"];
 
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -120,24 +157,21 @@ function Dash() {
         <section aria-labelledby="ov">
           <div className="mb-3 flex items-center justify-between">
             <h3 id="ov" className="font-heading text-xl font-bold">Overview</h3>
-            <button className="flex items-center gap-1.5 rounded-full bg-surface px-4 py-2 text-xs font-medium shadow-sm ring-1 ring-line">
-              This week
-              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4.5 6 7.5 9 4.5"/></svg>
-            </button>
+            <Select label="Stats range" value={range} onChange={(v) => setRange(v as Range)} options={RANGE_OPTS} className="w-36" />
           </div>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
             <div className="rounded-[28px] bg-ink p-6 text-[#F2F2F0] dark:bg-[#202020] dark:ring-1 dark:ring-line">
-              <p className="text-sm text-[#A1A5A0]">You’ve clipped 14 moments this week, keep it up!</p>
+              <p className="text-sm text-[#A1A5A0]">You’ve clipped {rangeClips.length} moment{rangeClips.length === 1 ? "" : "s"} {RANGE_LABEL[range]}, keep it up!</p>
               <p className="mt-1 font-heading text-4xl font-bold">{left} <span className="text-xl font-medium text-[#A1A5A0]">credits left</span></p>
               {(low || left < 5) && <p className="mt-2 inline-block rounded-full bg-heat/15 px-3 py-1 text-xs text-heat">Running low — upgrade for more.</p>}
               <div className="mt-5 flex justify-between gap-2 px-1">
                 <Ring value={usedPct} color="#BDEF72" label="Credits used" />
-                <Ring value={0.62} color="#F5A524" label="Clips posted" />
-                <Ring value={0.86} color="#BAAEF0" label="Avg score" />
+                <Ring value={postedPct} color="#F5A524" label="Clips posted" />
+                <Ring value={avgScore / 100} color="#BAAEF0" label="Avg score" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {METRICS.map(([l, v, sub, dot]) => (
+              {metrics.map(([l, v, sub, dot]) => (
                 <div key={l} className="flex flex-col justify-between rounded-[24px] bg-surface p-4 shadow-sm ring-1 ring-line">
                   <div className="flex items-start justify-between">
                     <p className="text-xs text-slate">{l}</p>
@@ -156,7 +190,7 @@ function Dash() {
         {/* weekly bar chart */}
         <section className="rounded-[24px] bg-surface p-5 shadow-sm ring-1 ring-line" aria-labelledby="wk">
           <div className="mb-4 flex items-center justify-between">
-            <h3 id="wk" className="text-sm font-semibold">Clips per day</h3>
+            <h3 id="wk" className="text-sm font-semibold">Scheduled posts per day</h3>
             <p className="text-xs text-slate">This week</p>
           </div>
           <div className="flex h-40 items-end justify-between gap-3">
@@ -177,13 +211,13 @@ function Dash() {
         <section aria-labelledby="rp">
           <div className="mb-3 flex items-center justify-between">
             <h3 id="rp" className="font-heading text-xl font-bold">Recent projects</h3>
-            <Link href="/app/library" className="text-xs font-medium text-slate hover:text-fg">See all</Link>
+            <Link href="/app/projects" className="text-xs font-medium text-slate hover:text-fg">See all</Link>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {plist === null && [0, 1, 2].map((i) => (
+            {plist === null && apiEnabled && [0, 1, 2].map((i) => (
               <div key={i} className="h-56 animate-pulse rounded-[24px] bg-surface ring-1 ring-line" />
             ))}
-            {plist?.slice(0, 3).map((p, i) => {
+            {view.slice(0, 3).map((p, i) => {
               const isApi = !("clipIds" in p);
               const cs = isApi ? [] : clips.filter((c) => (p as Project).clipIds.includes(c.id)).slice(0, 3);
               const title = p.title ?? "New import";
@@ -196,7 +230,7 @@ function Dash() {
                   <div>
                     <div className="flex items-center justify-between">
                       <PlatformGlyph p={p.platform} size={20} />
-                      <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium capitalize ${p.status === "processing" ? "bg-line-2" : "bg-line-2"}`}>
+                      <span className="rounded-full bg-line-2 px-2.5 py-1 text-[11px] font-medium capitalize">
                         {p.status === "processing" && <span className="mr-1.5 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-current align-middle" />}
                         {p.status}
                       </span>
@@ -232,17 +266,14 @@ function Dash() {
         <div className="rounded-[24px] bg-surface p-5 shadow-sm ring-1 ring-line">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="font-heading text-xl font-bold">Up next</h3>
-            <button className="flex items-center gap-1 rounded-full bg-canvas px-3 py-1.5 text-xs font-medium">
-              Sat, 28 Nov
-              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4.5 6 7.5 9 4.5"/></svg>
-            </button>
           </div>
           <div className="space-y-2">
             {upcoming.slice(0, 4).map((s) => {
-              const c = clipById(s.clipId)!;
+              const c = clipById(s.clipId);
+              if (!c) return null;
               return (
                 <div key={s.id} className="flex items-center gap-3 rounded-2xl bg-canvas/60 p-2.5">
-                  <span className="flex -space-x-3">
+                  <span className="flex -space-x-3 overflow-hidden rounded-lg">
                     <Image src={c.poster} alt="" width={404} height={720} className="h-auto w-[30px] rounded-lg object-cover ring-2 ring-white" />
                     <Image src={c.poster} alt="" width={404} height={720} className="h-auto w-[30px] rounded-lg object-cover ring-2 ring-white" style={{ transform: "rotate(6deg)" }} />
                   </span>
@@ -255,25 +286,28 @@ function Dash() {
                 </div>
               );
             })}
+            {!upcoming.length && <p className="py-2 text-sm text-slate">Nothing scheduled yet.</p>}
           </div>
-          <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-line-2 py-2.5 text-sm text-slate hover:text-fg">
+          <Link href="/app/calendar" className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-line-2 py-2.5 text-sm text-slate hover:text-fg">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-fg text-canvas"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2v8M2 6h8"/></svg></span>
             Schedule a post
-          </button>
-          <div className="mt-6">
-            <p className="mb-3 text-sm font-semibold">Platform mix</p>
-            <div className="space-y-2.5">
-              {mix.map(([n, v]) => (
-                <div key={n} className="flex items-center gap-3">
-                  <span className="w-12 text-xs text-slate">{n}</span>
-                  <div className="h-3.5 flex-1 overflow-hidden rounded-full bg-surface-2/50">
-                    <div className="h-full rounded-full bg-fg" style={{ width: `${(v / mixMax) * 100}%` }} />
+          </Link>
+          {mix.length > 0 && (
+            <div className="mt-6">
+              <p className="mb-3 text-sm font-semibold">Platform mix</p>
+              <div className="space-y-2.5">
+                {mix.map(([n, v]) => (
+                  <div key={n} className="flex items-center gap-3">
+                    <span className="w-12 text-xs capitalize text-slate">{n}</span>
+                    <div className="h-3.5 flex-1 overflow-hidden rounded-full bg-surface-2/50">
+                      <div className="h-full rounded-full bg-fg" style={{ width: `${(v / mixMax) * 100}%` }} />
+                    </div>
+                    <span className="w-4 text-right font-mono text-xs">{v}</span>
                   </div>
-                  <span className="w-4 text-right font-mono text-xs">{v}</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
           <Link href="/app/calendar" className="mt-5 block text-center text-xs font-medium text-slate hover:text-fg">Open calendar</Link>
         </div>
       </aside>

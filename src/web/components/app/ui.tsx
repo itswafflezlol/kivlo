@@ -68,7 +68,10 @@ export function Select({ value, onChange, label, options, className = "", dark }
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
-  const pick = (i: number) => { onChange?.(options[i].value); setOpen(false); };
+  // Blink re-fires a click on the trigger when the option unmounts mid-gesture;
+  // ignore trigger clicks that land right after a pick so the menu stays closed.
+  const lastPick = useRef(0);
+  const pick = (i: number) => { lastPick.current = Date.now(); onChange?.(options[i].value); setOpen(false); };
   const expand = () => { setActive(idx); setOpen(true); };
   const onKey = (e: React.KeyboardEvent) => {
     if (!open && (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ")) { expand(); e.preventDefault(); return; }
@@ -82,8 +85,8 @@ export function Select({ value, onChange, label, options, className = "", dark }
   };
   return (
     <span ref={root} className={`relative inline-block ${className}`}>
-      <button type="button" aria-label={label} aria-haspopup="listbox" aria-expanded={open}
-        onClick={() => (open ? setOpen(false) : expand())} onKeyDown={onKey}
+      <button type="button" aria-label={label ? `${label}: ${options[idx]?.label ?? ""}` : undefined} aria-haspopup="listbox" aria-expanded={open}
+        onClick={() => { if (Date.now() - lastPick.current < 150) return; if (open) setOpen(false); else expand(); }} onKeyDown={onKey}
         className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm focus:outline-none focus:ring-2 focus:ring-lime ${dark ? "border-[#3A3A3A] bg-carbon text-[#F2F2F0]" : "border-line-2 bg-surface text-fg"}`}>
         <span>{options[idx]?.label}</span>
         <svg aria-hidden viewBox="0 0 12 12" className={`ml-2 h-3 w-3 shrink-0 text-slate transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4.5l3 3 3-3"/></svg>
@@ -102,6 +105,44 @@ export function Select({ value, onChange, label, options, className = "", dark }
             </li>
           ))}
         </ul>
+      )}
+    </span>
+  );
+}
+
+export function DotsMenu({ label, items, dark }: {
+  label: string; dark?: boolean;
+  items: { label: string; onClick: () => void; danger?: boolean }[];
+}) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLSpanElement>(null);
+  // same Blink quirk as Select: a click can re-fire on the trigger after the
+  // menu unmounts mid-gesture — ignore clicks right after an item pick.
+  const lastPick = useRef(0);
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDoc); document.removeEventListener("keydown", onKey); };
+  }, [open]);
+  return (
+    <span ref={root} className="relative inline-block">
+      <IconButton label={label} pressed={open} dark={dark} onClick={() => { if (Date.now() - lastPick.current < 150) return; setOpen((o) => !o); }}>
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden><circle cx="8" cy="3.5" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="8" cy="12.5" r="1.4"/></svg>
+      </IconButton>
+      {open && (
+        <div role="menu" aria-label={label}
+          className={`menu-in absolute right-0 z-50 mt-1 w-44 rounded-2xl p-1.5 shadow-lg ring-1 ${dark ? "bg-graphite ring-[#3A3A3A]" : "bg-surface ring-line"}`}>
+          {items.map((it) => (
+            <button key={it.label} role="menuitem"
+              onClick={() => { lastPick.current = Date.now(); setOpen(false); it.onClick(); }}
+              className={`w-full rounded-xl px-3 py-2 text-left text-sm transition-colors ${it.danger ? "text-error" : dark ? "text-[#F2F2F0]" : "text-fg"} ${dark ? "hover:bg-carbon" : "hover:bg-surface-2"}`}>
+              {it.label}
+            </button>
+          ))}
+        </div>
       )}
     </span>
   );

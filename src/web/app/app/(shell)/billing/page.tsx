@@ -2,6 +2,7 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { user, invoices, billing } from "@/lib/mock";
+import { useLocalData } from "@/lib/localStore";
 import { plans } from "@/lib/pricing";
 import { Modal } from "@/components/app/ui";
 
@@ -18,7 +19,10 @@ function Billing() {
   const [yearly, setYearly] = useState(false);
   const [cancel, setCancel] = useState(false);
   const [card, setCard] = useState(false);
-  const left = user.creditsTotal - user.creditsUsed;
+  const { creditsUsed } = useLocalData();
+  const [addr, setAddr] = useState(billing.address);
+  const [editingAddr, setEditingAddr] = useState(false);
+  const left = user.creditsTotal - creditsUsed;
   const pct = left / user.creditsTotal;
   const cur = plans.findIndex((p) => p.id === user.plan);
   const hist = billing.creditHistory;
@@ -81,7 +85,16 @@ function Billing() {
           </p>
           <div className="mt-4 border-t border-line pt-3 text-xs">
             <p className="flex items-center justify-between"><span className="text-slate">Billing email</span><span className="font-medium">{billing.email}</span></p>
-            <p className="mt-1.5 flex items-center justify-between"><span className="text-slate">Address</span><span className="font-medium">{billing.address} <button className="ml-1 text-lime-deep hover:underline">Edit</button></span></p>
+            <p className="mt-1.5 flex items-center justify-between"><span className="text-slate">Address</span>
+              {editingAddr ? (
+                <input autoFocus defaultValue={addr} aria-label="Billing address"
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") setEditingAddr(false); }}
+                  onBlur={(e) => { setAddr(e.target.value.trim() || addr); setEditingAddr(false); }}
+                  className="w-56 rounded-lg border border-lime px-2 py-0.5 text-right font-medium focus:outline-none" />
+              ) : (
+                <span className="font-medium">{addr} <button onClick={() => setEditingAddr(true)} className="ml-1 text-lime-deep hover:underline">Edit</button></span>
+              )}
+            </p>
           </div>
         </section>
       </div>
