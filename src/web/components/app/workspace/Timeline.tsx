@@ -66,9 +66,9 @@ function Block({ ws, start, end, dur, className, label, selected, onSelect, onCh
       onPointerDown={drag("move")} onClick={onSelect}
       className={`absolute top-0.5 bottom-0.5 flex items-center overflow-hidden rounded-md ${className} ${selected ? "ring-2 ring-white" : ""}`}
       style={{ left: `${(start / dur) * 100}%`, width: `calc(${Math.max(0.8, ((end - start) / dur) * 100)}% - 2px)` }}>
-      <span aria-hidden onPointerDown={drag("l")} className="absolute inset-y-0 left-0 z-10 w-2 cursor-ew-resize rounded-l-md bg-white/0 hover:bg-white/25" />
-      <span className="truncate px-2 text-[9px] font-bold">{label}</span>
-      <span aria-hidden onPointerDown={drag("r")} className="absolute inset-y-0 right-0 z-10 w-2 cursor-ew-resize rounded-r-md bg-white/0 hover:bg-white/25" />
+      <span aria-hidden onPointerDown={drag("l")} className="absolute inset-y-0 left-0 z-10 w-2.5 cursor-ew-resize rounded-l-md bg-white/0 hover:bg-white/25" />
+      <span className="truncate px-2 text-[11px] font-bold">{label}</span>
+      <span aria-hidden onPointerDown={drag("r")} className="absolute inset-y-0 right-0 z-10 w-2.5 cursor-ew-resize rounded-r-md bg-white/0 hover:bg-white/25" />
     </div>
   );
 }
@@ -109,7 +109,8 @@ export default function Timeline({ ws }: { ws: Ws }) {
   const lanes = overlayLanes(doc.overlays);
   const offsets = segOffsets(doc.segments);
   const headers = ["Video 1", "Captions", ...lanes.map((_, i) => `Text ${i + 1}`), "Audio"];
-  const hrow = `h-[26px]`;
+  const ROW = 36, GAP = 8, STRIDE = ROW + GAP;
+  const hrow = `h-9`;
 
   return (
     <div className="flex h-full gap-3">
@@ -122,9 +123,9 @@ export default function Timeline({ ws }: { ws: Ws }) {
           <IconButton dark onClick={ws.deleteSel} label="Delete selection">{ic.trash}</IconButton>
         </div>
         {headers.map((name, i) => (
-          <div key={i} className={`flex ${hrow} items-center gap-1.5 pr-1`}>
+          <div key={i} className={`mt-2 flex ${hrow} items-center gap-2 pr-1`}>
             <span className="text-[#A1A5A0]">{i === 0 ? ic.video : i === headers.length - 1 ? ic.audio : i === 1 ? ic.captions : ic.text}</span>
-            <span className="flex-1 truncate text-[11px] font-semibold text-[#A1A5A0]">{name}</span>
+            <span className="flex-1 truncate text-xs font-semibold text-[#A1A5A0]">{name}</span>
           </div>
         ))}
       </div>
@@ -135,7 +136,7 @@ export default function Timeline({ ws }: { ws: Ws }) {
           <div className="relative h-8 flex-1">
             <div className="absolute inset-x-0 bottom-1 top-0 overflow-hidden" style={{ width: `${zoom * 100}%`, minWidth: "100%" }}>
               {Array.from({ length: Math.ceil(dur) + 1 }, (_, s) => (
-                <span key={s} className="absolute bottom-0 border-l border-dotted border-[#5A5E56] pl-1 font-mono text-[9px] text-[#A1A5A0]" style={{ left: `${(s / dur) * 100}%`, height: 10 }}>{s}s</span>
+                <span key={s} className="absolute bottom-0 border-l border-dotted border-[#5A5E56] pl-1 font-mono text-[10px] text-[#A1A5A0]" style={{ left: `${(s / dur) * 100}%`, height: 12 }}>{s}s</span>
               ))}
             </div>
           </div>
@@ -149,15 +150,15 @@ export default function Timeline({ ws }: { ws: Ws }) {
           className="relative flex-1 cursor-crosshair overflow-x-auto overflow-y-hidden rounded-xl bg-[#1f1f1f]">
           <div className="relative h-full" style={{ width: `${zoom * 100}%`, minWidth: "100%" }}>
             {/* video track — magnetic segments */}
-            <div className={`absolute inset-x-0 top-1 ${hrow}`}>
+            <div className={`absolute inset-x-0 top-1 ${hrow}`} data-row="video">
               {offsets.map(({ seg, off }) => (
                 <div key={seg.id} role="group" aria-roledescription="segment"
                   aria-label={`Segment ${seg.srcStart.toFixed(1)}–${seg.srcEnd.toFixed(1)}`}
                   onPointerDown={(e) => { e.stopPropagation(); ws.setSel({ kind: "segment", id: seg.id }); }}
                   className={`absolute top-0.5 bottom-0.5 overflow-hidden rounded-lg bg-lilac-deep ${sel?.kind === "segment" && sel.id === seg.id ? "ring-2 ring-white" : ""}`}
                   style={{ left: `${(off / dur) * 100}%`, width: `${((seg.srcEnd - seg.srcStart) / dur) * 100}%` }}>
-                  <div className="absolute inset-y-0 left-0 w-12 bg-cover bg-center" style={{ backgroundImage: `url(${clip.poster})` }} />
-                  <span className="absolute left-14 top-1/2 -translate-y-1/2 truncate font-mono text-[9px] font-medium text-white">{clip.id}.mp4</span>
+                  <div className="absolute inset-y-0 left-0 w-16 bg-cover bg-center" style={{ backgroundImage: `url(${clip.poster})` }} />
+                  <span className="absolute left-[72px] top-1/2 -translate-y-1/2 truncate font-mono text-[10px] font-medium text-white">{clip.id}.mp4</span>
                   {/* ripple trim handles */}
                   {(["l", "r"] as const).map((k) => (
                     <span key={k} role="slider" aria-label={k === "l" ? "Trim segment start" : "Trim segment end"}
@@ -183,13 +184,13 @@ export default function Timeline({ ws }: { ws: Ws }) {
                         const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); ws.endGesture(); };
                         window.addEventListener("pointermove", move); window.addEventListener("pointerup", up);
                       }}
-                      className={`absolute inset-y-0 ${k === "l" ? "left-0" : "right-0"} z-10 w-2.5 cursor-ew-resize bg-white/0 hover:bg-white/30`} />
+                      className={`absolute inset-y-0 ${k === "l" ? "left-0" : "right-0"} z-10 w-3 cursor-ew-resize bg-white/0 hover:bg-white/30`} />
                   ))}
                 </div>
               ))}
             </div>
             {/* captions track */}
-            <div className={`absolute inset-x-0 ${hrow}`} style={{ top: "calc(4px + 26px)" }}>
+            <div className={`absolute inset-x-0 ${hrow}`} style={{ top: 4 + STRIDE }}>
               {doc.captionBlocks.filter((b) => !clip.words[b.wordIdx]?.cut).map((b) => (
                 <Block key={b.id} ws={ws} start={b.start} end={b.end} dur={dur}
                   className="bg-lime text-ink" label={clip.words[b.wordIdx]?.w ?? ""}
@@ -201,7 +202,7 @@ export default function Timeline({ ws }: { ws: Ws }) {
             </div>
             {/* overlay lanes */}
             {lanes.map((lane, li) => (
-              <div key={li} className={`absolute inset-x-0 ${hrow}`} style={{ top: `calc(4px + ${(li + 2) * 26}px)` }}>
+              <div key={li} className={`absolute inset-x-0 ${hrow}`} style={{ top: 4 + (li + 2) * STRIDE }}>
                 {lane.map((o) => (
                   <Block key={o.id} ws={ws} start={o.start} end={o.end} dur={dur}
                     className="bg-lilac text-ink" label={o.text}
@@ -213,7 +214,7 @@ export default function Timeline({ ws }: { ws: Ws }) {
               </div>
             ))}
             {/* audio track */}
-            <div className="absolute inset-x-0 flex items-center gap-px px-1" style={{ top: `calc(4px + ${(lanes.length + 2) * 26}px)`, height: 26 }}>
+            <div className={`absolute inset-x-0 flex items-center gap-px px-1 ${hrow}`} style={{ top: 4 + (lanes.length + 2) * STRIDE }}>
               <span className="mr-1 shrink-0 text-[#A1A5A0]">{ic.audio}</span>
               {wave.map((h, i) => <span key={i} className="flex-1 rounded-sm bg-white/60" style={{ height: `${h * 90}%` }} />)}
             </div>

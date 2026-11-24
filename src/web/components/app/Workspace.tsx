@@ -45,7 +45,7 @@ function PanelDivider({ vertical, value, min, max, onChange, onReset, label, sig
 }
 
 type LayoutSizes = { left: number; right: number; timeline: number };
-const DEFAULT_SIZES: LayoutSizes = { left: 260, right: 290, timeline: 168 };
+const DEFAULT_SIZES: LayoutSizes = { left: 260, right: 290, timeline: 224 };
 
 function loadSizes(): LayoutSizes {
   try {
@@ -329,7 +329,7 @@ export default function Workspace({ clip: initial, siblings }: { clip: Clip; sib
           </aside>
         </div>
 
-        <PanelDivider vertical={false} sign={-1} value={sizes.timeline} min={120} max={320} label="Timeline height"
+        <PanelDivider vertical={false} sign={-1} value={sizes.timeline} min={170} max={420} label="Timeline height"
           onChange={(v) => patchSizes({ timeline: v })} onReset={() => patchSizes({ timeline: DEFAULT_SIZES.timeline })} />
 
         {/* timeline */}
