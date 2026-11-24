@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { PostPlatform } from "@/lib/mock";
 import PlatformIcon, { platformLabel } from "./PlatformIcon";
 
@@ -56,7 +57,7 @@ export function Toggle({ checked, onChange, label }: { checked: boolean; onChang
 }
 
 export function Select({ value, onChange, label, options, className = "", dark }: {
-  value?: string; onChange?: (v: string) => void; label?: string; options: { value: string; label: string }[]; className?: string; dark?: boolean;
+  value?: string; onChange?: (v: string) => void; label?: string; options: { value: string; label: string; style?: React.CSSProperties }[]; className?: string; dark?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -88,7 +89,7 @@ export function Select({ value, onChange, label, options, className = "", dark }
       <button type="button" aria-label={label ? `${label}: ${options[idx]?.label ?? ""}` : undefined} aria-haspopup="listbox" aria-expanded={open}
         onClick={() => { if (Date.now() - lastPick.current < 150) return; if (open) setOpen(false); else expand(); }} onKeyDown={onKey}
         className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm focus:outline-none focus:ring-2 focus:ring-lime ${dark ? "border-[#3A3A3A] bg-carbon text-[#F2F2F0]" : "border-line-2 bg-surface text-fg"}`}>
-        <span>{options[idx]?.label}</span>
+        <span style={options[idx]?.style}>{options[idx]?.label}</span>
         <svg aria-hidden viewBox="0 0 12 12" className={`ml-2 h-3 w-3 shrink-0 text-slate transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4.5l3 3 3-3"/></svg>
       </button>
       {open && (
@@ -98,7 +99,7 @@ export function Select({ value, onChange, label, options, className = "", dark }
             <li key={o.value} id={`opt-${i}`} role="option" aria-selected={o.value === value}
               onMouseEnter={() => setActive(i)} onClick={() => pick(i)}
               className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm ${i === active ? (dark ? "bg-carbon" : "bg-surface-2") : ""} ${o.value === value ? (dark ? "font-medium text-white" : "font-medium text-fg") : (dark ? "text-[#F2F2F0]" : "text-fg")}`}>
-              {o.label}
+              <span style={o.style}>{o.label}</span>
               {o.value === value && (
                 <svg viewBox="0 0 12 12" className="h-3 w-3 text-lime-deep" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2l2.3 2.3L9.5 3.6" /></svg>
               )}
@@ -170,8 +171,10 @@ export function Modal({
     window.addEventListener("keydown", onKey);
     return () => { window.removeEventListener("keydown", onKey); prev?.focus(); };
   }, [open, onClose]);
-  if (!open) return null;
-  return (
+  if (!open || typeof document === "undefined") return null;
+  // portal: a transformed ancestor (page-in animation) would hijack `fixed`,
+  // pinning the modal to the document and clipping its top off-screen
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={label} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div
         ref={ref}
@@ -191,7 +194,8 @@ export function Modal({
         )}
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

@@ -3,7 +3,7 @@
 import React, { useRef, useState } from "react";
 const ViewTransition = (React as unknown as { ViewTransition?: React.ComponentType<{ name: string; children?: React.ReactNode }> }).ViewTransition ?? (({ children }: { children?: React.ReactNode }) => <>{children}</>);
 import type { EditDoc, TextOverlay } from "./editDoc";
-import { fmtTc, ic, InlineEdit, type Ws } from "./common";
+import { fmtTc, FONT_STACKS, ic, InlineEdit, type Ws } from "./common";
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 const SNAP = 0.02;
@@ -159,7 +159,7 @@ export default function Stage({ ws, vid, vid2, onVideoEvent }: {
   const visBlocks = doc.captionBlocks.filter((b) => !clip.words[b.wordIdx]?.cut);
   const ai = visBlocks.findIndex((b) => t >= b.start && t < b.end);
   const line = ai >= 0 ? visBlocks.slice(Math.max(0, ai - (ai % cfg.lineWords)), Math.max(0, ai - (ai % cfg.lineWords)) + cfg.lineWords) : [];
-  const fontFam = cfg.font === "Clash Display" ? "var(--font-clash)" : cfg.font === "JetBrains Mono" ? "var(--font-jetbrains)" : "var(--font-body)";
+  const fontFam = FONT_STACKS[cfg.font] ?? "var(--font-body)";
 
   const captionBox = (
     <div data-caption-box className="absolute z-10 cursor-move"

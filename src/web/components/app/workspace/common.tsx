@@ -6,7 +6,19 @@ import type { EditDoc } from "./editDoc";
 
 export const fmtTc = (v: number) => `${Math.floor(v / 60)}:${(v % 60).toFixed(1).padStart(4, "0")}`;
 export const COLORS = ["#BDEF72", "#F5A524", "#BAAEF0", "#FFFFFF", "#FF6B63"];
-export const FONTS = ["Manrope", "Clash Display", "JetBrains Mono"];
+export const FONT_STACKS: Record<string, string> = {
+  "Manrope": "var(--font-body)",
+  "Clash Display": "var(--font-clash)",
+  "Bebas Neue": "var(--font-bebas)",
+  "Anton": "var(--font-anton)",
+  "Archivo Black": "var(--font-archivo-black)",
+  "Oswald": "var(--font-oswald)",
+  "Poppins": "var(--font-poppins)",
+  "Bangers": "var(--font-bangers)",
+  "Permanent Marker": "var(--font-marker)",
+  "JetBrains Mono": "var(--font-jetbrains)",
+};
+export const FONTS = Object.keys(FONT_STACKS);
 
 const IC = "h-4 w-4";
 export const ic = {

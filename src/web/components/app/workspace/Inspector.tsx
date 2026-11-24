@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { clips as allClips, presets } from "@/lib/mock";
 import type { EditDoc } from "./editDoc";
-import { CapSec, COLORS, FONTS, NumField, Slider, type Ws } from "./common";
+import { CapSec, COLORS, FONTS, FONT_STACKS, NumField, Slider, type Ws } from "./common";
+import { Select } from "../ui";
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
@@ -150,14 +151,14 @@ export default function Inspector({ ws }: { ws: Ws }) {
 
           <CapSec title="Text" open>
             <div className="flex gap-2">
-              <select value={cfg.font} onChange={(e) => setCfg((c) => ({ ...c, font: e.target.value }))} aria-label="Caption font"
-                className="min-w-0 flex-1 rounded-lg border border-[#3A3A3A] bg-carbon px-2 py-1.5 text-xs text-white">
-                {FONTS.map((f) => <option key={f}>{f}</option>)}
-              </select>
-              <select value={cfg.weight} onChange={(e) => setCfg((c) => ({ ...c, weight: Number(e.target.value) }))} aria-label="Weight"
-                className="w-16 rounded-lg border border-[#3A3A3A] bg-carbon px-2 py-1.5 text-xs text-white">
-                {[800, 700, 600].map((w) => <option key={w}>{w}</option>)}
-              </select>
+              <Select dark label="Caption font" value={cfg.font}
+                onChange={(v) => setCfg((c) => ({ ...c, font: v }))}
+                options={FONTS.map((f) => ({ value: f, label: f, style: { fontFamily: FONT_STACKS[f] } }))}
+                className="min-w-0 flex-1" />
+              <Select dark label="Weight" value={String(cfg.weight)}
+                onChange={(v) => setCfg((c) => ({ ...c, weight: Number(v) }))}
+                options={["800", "700", "600"].map((w) => ({ value: w, label: w }))}
+                className="w-20" />
             </div>
             <Slider label="Size" min={16} max={40} value={cfg.size} onChange={(v) => setCfg((c) => ({ ...c, size: v }))} />
             <div className="flex items-center justify-between text-xs text-[#A1A5A0]">

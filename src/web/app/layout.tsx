@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { JetBrains_Mono, Manrope } from "next/font/google";
+import { Anton, Archivo_Black, Bangers, Bebas_Neue, JetBrains_Mono, Manrope, Oswald, Permanent_Marker, Poppins } from "next/font/google";
 import "./globals.css";
 
 const clash = localFont({
@@ -23,6 +23,14 @@ const jetbrains = JetBrains_Mono({
   variable: "--font-jetbrains",
 });
 
+const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-bebas" });
+const anton = Anton({ subsets: ["latin"], weight: "400", variable: "--font-anton" });
+const archivoBlack = Archivo_Black({ subsets: ["latin"], weight: "400", variable: "--font-archivo-black" });
+const oswald = Oswald({ subsets: ["latin"], variable: "--font-oswald" });
+const poppins = Poppins({ subsets: ["latin"], weight: ["400", "600", "700", "800"], variable: "--font-poppins" });
+const bangers = Bangers({ subsets: ["latin"], weight: "400", variable: "--font-bangers" });
+const marker = Permanent_Marker({ subsets: ["latin"], weight: "400", variable: "--font-marker" });
+
 export const metadata: Metadata = {
   title: "Kivlo — Turn long streams into clips worth posting",
   description:
@@ -40,7 +48,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className={`${clash.variable} ${manrope.variable} ${jetbrains.variable} antialiased`}
+        className={`${clash.variable} ${manrope.variable} ${jetbrains.variable} ${bebas.variable} ${anton.variable} ${archivoBlack.variable} ${oswald.variable} ${poppins.variable} ${bangers.variable} ${marker.variable} antialiased`}
       >
         {children}
       </body>
