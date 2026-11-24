@@ -12,11 +12,13 @@ function HoverPlay({
   video,
   className = "",
   label,
+  live = false,
 }: {
   poster: string;
   video: string;
   className?: string;
   label: string;
+  live?: boolean;
 }) {
   const reduced = useReducedMotion();
   const [hover, setHover] = useState(false);
@@ -28,8 +30,8 @@ function HoverPlay({
       role="img"
       aria-label={label}
     >
-      {hover && !reduced ? (
-        <video src={video} muted loop playsInline autoPlay />
+      {(live || hover) && !reduced ? (
+        <video src={video} poster={poster} muted loop playsInline autoPlay />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={poster} alt="" loading="lazy" />
@@ -61,6 +63,7 @@ function FloatThumb({ t, mx, my }: { t: (typeof THUMBS)[0]; mx: number; my: numb
         style={{ ["--bob-delay" as string]: `${t.delay}s` }}
       >
         <HoverPlay
+          live
           poster={t.poster}
           video={t.video}
           label=""
@@ -242,6 +245,7 @@ export default function Hero() {
           <h1 className="hero-in mx-auto w-fit max-w-full text-balance font-display text-[40px] font-semibold leading-[1.08] text-ink sm:text-6xl lg:text-[56px] xl:text-[64px]">
             Turn long{" "}
             <HoverPlay
+              live
               poster={asset("/videos/thumbs/kai-museum-face.jpg")}
               video={asset("/videos/wall/kai-museum-1.mp4")}
               label="Kai Cenat clip"
@@ -251,9 +255,10 @@ export default function Hero() {
             <br />
             into clips{" "}
             <HoverPlay
-              poster={asset("/videos/thumbs/emily-dance-face.jpg")}
-              video={asset("/videos/wall/emily-dance-1.mp4")}
-              label="ExtraEmily clip"
+              live
+              poster={asset("/videos/wall/speed-roblox-1.jpg")}
+              video={asset("/videos/wall/speed-roblox-1.mp4")}
+              label="iShowSpeed clip"
               className="h-chip rotate-2 shadow-md"
             />{" "}
             <span className="text-slate">worth posting.</span>

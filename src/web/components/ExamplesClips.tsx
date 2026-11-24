@@ -1,7 +1,7 @@
 "use client";
 
 import { asset } from "@/lib/asset";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const CLIPS = [
   {
@@ -28,19 +28,32 @@ export default function ExamplesClips() {
   const [playingIdx, setPlayingIdx] = useState<number | null>(null);
   const refs = useRef<(HTMLVideoElement | null)[]>([]);
 
+  // every clip plays muted when it scrolls into view
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          const v = e.target as HTMLVideoElement;
+          if (e.isIntersecting) v.play().catch(() => {});
+          else v.pause();
+        }),
+      { threshold: 0.4 }
+    );
+    refs.current.forEach((v) => v && io.observe(v));
+    return () => io.disconnect();
+  }, []);
+
+  // the button toggles sound on one clip; the rest keep playing muted
   const toggle = (i: number) => {
     const v = refs.current[i];
     if (!v) return;
-    if (playingIdx === i && !v.paused) {
-      v.pause();
+    if (playingIdx === i) {
+      v.muted = true;
       setPlayingIdx(null);
       return;
     }
     refs.current.forEach((other, j) => {
-      if (other && j !== i) {
-        other.pause();
-        other.muted = true;
-      }
+      if (other && j !== i) other.muted = true;
     });
     v.muted = false;
     v.play().catch(() => {});
@@ -67,6 +80,7 @@ export default function ExamplesClips() {
               }}
               src={c.src}
               poster={c.poster}
+              muted
               loop
               playsInline
               preload="none"
@@ -76,20 +90,22 @@ export default function ExamplesClips() {
             />
             <button
               type="button"
-              aria-label={playing ? `Pause ${c.title}` : `Play ${c.title}`}
+              aria-label={playing ? `Mute ${c.title}` : `Play ${c.title} with sound`}
               onClick={() => toggle(i)}
-              className={`absolute inset-0 flex items-center justify-center transition-colors duration-200 ${
-                playing ? "bg-transparent" : "bg-ink/20"
-              }`}
+              className="absolute inset-0 flex items-end justify-end p-3"
             >
-              <span
-                className={`flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg transition-transform duration-200 ease-out ${
-                  playing ? "scale-0" : "scale-100"
-                }`}
-              >
-                <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
-                  <path d="M5 3.5v9l7.5-4.5z" fill="#181818" />
-                </svg>
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/55 text-white transition-transform duration-200 ease-out hover:scale-110">
+                {playing ? (
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                    <path d="M2 6v4h3l3.5 3V3L5 6H2Z" fill="currentColor" stroke="none" />
+                    <path d="M11 5.5a4 4 0 0 1 0 5M13 3.8a6.5 6.5 0 0 1 0 8.4" />
+                  </svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                    <path d="M2 6v4h3l3.5 3V3L5 6H2Z" fill="currentColor" stroke="none" />
+                    <path d="M11 6l4 4m0-4-4 4" />
+                  </svg>
+                )}
               </span>
             </button>
             <span className="absolute bottom-3 left-3 flex items-center gap-2 rounded-full bg-white py-1.5 pl-4 pr-1.5 text-xs font-semibold text-ink">
