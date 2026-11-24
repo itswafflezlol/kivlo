@@ -2,15 +2,43 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Modal, PlatformGlyph } from "./ui";
-import { user, presets } from "@/lib/mock";
+import UpgradeModal from "./UpgradeModal";
+import { user, presets, clips } from "@/lib/mock";
 import { parseVideoLink, type ParsedLink } from "@/lib/linkParse";
+import { ApiError, createProject } from "@/lib/data";
+import { errorMessage, fieldError } from "@/lib/error-message";
+import { styledCaption } from "@/app/app/(shell)/presets/page";
 
 const LAYOUTS = [
   { id: "auto", label: "Auto" },
   { id: "split", label: "Facecam + gameplay" },
   { id: "face", label: "Face only" },
 ] as const;
+
+const CAP_PRESETS = presets.filter((p) => p.kind === "captions");
+const FALLBACK_THUMB = clips[0].poster;
+
+function LayoutThumb({ layout, thumb }: { layout: string; thumb: string }) {
+  // eslint-disable-next-line @next/next/no-img-element
+  const img = (cls: string, style?: React.CSSProperties) => <img src={thumb} alt="" className={cls} style={style} />;
+  return (
+    <span aria-hidden className="block aspect-[9/16] w-14 overflow-hidden rounded-lg bg-surface-2 ring-1 ring-line">
+      {layout === "auto" && img("h-full w-full object-cover")}
+      {layout === "split" && (
+        <span className="block h-full w-full">
+          <span className="block h-[40%] overflow-hidden">{img("h-full w-full scale-[1.7] object-cover object-[50%_15%]")}</span>
+          <span className="h-[3px] w-full bg-ink" />
+          <span className="block h-[calc(60%-3px)] overflow-hidden">{img("h-full w-full object-cover")}</span>
+        </span>
+      )}
+      {layout === "face" && (
+        <span className="block h-full w-full overflow-hidden">{img("h-full w-full scale-[2] object-cover object-[50%_12%]")}</span>
+      )}
+    </span>
+  );
+}
 
 let checkSeq = 0;
 
@@ -30,8 +58,11 @@ export default function ImportModal({ open, onClose, initialUrl = "" }: { open: 
   const [checked, setChecked] = useState(false);
   const [rights, setRights] = useState(false);
   const [layout, setLayout] = useState("auto");
-  const [preset, setPreset] = useState(presets[0].name);
+  const [preset, setPreset] = useState(CAP_PRESETS[0].id);
   const [progress, setProgress] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [err, setErr] = useState<ApiError | null>(null);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const deb = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const left = user.creditsTotal - user.creditsUsed;
@@ -83,12 +114,33 @@ export default function ImportModal({ open, onClose, initialUrl = "" }: { open: 
   };
 
   const valid = parsed?.ok === true;
+  const thumb = info.state === "ok" && info.thumb ? info.thumb : FALLBACK_THUMB;
+  const urlErr = fieldError(err, "url");
+
+  const submit = async () => {
+    if (!parsed?.ok || submitting) return;
+    setErr(null);
+    setSubmitting(true);
+    try {
+      const r = await createProject({
+        url: parsed.url, rightsConfirmed: true, layout,
+        presetId: preset, idempotencyKey: crypto.randomUUID(),
+      });
+      onClose();
+      router.push(`/app/projects/${r.id}`);
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 402) setUpgradeOpen(true);
+      else setErr(e as ApiError);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <Modal open={open} onClose={onClose} label="New import" wide title="New import">
       <div role="tablist" aria-label="Import source" className="mt-4 flex w-fit rounded-full bg-surface-2 p-1 text-sm font-medium">
         {(["link", "upload"] as const).map((t) => (
-          <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`rounded-full px-4 py-1.5 capitalize ${tab === t ? "bg-surface text-fg shadow-sm" : "text-slate"}`}>
+          <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`rounded-full px-4 py-1.5 capitalize ${tab === t ? "bg-surface text-fg shadow-sm" : "text-fg"}`}>
             {t === "link" ? "Link" : "Upload"}
           </button>
         ))}
@@ -112,6 +164,16 @@ export default function ImportModal({ open, onClose, initialUrl = "" }: { open: 
           {parsed && !parsed.ok && parsed.reason !== "empty" && (
             <p role="alert" className="flex items-center gap-2 rounded-xl bg-[#FF6B63]/10 px-3 py-2 text-sm text-error">
               {parsed.message}
+            </p>
+          )}
+          {urlErr && (
+            <p role="alert" className="flex items-center gap-2 rounded-xl bg-[#FF6B63]/10 px-3 py-2 text-sm text-error">
+              {urlErr}
+            </p>
+          )}
+          {err && !urlErr && err.status !== 402 && (
+            <p role="alert" className="flex items-center gap-2 rounded-xl bg-[#FF6B63]/10 px-3 py-2 text-sm text-error">
+              {errorMessage(err)}
             </p>
           )}
 
@@ -152,33 +214,45 @@ export default function ImportModal({ open, onClose, initialUrl = "" }: { open: 
 
               <fieldset>
                 <legend className="mb-2 text-sm font-medium">Layout</legend>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="flex gap-2">
                   {LAYOUTS.map((l) => (
                     <button key={l.id} type="button" aria-pressed={layout === l.id} onClick={() => setLayout(l.id)}
-                      className={`relative rounded-xl border p-3 text-left text-xs font-medium transition-colors ${layout === l.id ? "border-fg bg-lime-soft" : "border-hairline hover:border-slate"}`}>
-                      {layout === l.id && (
-                        <span aria-hidden className="absolute right-2 top-2 flex h-4 w-4 items-center justify-center rounded-full bg-fg text-lime-deep">
-                          <svg viewBox="0 0 12 12" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2l2.3 2.3L9.5 3.6" /></svg>
-                        </span>
-                      )}
-                      <span aria-hidden className="mb-2 block aspect-[9/16] w-9 overflow-hidden rounded-md bg-surface-2 ring-1 ring-line">
-                        {l.id === "auto" && <span className="block h-full w-full bg-lilac-soft" />}
-                        {l.id === "split" && (<span className="block h-full"><span className="block h-[40%] bg-surface ring-1 ring-line-2" /><span className="block h-[60%] bg-lilac-soft" /></span>)}
-                        {l.id === "face" && (<span className="flex h-full items-center justify-center"><span className="block h-5 w-5 rounded-full bg-surface ring-1 ring-line-2" /></span>)}
+                      className="group flex w-[92px] flex-col items-center gap-1.5 text-xs font-medium text-slate">
+                      <span className={`relative rounded-lg transition-shadow ${layout === l.id ? "ring-2 ring-lime ring-offset-2 ring-offset-surface" : "opacity-80 group-hover:opacity-100"}`}>
+                        <LayoutThumb layout={l.id} thumb={thumb} />
+                        {layout === l.id && (
+                          <span aria-hidden className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-lime text-ink">
+                            <svg viewBox="0 0 12 12" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2l2.3 2.3L9.5 3.6" /></svg>
+                          </span>
+                        )}
                       </span>
-                      {l.label}
+                      <span className={layout === l.id ? "text-fg" : ""}>{l.label}</span>
                     </button>
                   ))}
                 </div>
               </fieldset>
 
-              <label className="relative block text-sm font-medium">
-                Caption preset
-                <select value={preset} onChange={(e) => setPreset(e.target.value)} className="mt-1 w-full appearance-none rounded-xl border border-line-2 bg-surface px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-lime">
-                  {presets.map((p) => <option key={p.id}>{p.name}</option>)}
-                </select>
-                <svg aria-hidden viewBox="0 0 12 12" className="pointer-events-none absolute bottom-3.5 right-3 h-3 w-3 text-slate" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M3 4.5l3 3 3-3" /></svg>
-              </label>
+              <fieldset>
+                <legend className="mb-2 flex w-full items-baseline justify-between text-sm font-medium">
+                  Caption preset
+                  <Link href="/app/presets" className="text-xs font-medium text-lime-deep hover:underline" onClick={onClose}>See all presets</Link>
+                </legend>
+                <div className="grid grid-cols-6 gap-1.5">
+                  {CAP_PRESETS.map((p) => (
+                    <button key={p.id} type="button" aria-pressed={preset === p.id} onClick={() => setPreset(p.id)}
+                      className="group flex flex-col items-center gap-1 text-[10px] font-medium text-slate">
+                      <span className={`relative aspect-[9/16] w-full overflow-hidden rounded-lg ring-1 ring-line transition-shadow ${preset === p.id ? "ring-2 ring-lime ring-offset-2 ring-offset-surface" : "opacity-80 group-hover:opacity-100"}`}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={thumb} alt="" className="h-full w-full object-cover" />
+                        <span className="absolute inset-x-1 bottom-2 text-center text-[8px]">
+                          {styledCaption(p, ["NO", "WAY", "HE"], 1)}
+                        </span>
+                      </span>
+                      <span className={`max-w-full truncate ${preset === p.id ? "text-fg" : ""}`}>{p.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
 
               <label className="flex cursor-pointer items-start gap-2.5 text-sm">
                 <input type="checkbox" checked={rights} onChange={(e) => setRights(e.target.checked)} className="peer sr-only" />
@@ -188,9 +262,9 @@ export default function ImportModal({ open, onClose, initialUrl = "" }: { open: 
                 I have the rights to this content
               </label>
 
-              <button disabled={!rights || !checked} onClick={() => { onClose(); router.push("/app/projects/new-demo"); }}
+              <button disabled={!rights || !checked || submitting} onClick={() => void submit()}
                 className="w-full rounded-full bg-lime py-3 text-sm font-semibold text-ink transition-colors hover:bg-lime-hover disabled:opacity-40">
-                Find highlights
+                {submitting ? "Starting…" : "Find highlights"}
               </button>
             </div>
           )}
@@ -210,6 +284,7 @@ export default function ImportModal({ open, onClose, initialUrl = "" }: { open: 
           </label>
         </div>
       )}
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
     </Modal>
   );
 }

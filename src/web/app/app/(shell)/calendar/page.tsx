@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 import { scheduledPosts as seed, clips, clipById, WEEK_START_ISO, type ScheduledPost, type PostPlatform } from "@/lib/mock";
-import { PlatformGlyph, Modal, ScoreBadge } from "@/components/app/ui";
+import { PlatformGlyph, Modal, ScoreBadge, IconButton } from "@/components/app/ui";
 
 const PLATS: PostPlatform[] = ["tiktok", "shorts", "reels", "x"];
 const HOURS = Array.from({ length: 16 }, (_, i) => i + 8); // 8am–11pm
@@ -144,8 +144,8 @@ export default function Calendar() {
               ))}
             </div>
             <button className="rounded-full bg-surface px-3 py-1 text-xs font-medium shadow-sm ring-1 ring-line">Today</button>
-            <button aria-label="Previous" className="rounded-full bg-surface p-1.5 shadow-sm ring-1 ring-line"><svg viewBox="0 0 12 12" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M7.5 2.5 4 6l3.5 3.5"/></svg></button>
-            <button aria-label="Next" className="rounded-full bg-surface p-1.5 shadow-sm ring-1 ring-line"><svg viewBox="0 0 12 12" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></button>
+            <IconButton label="Previous" className="bg-surface shadow-sm ring-1 ring-line"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" className="translate-x-[-0.5px]"><path d="M7.5 2.5 4 6l3.5 3.5"/></svg></IconButton>
+            <IconButton label="Next" className="bg-surface shadow-sm ring-1 ring-line"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" className="translate-x-[0.5px]"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></IconButton>
           </div>
         </div>
 

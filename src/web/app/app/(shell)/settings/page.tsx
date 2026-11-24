@@ -24,13 +24,11 @@ export default function Settings() {
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-ink font-heading font-bold text-lime">A</span>
           <div><p className="text-sm font-medium">{user.name}</p><p className="text-xs text-slate">{user.email}</p></div>
         </div>
-        <label className="mt-4 block text-sm font-medium">Theme
-          <Select label="Theme" value={theme} onChange={(v) => setTheme(v as typeof theme)} className="mt-1 block w-48">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="system">System</option>
-          </Select>
-        </label>
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <span className="text-sm font-medium">Theme</span>
+          <Select label="Theme" value={theme} onChange={(v) => setTheme(v as typeof theme)} className="w-44"
+            options={[{ value: "light", label: "Light" }, { value: "dark", label: "Dark" }, { value: "system", label: "System" }]} />
+        </div>
       </section>
       <section className="rounded-2xl bg-surface p-5 ring-1 ring-line">
         <h3 className="mb-4 font-heading text-sm font-bold">Connected accounts</h3>

@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { projectById, clipsOf, type Clip, type PostPlatform } from "@/lib/mock";
+import { apiEnabled, getProject, eventsTicket, eventsUrl, type ApiProject } from "@/lib/data";
 import { PlatformGlyph, ScoreBadge, fmtLen, Modal } from "@/components/app/ui";
+
+const ViewTransition = (React as unknown as { ViewTransition?: React.ComponentType<{ name: string; children?: React.ReactNode }> }).ViewTransition ?? (({ children }: { children?: React.ReactNode }) => <>{children}</>);
 
 const STEPS = ["Downloading", "Transcribing", "Finding moments", "Making clips"];
 const PLATFORMS: PostPlatform[] = ["tiktok", "shorts", "reels", "x"];
@@ -86,7 +89,85 @@ function PostPrep({ clip, onClose }: { clip: Clip; onClose: () => void }) {
   );
 }
 
+const API_STAGES: Record<string, string> = {
+  probe: "Checking the video", download: "Downloading", transcribe: "Transcribing",
+  highlights: "Finding moments", render: "Making clips",
+};
+
+function ApiProjectView({ id }: { id: string }) {
+  const [project, setProject] = useState<ApiProject | null | "loading">("loading");
+  const [live, setLive] = useState<{ stage: string | null; pct: number }>({ stage: null, pct: 0 });
+
+  useEffect(() => {
+    let dead = false;
+    let es: EventSource | null = null;
+    let retries = 0;
+    const open = async () => {
+      try {
+        const { ticket } = await eventsTicket();
+        if (dead) return;
+        es = new EventSource(eventsUrl(ticket));
+        es.addEventListener("job.progress", (e) => {
+          const d = JSON.parse((e as MessageEvent).data);
+          if (d.projectId === id) setLive({ stage: d.stage ?? null, pct: d.pct ?? 0 });
+        });
+        es.addEventListener("project.updated", (e) => {
+          const d = JSON.parse((e as MessageEvent).data);
+          if (d.projectId === id) void getProject(id).then((p) => !dead && setProject((p as ApiProject) ?? null));
+        });
+        es.onerror = () => {
+          es?.close();
+          if (!dead && retries++ < 5) setTimeout(() => void open(), 2000);
+        };
+      } catch {
+        if (!dead && retries++ < 5) setTimeout(() => void open(), 2000);
+      }
+    };
+    getProject(id).then((p) => { if (!dead) { setProject((p as ApiProject) ?? null); if (p && (p as ApiProject).status === "processing") void open(); } })
+      .catch(() => !dead && setProject(null));
+    return () => { dead = true; es?.close(); };
+  }, [id]);
+
+  if (project === "loading") {
+    return <div className="mx-auto mt-16 h-64 max-w-md animate-pulse rounded-2xl bg-surface ring-1 ring-line" />;
+  }
+  if (!project) return <p className="mt-10 text-slate">Project not found.</p>;
+  if (project.status === "failed") {
+    return (
+      <div className="mx-auto mt-16 max-w-md rounded-2xl bg-surface p-8 text-center ring-1 ring-line">
+        <h2 className="font-heading text-lg font-bold">That import didn&apos;t finish.</h2>
+        <p className="mt-1 text-sm text-slate">{project.error ?? "Something went wrong."} Your credits were refunded.</p>
+        <Link href="/app" className="mt-5 inline-block rounded-full bg-lime px-6 py-2.5 text-sm font-semibold text-ink hover:bg-lime-hover">Back to dashboard</Link>
+      </div>
+    );
+  }
+  if (project.status === "ready") {
+    return (
+      <div className="mx-auto mt-16 max-w-md rounded-2xl bg-surface p-8 text-center ring-1 ring-line">
+        <h2 className="font-heading text-lg font-bold">{project.title ?? "Import ready"}</h2>
+        <p className="mt-1 text-sm text-slate">Clips are ready to review.</p>
+      </div>
+    );
+  }
+  const pct = Math.max(project.progress ?? 0, live.pct);
+  const stageName = API_STAGES[live.stage ?? project.stage ?? ""] ?? "Importing";
+  return (
+    <div className="mx-auto mt-16 max-w-md rounded-2xl bg-surface p-8 ring-1 ring-line">
+      <h2 className="font-heading text-lg font-bold">{project.title ?? "Finding the best moments"}</h2>
+      <p className="mt-1 text-sm text-slate">{stageName} — this takes a few minutes. You can leave, we&apos;ll notify you.</p>
+      <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-surface-2">
+        <div className="h-full bg-lime transition-all" style={{ width: `${pct}%` }} />
+      </div>
+      <p className="mt-2 font-mono text-xs text-slate">{Math.round(pct)}% · {live.stage ?? project.stage ?? "queued"}</p>
+    </div>
+  );
+}
+
 export default function ProjectView({ id }: { id: string }) {
+  return apiEnabled ? <ApiProjectView id={id} /> : <MockProjectView id={id} />;
+}
+
+function MockProjectView({ id }: { id: string }) {
   const project = projectById(id);
   const [processing, setProcessing] = useState(project?.status === "processing");
   const [sort, setSort] = useState<"score" | "time">("score");
@@ -146,10 +227,12 @@ export default function ProjectView({ id }: { id: string }) {
         {list.map((c) => (
           <div key={c.id} ref={(n) => { cardRefs.current[c.id] = n; }} className="group rounded-2xl bg-surface p-3 ring-1 ring-line">
             <div className="relative aspect-[9/16] overflow-hidden rounded-xl bg-ink ring-1 ring-line">
+              <ViewTransition name={`clip-thumb-${c.id}`}>
               <video src={c.src} poster={c.poster} muted loop playsInline preload="none" aria-label={c.title}
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
                 onMouseLeave={(e) => e.currentTarget.pause()} />
+              </ViewTransition>
               <span className="absolute left-2 top-2"><ScoreBadge score={c.score} /></span>
               <span className="absolute bottom-2 right-2 rounded-md bg-black/60 px-1.5 py-0.5 font-mono text-[11px] text-white">0:0{c.duration}</span>
             </div>

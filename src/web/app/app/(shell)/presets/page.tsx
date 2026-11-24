@@ -62,6 +62,7 @@ export default function Presets() {
   const [tab, setTab] = useState<"all" | PresetKind>("all");
   const [q, setQ] = useState("");
   const [sel, setSel] = useState<Preset | null>(null);
+  const [renaming, setRenaming] = useState(false);
   const [playing, setPlaying] = useState(false);
   const vidRef = useRef<HTMLVideoElement>(null);
 
@@ -165,7 +166,14 @@ export default function Presets() {
             <button className="rounded-full bg-lime py-2 text-xs font-semibold text-ink hover:bg-lime-hover">Apply to clip…</button>
             <button onClick={() => act(sel.id, "def")} className="rounded-full border border-line-2 py-2 text-xs font-medium hover:border-fg">{sel.isDefault ? "Default ✓" : "Set as default"}</button>
             <button onClick={() => act(sel.id, "dup")} className="rounded-full border border-line-2 py-2 text-xs font-medium hover:border-fg">Duplicate</button>
-            <button onClick={() => { const v = prompt("Preset name", sel.name); if (v) setList((l) => l.map((p) => p.id === sel.id ? { ...p, name: v } : p)); }} className="rounded-full border border-line-2 py-2 text-xs font-medium hover:border-fg">Rename</button>
+            {renaming ? (
+              <input autoFocus defaultValue={sel.name} aria-label="Preset name"
+                onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") setRenaming(false); }}
+                onBlur={(e) => { const v = e.target.value.trim(); if (v) setList((l) => l.map((p) => p.id === sel.id ? { ...p, name: v } : p)); setRenaming(false); }}
+                className="col-span-1 rounded-full border border-lime bg-surface px-3 py-1.5 text-xs font-medium focus:outline-none" />
+            ) : (
+              <button onClick={() => setRenaming(true)} className="rounded-full border border-line-2 py-2 text-xs font-medium hover:border-fg">Rename</button>
+            )}
             {sel.mine && <button onClick={() => act(sel.id, "del")} className="col-span-2 rounded-full border border-line-2 py-2 text-xs font-medium text-error hover:border-[#B3261E]">Delete</button>}
           </div>
         </aside>

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useRef, useState, useSyncExternalStore } from "react";
 import { user, notifications, clips } from "@/lib/mock";
+import { IconButton } from "@/components/app/ui";
 import { useSession, clearSession } from "@/lib/session";
 import { useTheme, type Theme } from "@/lib/theme";
 import { useRouter } from "next/navigation";
@@ -142,7 +143,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           <Image src={asset("/kivlo-mark-white.png")} alt="Kivlo" width={94} height={96} className="h-[26px] w-auto" />
         </Link>
         <button onClick={() => setImportOpen(true)} aria-label="New import" title="New import"
-          className={`mb-5 flex h-11 items-center gap-2 rounded-full bg-lime text-ink transition-transform hover:scale-105 ${expanded ? "mx-3 justify-start px-4" : "w-11 justify-center"}`}>
+          className={`mb-5 flex h-11 items-center rounded-full bg-lime text-ink transition-transform hover:scale-105 ${expanded ? "mx-3 justify-start gap-2 px-4" : "w-11 justify-center"}`}>
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0"><path d="M9 3v12M3 9h12"/></svg>
           <span aria-hidden={!expanded} className={`overflow-hidden whitespace-nowrap text-sm font-semibold transition-all duration-200 ${expanded ? "max-w-[130px] opacity-100" : "max-w-0 opacity-0"}`}>New import</span>
         </button>
@@ -202,13 +203,13 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             )}
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <button aria-label="Search" className="flex h-10 w-10 items-center justify-center rounded-full bg-surface shadow-sm ring-1 ring-line hover:shadow">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
-            </button>
+            <IconButton label="Search" className="h-10 w-10 bg-surface shadow-sm ring-1 ring-line hover:shadow [&>svg]:h-4 [&>svg]:w-4">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+            </IconButton>
             <div className="relative">
               <button aria-label="Notifications" aria-expanded={bellOpen} onClick={() => setBellOpen(!bellOpen)}
-                className="relative flex h-10 w-10 items-center justify-center rounded-full bg-surface shadow-sm ring-1 ring-line hover:shadow">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M8 2a4 4 0 0 0-4 4v2.5L2.8 11h10.4L12 8.5V6a4 4 0 0 0-4-4Z"/><path d="M6.5 13a1.5 1.5 0 0 0 3 0"/></svg>
+                className="relative grid h-10 w-10 place-items-center rounded-full bg-surface shadow-sm ring-1 ring-line hover:shadow [&>svg]:h-4 [&>svg]:w-4 [&>svg]:translate-y-[-0.5px]">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M8 2a4 4 0 0 0-4 4v2.5L2.8 11h10.4L12 8.5V6a4 4 0 0 0-4-4Z"/><path d="M6.5 13a1.5 1.5 0 0 0 3 0"/></svg>
                 {unread > 0 && <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-lime ring-2 ring-white" />}
               </button>
               {bellOpen && (

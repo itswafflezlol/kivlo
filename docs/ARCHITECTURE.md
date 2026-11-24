@@ -71,3 +71,24 @@ Every import records who submitted which video (PRD requirement).
 | Postgres + Auth | Supabase (hosted) | — |
 
 Local dev: `docker compose -f deploy/docker-compose.yml up` starts Postgres, the API and the worker.
+
+## Editor adjustments → FFmpeg mapping
+
+The workspace preview renders adjustments with CSS `filter` + an inline SVG filter; export must produce the same look. Mapping (values are the editor's -100..100 unless noted):
+
+| Slider | Preview | FFmpeg equivalent |
+|---|---|---|
+| Brightness | `brightness()` | `eq=brightness=(v/100)*0.5` |
+| Contrast | `contrast()` | `eq=contrast=1+v/100` |
+| Saturation | `saturate()` | `eq=saturation=1+v/100` |
+| Exposure | extra `brightness()` | `eq=brightness=+(v/100)*0.5` |
+| Sharpen (0..100) | `feConvolveMatrix` | `unsharp=5:5:(v/100)` |
+| Temperature | `feColorMatrix` (warm/cool shift) | `colortemperature=temperature=6500+v*30` |
+| Tint | `feColorMatrix` (green/magenta) | `colorbalance=gm=v/100` |
+| Highlights | `feComponentTransfer` (compress top) | `curves=lighter='0/0 0.5/(0.5-v*0.001) 1/1'` |
+| Shadows | `feComponentTransfer` (lift/compress bottom) | `curves='0/(v*0.002) 0.5/0.5 1/1'` |
+| Vibrance | `feColorMatrix` (sat of low-sat pixels) | `eq=saturation` + `vibrance=intensity=v/100` |
+| Fade | `feComponentTransfer` (lift blacks, drop whites) | `curves='0/(v*0.002) 1/(1-v*0.002)'` |
+| Vignette (0..100) | `radial-gradient` overlay | `vignette=angle=PI/5*(1-v/100)` |
+
+Exact coefficient tuning happens when the render pipeline is built; the preview is the visual reference.

@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Suspense, useState, useSyncExternalStore } from "react";
+import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
-import { user, projects, clips, scheduledPosts, clipById } from "@/lib/mock";
+import { user, projects as mockProjects, clips, scheduledPosts, clipById, type Project } from "@/lib/mock";
+import { apiEnabled, getMe, getProjects, type Me, type ApiProject } from "@/lib/data";
 import { useSession } from "@/lib/session";
 import { PlatformGlyph, fmtLen, fmtTime, statusChip } from "@/components/app/ui";
 import ImportModal from "@/components/app/ImportModal";
@@ -37,7 +38,7 @@ function Dash() {
   const sp = useSearchParams();
   const state = sp.get("state");
   const empty = state === "empty";
-  const low = state === "low" || user.creditsTotal - user.creditsUsed < 5;
+  const low = state === "low";
   const session = useSession();
   const displayName = session?.name.split(" ")[0] ?? user.name;
   const urlParam = sp.get("url");
@@ -45,8 +46,19 @@ function Dash() {
   const [modalUrl, setModalUrl] = useState(urlParam ?? "");
   const [link, setLink] = useState("");
   const [linkErr, setLinkErr] = useState("");
-  const left = user.creditsTotal - user.creditsUsed;
-  const usedPct = user.creditsUsed / user.creditsTotal;
+  const [me, setMe] = useState<Me | null>(null);
+  const [plist, setPlist] = useState<(Project | ApiProject)[] | null>(apiEnabled ? null : mockProjects);
+  useEffect(() => {
+    if (!apiEnabled) return;
+    let on = true;
+    getMe().then((m) => on && setMe(m)).catch(() => {});
+    getProjects().then((l) => on && setPlist(l)).catch(() => on && setPlist([]));
+    return () => { on = false; };
+  }, []);
+  const used = me?.credits.used ?? user.creditsUsed;
+  const total = me?.credits.total ?? user.creditsTotal;
+  const left = me?.credits.left ?? total - used;
+  const usedPct = used / total;
   const noop = () => () => {};
   const greet = useSyncExternalStore(noop, () => {
     const h = new Date().getHours();
@@ -117,7 +129,7 @@ function Dash() {
             <div className="rounded-[28px] bg-ink p-6 text-[#F2F2F0] dark:bg-[#202020] dark:ring-1 dark:ring-line">
               <p className="text-sm text-[#A1A5A0]">You’ve clipped 14 moments this week, keep it up!</p>
               <p className="mt-1 font-heading text-4xl font-bold">{left} <span className="text-xl font-medium text-[#A1A5A0]">credits left</span></p>
-              {low && <p className="mt-2 inline-block rounded-full bg-heat/15 px-3 py-1 text-xs text-heat">Running low — upgrade for more.</p>}
+              {(low || left < 5) && <p className="mt-2 inline-block rounded-full bg-heat/15 px-3 py-1 text-xs text-heat">Running low — upgrade for more.</p>}
               <div className="mt-5 flex justify-between gap-2 px-1">
                 <Ring value={usedPct} color="#BDEF72" label="Credits used" />
                 <Ring value={0.62} color="#F5A524" label="Clips posted" />
@@ -168,8 +180,16 @@ function Dash() {
             <Link href="/app/library" className="text-xs font-medium text-slate hover:text-fg">See all</Link>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.slice(0, 3).map((p, i) => {
-              const cs = clips.filter((c) => p.clipIds.includes(c.id)).slice(0, 3);
+            {plist === null && [0, 1, 2].map((i) => (
+              <div key={i} className="h-56 animate-pulse rounded-[24px] bg-surface ring-1 ring-line" />
+            ))}
+            {plist?.slice(0, 3).map((p, i) => {
+              const isApi = !("clipIds" in p);
+              const cs = isApi ? [] : clips.filter((c) => (p as Project).clipIds.includes(c.id)).slice(0, 3);
+              const title = p.title ?? "New import";
+              const meta = isApi
+                ? ((p as ApiProject).durationSec ? fmtLen((p as ApiProject).durationSec!) : "Importing…")
+                : `${(p as Project).clipIds.length} clips · ${fmtLen((p as Project).sourceLength)}`;
               return (
                 <Link key={p.id} href={`/app/projects/${p.id}`}
                   className={`group relative flex h-56 flex-col justify-between overflow-hidden rounded-[24px] p-5 transition-transform hover:-translate-y-0.5 ${cardSkin[i % 3]}`}>
@@ -181,8 +201,8 @@ function Dash() {
                         {p.status}
                       </span>
                     </div>
-                    <h4 className="mt-3 font-heading text-lg font-bold leading-snug">{p.title}</h4>
-                    <p className={`mt-1 text-xs ${i === 0 ? "text-ink/70" : i === 2 ? "text-[#A1A5A0]" : "text-fg/70"}`}>{p.clipIds.length} clips · {fmtLen(p.sourceLength)}</p>
+                    <h4 className="mt-3 font-heading text-lg font-bold leading-snug">{title}</h4>
+                    <p className={`mt-1 text-xs ${i === 0 ? "text-ink/70" : i === 2 ? "text-[#A1A5A0]" : "text-fg/70"}`}>{meta}</p>
                   </div>
                   <div className="flex items-end justify-between">
                     <span className={`flex h-11 w-11 items-center justify-center rounded-full transition-transform group-hover:scale-105 ${i === 1 ? "bg-fg text-canvas" : "bg-surface/90 text-fg shadow-sm"}`} aria-hidden="true">

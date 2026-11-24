@@ -1,3 +1,7 @@
 .audit/
 src/web/out/
 .env*.local
+node_modules/
+__pycache__/
+*.pyc
+.venv/

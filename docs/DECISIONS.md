@@ -54,3 +54,5 @@ Format: `YYYY-MM-DD: decision. Why.`
 - 2026-11-23: App themes: Light / Dark / System (default System), persisted per browser; applies to /app and /admin. Workspace stays always dark; marketing pages stay light for now.
 - 2026-11-23: Backend architecture set (docs/ARCHITECTURE.md): everything on the Sylant VPS via Docker Compose behind Cloudflare; TypeScript API (Hono) + Python worker; Supabase Postgres + Auth; Postgres jobs table as the queue (SKIP LOCKED); SSE for live progress; R2 presigned uploads; site stays a static build and falls back to mock data when no API is configured.
 - 2026-11-23: Google/Apple sign-in IDs live in GitHub Actions secrets (write-only), not variables or chat.
+- 2026-05-21: Branding hard rules added: no generic/default scrollbars, optical alignment for all icons/buttons, subtle page/editor transitions.
+- 2026-11-23: Editor: CapCut-style direct manipulation, resize-only panels, adjustments only (no effects). Inline editing only — no browser dialogs; custom thin scrollbars app-wide; View Transitions for editor enter/exit.

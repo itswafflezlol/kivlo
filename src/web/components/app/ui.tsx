@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { PostPlatform } from "@/lib/mock";
 import PlatformIcon, { platformLabel } from "./PlatformIcon";
 
@@ -34,6 +34,18 @@ export function ScoreBadge({ score, glass }: { score: number; glass?: boolean })
   );
 }
 
+export function IconButton({ onClick, label, pressed, disabled, dark, className = "", children }: {
+  onClick?: () => void; label: string; pressed?: boolean; disabled?: boolean; dark?: boolean; className?: string; children: React.ReactNode;
+}) {
+  return (
+    <button onClick={onClick} aria-label={label} aria-pressed={pressed} disabled={disabled}
+      className={`grid h-8 w-8 place-items-center rounded-full transition-colors disabled:opacity-30 [&>svg]:h-4 [&>svg]:w-4 ${
+        dark ? (pressed ? "bg-lime text-ink" : "text-[#A1A5A0] hover:bg-carbon hover:text-white") : (pressed ? "bg-fg text-canvas" : "text-slate hover:bg-surface-2 hover:text-fg")} ${className}`}>
+      {children}
+    </button>
+  );
+}
+
 export function Toggle({ checked, onChange, label }: { checked: boolean; onChange?: (v: boolean) => void; label?: string }) {
   return (
     <label className="inline-flex cursor-pointer items-center">
@@ -43,16 +55,54 @@ export function Toggle({ checked, onChange, label }: { checked: boolean; onChang
   );
 }
 
-export function Select({ value, onChange, label, children, className = "" }: {
-  value?: string; onChange?: (v: string) => void; label?: string; children: React.ReactNode; className?: string;
+export function Select({ value, onChange, label, options, className = "", dark }: {
+  value?: string; onChange?: (v: string) => void; label?: string; options: { value: string; label: string }[]; className?: string; dark?: boolean;
 }) {
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const root = useRef<HTMLSpanElement>(null);
+  const idx = Math.max(0, options.findIndex((o) => o.value === value));
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+  const pick = (i: number) => { onChange?.(options[i].value); setOpen(false); };
+  const expand = () => { setActive(idx); setOpen(true); };
+  const onKey = (e: React.KeyboardEvent) => {
+    if (!open && (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ")) { expand(); e.preventDefault(); return; }
+    if (!open) return;
+    if (e.key === "ArrowDown") { setActive((a) => Math.min(options.length - 1, a + 1)); e.preventDefault(); }
+    else if (e.key === "ArrowUp") { setActive((a) => Math.max(0, a - 1)); e.preventDefault(); }
+    else if (e.key === "Enter" || e.key === " ") { pick(active); e.preventDefault(); }
+    else if (e.key === "Escape") { setOpen(false); e.preventDefault(); }
+    else if (e.key === "Home") { setActive(0); e.preventDefault(); }
+    else if (e.key === "End") { setActive(options.length - 1); e.preventDefault(); }
+  };
   return (
-    <span className={`relative inline-block ${className}`}>
-      <select value={value} onChange={(e) => onChange?.(e.target.value)} aria-label={label}
-        className="w-full appearance-none rounded-xl border border-line-2 bg-surface px-3 py-2 pr-9 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-lime">
-        {children}
-      </select>
-      <svg aria-hidden viewBox="0 0 12 12" className="pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 text-slate" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4.5l3 3 3-3"/></svg>
+    <span ref={root} className={`relative inline-block ${className}`}>
+      <button type="button" aria-label={label} aria-haspopup="listbox" aria-expanded={open}
+        onClick={() => (open ? setOpen(false) : expand())} onKeyDown={onKey}
+        className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm focus:outline-none focus:ring-2 focus:ring-lime ${dark ? "border-[#3A3A3A] bg-carbon text-[#F2F2F0]" : "border-line-2 bg-surface text-fg"}`}>
+        <span>{options[idx]?.label}</span>
+        <svg aria-hidden viewBox="0 0 12 12" className={`ml-2 h-3 w-3 shrink-0 text-slate transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 4.5l3 3 3-3"/></svg>
+      </button>
+      {open && (
+        <ul role="listbox" aria-label={label} aria-activedescendant={`opt-${active}`}
+          className={`kv-scroll absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-xl p-1 shadow-lg ring-1 ${dark ? "bg-graphite ring-[#3A3A3A]" : "bg-surface ring-line"}`}>
+          {options.map((o, i) => (
+            <li key={o.value} id={`opt-${i}`} role="option" aria-selected={o.value === value}
+              onMouseEnter={() => setActive(i)} onClick={() => pick(i)}
+              className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm ${i === active ? (dark ? "bg-carbon" : "bg-surface-2") : ""} ${o.value === value ? (dark ? "font-medium text-white" : "font-medium text-fg") : (dark ? "text-[#F2F2F0]" : "text-fg")}`}>
+              {o.label}
+              {o.value === value && (
+                <svg viewBox="0 0 12 12" className="h-3 w-3 text-lime-deep" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 6.2l2.3 2.3L9.5 3.6" /></svg>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </span>
   );
 }
@@ -93,15 +143,9 @@ export function Modal({
         {title !== undefined && (
           <div className="flex items-center justify-between gap-4">
             <h2 className={`font-heading text-[17px] font-bold ${dark ? "text-[#F2F2F0]" : "text-fg"}`}>{title}</h2>
-            <button
-              onClick={onClose}
-              aria-label="Close"
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors ${
-                dark ? "text-[#A1A5A0] hover:bg-surface/10 hover:text-white" : "text-slate hover:bg-surface-2 hover:text-fg"
-              }`}
-            >
-              <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M4 4l8 8M12 4l-8 8" /></svg>
-            </button>
+            <IconButton onClick={onClose} label="Close" dark={dark}>
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M4 4l8 8M12 4l-8 8" /></svg>
+            </IconButton>
           </div>
         )}
         {children}

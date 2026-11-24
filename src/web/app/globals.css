@@ -327,3 +327,42 @@ body {
 /* chart capacity hatching */
 :root { --hatch-a: #F1F4EA; --hatch-b: #E6EBD8; --hatch-line: rgba(24, 24, 24, 0.05); }
 .dark { --hatch-a: #2A2A2A; --hatch-b: #303030; --hatch-line: rgba(255, 255, 255, 0.05); }
+
+/* --- Kivlo thin scrollbars (founder rule: never show native scrollbars) --- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(24, 24, 24, 0.22) transparent;
+}
+.dark * {
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+*::-webkit-scrollbar-thumb {
+  background: rgba(24, 24, 24, 0.0);
+  border-radius: 999px;
+}
+*:hover::-webkit-scrollbar-thumb, .kv-scroll::-webkit-scrollbar-thumb {
+  background: rgba(24, 24, 24, 0.22);
+}
+.dark *::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.0); }
+.dark *:hover::-webkit-scrollbar-thumb, .dark .kv-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Motion system --- */
+@keyframes kv-panel-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes kv-page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.kv-panel-in { animation: kv-panel-in 400ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.kv-page-in { animation: kv-page-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* consistent press feedback */
+button:not([data-nopress]) { transition: transform 120ms ease, opacity 120ms ease, background-color 150ms ease, color 150ms ease, border-color 150ms ease; }
+button:not([data-nopress]):active { transform: scale(0.97); }
